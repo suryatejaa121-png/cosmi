@@ -12,7 +12,7 @@
   
   <meta property="og:title" content="CosmironAI | Enterprise AI Solutions & Strategy Partner">
   <meta property="og:description" content="Unlock your business potential with CosmironAI. We provide end-to-end AI strategy, development, and integration to automate processes and fuel growth.">
-  <meta property="og:image" content="https://cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/6859494f184f134461c3abc3_opengraph.png">
+  <meta property="og:image" content="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/67efdc24d4b8be13e09af08c_dark-card-2.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.cosmiron.ai"> 
   <meta property="og:site_name" content="CosmironAI">
@@ -20,7 +20,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="CosmironAI | Enterprise AI Solutions & Strategy Partner">
   <meta name="twitter:description" content="Unlock your business potential with CosmironAI. We provide end-to-end AI strategy, development, and integration to automate processes and fuel growth.">
-  <meta name="twitter:image" content="https://cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/6859494f184f134461c3abc3_opengraph.png">
+  <meta name="twitter:image" content="https://cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/67efdc24d4b8be13e09af08c_dark-card-2.png">
 
   <meta content="Webflow" name="generator">
   <link href="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/css/eterna-stage.webflow.shared.7deb28337.css"
@@ -30,9 +30,31 @@
   <link href="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/67937f3904e46a3162e1e73b_32x32.png"
     rel="shortcut icon" type="image/x-icon">
   <link href="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/67937f3d0e2cec47d8da89af_256x256.png"
-    rel="apple-touch-icon"><!-- [Attributes by Finsweet] Disable scrolling -->
+    rel="apple-touch-icon">
+    <style>
+  body { visibility: hidden; }
+</style>
   <script defer="" src="./cdn.jsdelivr.net/npm/%40finsweet/attributes-scrolldisable%401/scrolldisable.js"></script>
-
+<script>
+// Client-side geoblocking for USA
+fetch('https://ipapi.co/json/')
+  .then(res => res.json())
+  .then(data => {
+    if(data.country === "US"){ // Deny USA
+      document.body.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:sans-serif;background:#f6f6f6;">
+          <h1 style="font-size:96px;margin:0;color:#111;">404</h1>
+          <p style="font-size:18px;color:#666;margin:10px 0;">There isn't a GitHub Pages site here.</p>
+          <p style="font-size:14px;color:#999;">If you're trying to publish one, <a href="https://docs.github.com/en/pages" target="_blank">read the full documentation</a> to learn how to set up GitHub Pages for your repository, organization, or user account.</p>
+          <p style="font-size:12px;color:#bbb;">GitHub Status — <a href="https://www.githubstatus.com/" target="_blank">@githubstatus</a></p>
+        </div>
+      `;
+    } else {
+      document.body.style.visibility = 'visible';
+    }
+  })
+  .catch(err => { document.body.style.visibility = 'visible'; });
+</script>
   <style>
     html.lenis {
       height: auto;
@@ -101,7 +123,7 @@
   </style>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="google-site-verification" content="kGmUTC3OnFa0XB5uQDbyoqnjdV1wc9fmy_bsHlUg0rQ">
+  <!-- <meta name="google-site-verification" content="kGmUTC3OnFa0XB5uQDbyoqnjdV1wc9fmy_bsHlUg0rQ"> -->
 
   <style>
     .loader {
@@ -186,9 +208,9 @@
       /* Internet Explorer and Edge */
     }
   </style>
-  <script
+  <!-- <script
     src="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1%252F652d31f3dc22d7b4ee708e44%252F6855a7bfb2434228c83667a0%252Fclarity_script-0.9.6.js"
-    type="text/javascript"></script>
+    type="text/javascript"></script> -->
 </head>
 
 <body>
@@ -363,7 +385,7 @@
           </div>
           <div data-is-ix2-target="1" class="lottie-animation-5" data-w-id="99dbca45-354d-1d51-b642-0a9632b606aa"
             data-animation-type="lottie"
-            data-src="https://cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/68501bef632a79a4f8a3e2ee_bottom_part%20(1).json"
+            data-src="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/68501bef632a79a4f8a3e2ee_bottom_part%20(1).json"
             data-loop="0" data-direction="1" data-autoplay="0" data-renderer="svg" data-default-duration="0"
             data-duration="0" data-ix2-initial-state="0"></div>
         </div>
@@ -379,7 +401,7 @@
           </div>
           <div data-is-ix2-target="1" class="lottie-animation-5" data-w-id="0f0427f2-e060-b874-1fd0-7450fc76c295"
             data-animation-type="lottie"
-            data-src="https://cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/68501bef632a79a4f8a3e2ee_bottom_part%20(1).json"
+            data-src="./cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/68501bef632a79a4f8a3e2ee_bottom_part%20(1).json"
             data-loop="0" data-direction="1" data-autoplay="0" data-renderer="svg" data-default-duration="0"
             data-duration="0" data-ix2-initial-state="0"></div>
         </div>
@@ -2198,13 +2220,13 @@
   <!-- <script>!function () { window.semaphore = window.semaphore || [], window.ketch = function () { window.semaphore.push(arguments) }; var e = new URLSearchParams(document.location.search), n = document.createElement("script"); n.type = "text/javascript", n.src = "https://global.ketchcdn.com/web/v3/config/eternacloud/website_smart_tag/boot.js", n.defer = n.async = !0, document.getElementsByTagName("head")[0].appendChild(n) }();</script> -->
 
   <!-- Google tag (gtag.js) -->
-  <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SNC2TKJ01D"></script>
+  <!-- <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-SNC2TKJ01D"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-SNC2TKJ01D');
-  </script>
+  </script> -->
 
 
   <!-- GSAP & Plugins -->
@@ -2348,7 +2370,7 @@
 
 
   <script type="module">
-    import Swiper from "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs";
+    import Swiper from "./cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs";
 
     // Function to calculate dynamic spaceBetween for swiper-1
     const getDynamicSpacingSwiper1 = () => window.innerWidth * 0.01111;
