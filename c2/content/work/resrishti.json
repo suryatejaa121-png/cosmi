@@ -2,7 +2,7 @@
   "slug": "resrishti",
   "featured": true,
   "rank": 1,
-  "draft": ["why"],
+  "draft": [],
   "client": {
     "name": "ReSrishti",
     "legal": "GreenEarth Integrated Facility Pvt. Ltd.",
@@ -102,7 +102,7 @@
   "ai": "AI and automation features across daily operations",
   "outcome": "Every pickup, check-in and certificate now leaves a record ReSrishti can trust and audit.",
   "quote": {
-    "text": "We brought pickups, field attendance, and Certificates of Disposal into one streamlined platform, replacing fragmented WhatsApp workflows, spreadsheets, and scanned documents.",
+    "text": "Cosmiron transformed fragmented operations across WhatsApp and spreadsheets into a unified platform built for teams and clients to work smarter.",
     "by": "Nagaraj, Director, ReSrishti (GreenEarth Integrated Facility Pvt. Ltd.)"
   },
   "partners": {
