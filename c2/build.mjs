@@ -138,7 +138,9 @@ const ctaButton = (href, label) => `<a href="${href}" class="button main-cta w-i
 const outlineButton = (href, label) => `<a href="${href}" class="button-gradient w-inline-block"><div class="label margins">${esc(label)}</div></a>`;
 const frame = (src, alt, extra = "") =>
   `<div class="c2-frame${extra}"><div class="c2-frame-bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="${src}" alt="${esc(alt)}" loading="lazy"></div>`;
-const draftTag = (p, key) => ((p.draft || []).includes(key) ? '<span class="c2-draft" title="Placeholder copy — replace before launch">Draft</span>' : "");
+// Content listed in a project's "draft" array (placeholder copy) is left out of the
+// generated pages until it is replaced and removed from that list.
+const isDraft = (p, key) => (p.draft || []).includes(key);
 const media = (R, p, fileName) => `${R}c2/media/work/${p.slug}/${fileName}`;
 
 function closingSection(R, { label, lineA, lineB, primary, secondary, inner = "" }) {
@@ -269,9 +271,10 @@ function caseStudyBody(p, R) {
           <img src="${hoverImage}" loading="lazy" alt="" class="image-140">
         </div>`;
 
-  const quote = p.quote
-    ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(p.quote.text)}</blockquote><figcaption>${esc(p.quote.by)}${draftTag(p, "quote")}</figcaption></figure>`
-    : "";
+  const quote =
+    p.quote && !isDraft(p, "quote")
+      ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(p.quote.text)}</blockquote><figcaption>${esc(p.quote.by)}</figcaption></figure>`
+      : "";
 
   return `
 <div class="c2 c2-case" style="--c2-tint:${esc(p.client.brand)}">
@@ -318,10 +321,14 @@ ${partnersSection(p, R)}
 
   <section class="c2-owned">
     <div class="c2-container">
-      <div class="c2-head" data-c2-reveal>
+      ${
+        p.why && !isDraft(p, "why")
+          ? `<div class="c2-head" data-c2-reveal>
         ${caption("Why Cosmiron")}
-        <p class="c2-statement">${esc(p.why)}${draftTag(p, "why")}</p>
-      </div>
+        <p class="c2-statement">${esc(p.why)}</p>
+      </div>`
+          : ""
+      }
       <div class="c2-head c2-head--flush" data-c2-reveal>
         <h2 class="c2-h3 white">One partner,<br><span class="text-gradient">from first workshop to production.</span></h2>
       </div>
@@ -437,4 +444,5 @@ for (const p of projects) {
     }),
   );
   console.log(`  page        written          ${file}`);
+  if ((p.draft || []).length) console.log(`  draft       left out         ${p.slug}: ${p.draft.join(", ")}`);
 }

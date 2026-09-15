@@ -2,7 +2,7 @@
   "slug": "resrishti",
   "featured": true,
   "rank": 1,
-  "draft": ["quote", "why"],
+  "draft": ["why"],
   "client": {
     "name": "ReSrishti",
     "legal": "GreenEarth Integrated Facility Pvt. Ltd.",
@@ -100,10 +100,10 @@
   },
   "stack": ["React 19", "Vite", "Tailwind CSS v4", "Framer Motion", "GSAP", "Leaflet", "Recharts", "Node.js", "Express 5", "MongoDB", "Socket.IO", "Web Push (VAPID)", "Background Sync", "Nodemailer", "AWS S3", "AWS EC2", "React PDF", "JWT", "Docker", "GitHub Actions"],
   "ai": "AI and automation features across daily operations",
-  "outcome": "Pickups, field attendance and Certificates of Disposal now run through one platform instead of WhatsApp threads, spreadsheets and scanned Word documents.",
+  "outcome": "Every pickup, check-in and certificate now leaves a record ReSrishti can trust and audit.",
   "quote": {
-    "text": "Cosmiron took operations that lived in WhatsApp threads and spreadsheets and turned them into one platform our teams and our clients actually use.",
-    "by": "ReSrishti leadership"
+    "text": "We brought pickups, field attendance, and Certificates of Disposal into one streamlined platform, replacing fragmented WhatsApp workflows, spreadsheets, and scanned documents.",
+    "by": "Nagaraj, Director, ReSrishti (GreenEarth Integrated Facility Pvt. Ltd.)"
   },
   "partners": {
     "title": ["A platform for a recycler", "trusted by industry leaders."],
