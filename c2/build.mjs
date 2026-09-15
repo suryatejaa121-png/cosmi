@@ -13,8 +13,11 @@
  *
  * To add a collaboration: drop <slug>.json into c2/content/work and its images into
  * c2/media/work/<slug>/, then run this script. Never edit the generated pages by hand.
+ * Products ("kind": "product") show the product's own interface instead of screenshots:
+ * HTML screens exported from the app (with demo data) go in c2/media/work/<slug>/ui/.
  */
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,7 +33,11 @@ const EXISTING_PAGES = [
 const SHELL_PAGE = "aboutus-cosmiron/pages/about-us/index.html";
 const SHELL_ASSET_DIR = "aboutus-cosmiron/";
 const CONTACT_PAGE = "contact-cosmiron/pages/contact-us/index.html";
-const REQUIRED = ["slug", "project", "title", "headline", "summary", "industry", "status", "client", "capabilities", "context", "deliverables", "features", "craft", "stack", "outcome", "hero", "screens"];
+const REQUIRED = {
+  collaboration: ["slug", "project", "title", "headline", "summary", "industry", "status", "client", "capabilities", "context", "deliverables", "features", "craft", "stack", "outcome", "hero", "screens"],
+  product: ["slug", "project", "title", "headline", "summary", "audience", "industry", "type", "status", "since", "client", "hero", "card", "problem", "why", "ownedTitle", "capabilities", "screensHead", "screens", "ai", "craft", "stack", "outcome"],
+};
+const FILTER_LABELS = { "Client collaboration": "Client collaborations", "Cosmiron product": "Products" };
 
 /* ---------------- helpers ---------------- */
 
@@ -45,6 +52,7 @@ function rootPrefix(file) {
   const depth = file.split("/").length - 1;
   return depth === 0 ? "./" : "../".repeat(depth);
 }
+const isProduct = (p) => p.kind === "product";
 
 /* ---------------- 1. Work link on existing pages ---------------- */
 
@@ -109,8 +117,11 @@ function shell({ file, title, description, body, jsonLd }) {
 
   const head = [
     `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">`,
+    body.includes('class="c2-ui"') ? UI_FONTS : "",
     jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
-  ].join("\n  ");
+  ]
+    .filter(Boolean)
+    .join("\n  ");
   html = html.replace("</head>", `  ${head}\n</head>`);
 
   const start = html.indexOf('<div class="page_wrapper">');
@@ -142,6 +153,10 @@ const frame = (src, alt, extra = "") =>
 // generated pages until it is replaced and removed from that list.
 const isDraft = (p, key) => (p.draft || []).includes(key);
 const media = (R, p, fileName) => `${R}c2/media/work/${p.slug}/${fileName}`;
+const logoChip = (R, p) =>
+  `<span class="c2-logo-chip"${p.client.chip ? ` style="--c2-chip:${esc(p.client.chip)}"` : ""}><img src="${media(R, p, p.client.logo)}" alt="" loading="lazy"></span>`;
+const twoLines = (lines, gradient = "text-gradient") =>
+  `<span class="c2-line2">${esc(lines[0])}</span><span class="c2-line2"><span class="${gradient} c2-clone">${esc(lines[1])}</span></span>`;
 
 function closingSection(R, { label, lineA, lineB, primary, secondary, inner = "" }) {
   return `
@@ -157,50 +172,156 @@ function closingSection(R, { label, lineA, lineB, primary, secondary, inner = ""
   </section>`;
 }
 
+function capabilityCard(c, R) {
+  const hoverImage = `${R}${ASSETS}682c7cb62b8800a7594c5abd_hover_card_img.png`;
+  return `
+        <div class="case-card">
+          <div class="card-initial">
+            <div class="c2-card-top">${caption(c.name)}${c.phase ? `<span class="c2-card-phase">${esc(c.phase)}</span>` : ""}</div>
+            <div class="div-block-593">
+              <div class="div-block-495 gap-16">
+                <div class="title_24 white">${esc(c.title)}</div>
+                ${c.summary ? `<p class="c2-card-summary">${esc(c.summary)}</p>` : ""}
+                ${c.tags && c.tags.length ? `<div class="c2-card-module"><span class="c2-card-label">${esc(c.tagsLabel || "Highlights")}</span><div class="c2-card-tags">${c.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>` : ""}
+                <ul role="list" class="list body_14 gap-10 text-grey-light-home">${c.roles.map((r) => `<li class="list-card"><div>${esc(r)}</div></li>`).join("")}</ul>
+              </div>
+              ${c.output ? `<div class="c2-card-output"><span class="c2-card-label">Delivered</span><span class="c2-card-output-value">${esc(c.output)}</span></div>` : ""}
+            </div>
+          </div>
+          <img src="${hoverImage}" loading="lazy" alt="" class="image-140">
+        </div>`;
+}
+
+/* ---------------- product UI ---------------- */
+
+// Product pages embed the product's real interface: HTML screens exported from the app
+// with demo data. Each file is one <style> scoped under .cf-ui plus one <div class="cf-ui">,
+// which may hold several side-by-side states (div.cf-ui-state[data-state]). Every view on
+// a page shows exactly one state; cosmiron-2.js zooms it to fit.
+const UI_FONTS =
+  '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">';
+const UI_MEDIA = "@@C2_UI_MEDIA@@";
+const uiCache = new Map();
+
+// The whole <div ...>…</div> element that starts at `start`.
+function divAt(html, start) {
+  const tags = /<\/?div\b[^>]*>/g;
+  tags.lastIndex = start;
+  let depth = 0;
+  for (let m; (m = tags.exec(html)); ) {
+    depth += m[0][1] === "/" ? -1 : 1;
+    if (depth === 0) return html.slice(start, tags.lastIndex);
+  }
+  throw new Error("product UI: unbalanced <div>");
+}
+
+function loadUi(p, fileName) {
+  const key = `${p.slug}/${fileName}`;
+  if (uiCache.has(key)) return uiCache.get(key);
+  const dir = `c2/media/work/${p.slug}/ui`;
+  const source = read(`${dir}/${fileName}`);
+  const styles = [...source.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
+  if (styles.length !== 1) throw new Error(`${dir}/${fileName}: expected one <style>, found ${styles.length}`);
+  if (/@keyframes/.test(styles[0])) throw new Error(`${dir}/${fileName}: @keyframes names are global; prefix them before embedding`);
+
+  let markup = source.replace(/<style[^>]*>[\s\S]*?<\/style>/g, "").replace(/<!--[\s\S]*?-->/g, "").trim();
+  // Ids are only unique within one file; prefix them so screens can share a page.
+  const prefix = `cf-${fileName.replace(/\.html$/, "")}-`;
+  markup = markup
+    .replace(/\s(id|for|aria-labelledby|aria-describedby|aria-controls)="([^"]+)"/g, (m, attr, value) => ` ${attr}="${value.trim().split(/\s+/).map((v) => prefix + v).join(" ")}"`)
+    .replace(/url\(#/g, `url(#${prefix}`);
+  // Large inline images (contract pages, signatures) become files so pages stay light.
+  markup = markup.replace(/data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)/g, (uri, type, data) => {
+    if (data.length < 8000) return uri;
+    const bytes = Buffer.from(data, "base64");
+    const name = `img/${createHash("sha1").update(bytes).digest("hex").slice(0, 16)}.${type === "jpeg" ? "jpg" : type}`;
+    if (!existsSync(join(ROOT, dir, name))) {
+      mkdirSync(join(ROOT, dir, "img"), { recursive: true });
+      writeFileSync(join(ROOT, dir, name), bytes);
+    }
+    return `${UI_MEDIA}${name}`;
+  });
+
+  const root = markup.match(/^<div class="cf-ui" style="width:(\d+)px">/);
+  if (!root) throw new Error(`${dir}/${fileName}: expected a <div class="cf-ui" style="width:…px"> root`);
+  const states = new Map();
+  for (const m of markup.matchAll(/<div class="cf-ui-state" data-state="([^"]+)" style="([^"]*)">/g)) {
+    const width = Number((m[2].match(/width:\s*(\d+)px/) || [])[1]);
+    if (!width) throw new Error(`${dir}/${fileName}: state "${m[1]}" has no pixel width`);
+    states.set(m[1], { width, html: `<div class="cf-ui" style="width:${width}px">${divAt(markup, m.index)}</div>` });
+  }
+  if (!states.size) states.set("default", { width: Number(root[1]), html: markup });
+  const ui = { css: styles[0], states };
+  uiCache.set(key, ui);
+  return ui;
+}
+
+// One screen at the product's own width. variant "device" frames it as a phone, "tile"
+// leaves it bare. With scroll, a tall screen scrolls inside its view as the page scrolls.
+function uiView(ctx, p, spec, { variant = "device", scroll = true } = {}) {
+  const ui = loadUi(p, spec.file);
+  const state = ui.states.get(spec.state || "default");
+  if (!state) throw new Error(`${p.slug}: ${spec.file} has no state "${spec.state || "default"}" (has ${[...ui.states.keys()].join(", ")})`);
+  if (!spec.alt) throw new Error(`${p.slug}: ${spec.file} ${spec.state || ""} needs alt text`);
+  ctx.css.set(`${p.slug}/${spec.file}`, ui.css);
+  const html = state.html.split(UI_MEDIA).join(`${ctx.R}c2/media/work/${p.slug}/ui/`).replace(/<img\b(?![^>]*\sloading=)/g, '<img loading="lazy"');
+  const scrollAttr = scroll ? ` data-c2-scroll${scroll === true ? "" : `="${esc(scroll)}"`}` : "";
+  const view = `<div class="c2-ui-view${variant === "tile" ? " c2-ui-view--tile" : ""}"${scrollAttr} role="img" aria-label="${esc(spec.alt)}"><div class="c2-ui-scroll"><div class="c2-ui" data-w="${state.width}" style="width:${state.width}px" inert>${html}</div></div></div>`;
+  return variant === "device" ? `<div class="c2-device">${view}</div>` : view;
+}
+
+const uiStyles = (ctx) => [...ctx.css.entries()].map(([key, css]) => `<style data-c2-ui="${esc(key)}">${css}</style>`).join("");
+
 /* ---------------- Work index ---------------- */
 
-function exhibitCard(p, R, href) {
-  const tags = [p.industry, ...p.capabilities.map((c) => c.name)];
+function exhibitCard(p, R, href, ctx) {
+  const product = isProduct(p);
+  const tags = [p.type, p.industry, ...p.capabilities.map((c) => c.name)].filter(Boolean);
+  const stage = product
+    ? `<div class="c2-exhibit-stage c2-exhibit-stage--devices">${p.card.map((s) => uiView(ctx, p, s, { scroll: false })).join("")}</div>`
+    : `<div class="c2-exhibit-stage">${frame(media(R, p, p.hero.src), p.hero.alt)}</div>`;
   return `
         <article class="c2-exhibit" data-c2-work data-tags="${esc(tags.join("|"))}" style="--c2-tint:${esc(p.client.brand)}">
           <a class="c2-exhibit-link" data-c2-transition href="${href}">
             <div class="c2-exhibit-copy">
               <div class="c2-exhibit-meta">${caption(p.industry)}<span class="c2-status">${esc(p.status)}</span></div>
-              <div class="c2-exhibit-client"><span class="c2-logo-chip"><img src="${media(R, p, p.client.logo)}" alt="" loading="lazy"></span>${esc(p.client.name)}</div>
+              <div class="c2-exhibit-client">${logoChip(R, p)}${esc(product ? p.client.maker : p.client.name)}</div>
               <h2 class="c2-exhibit-title">${esc(p.project)}</h2>
               <p class="c2-exhibit-headline c2-spectrum">${esc(p.headline)}</p>
               ${p.partners && p.partners.featured ? `<p class="c2-exhibit-partners">${esc(p.client.name)}'s partners include <b>${p.partners.featured.map(esc).join(" · ")}</b></p>` : ""}
               <div class="tags_wrap">${p.capabilities.map((c) => `<div class="tag-solutions"><div>${esc(c.name)}</div></div>`).join("")}</div>
-              <span class="c2-exhibit-cta">View case study <span aria-hidden="true">→</span></span>
+              <span class="c2-exhibit-cta">${product ? "View product" : "View case study"} <span aria-hidden="true">→</span></span>
             </div>
-            <div class="c2-exhibit-stage">${frame(media(R, p, p.hero.src), p.hero.alt)}</div>
+            ${stage}
           </a>
         </article>`;
 }
 
 function workIndexBody(projects, R) {
-  const industries = [...new Set(projects.map((p) => p.industry))];
+  const ctx = { R, css: new Map() };
+  const types = [...new Set(projects.map((p) => p.type).filter(Boolean))];
   const filters =
-    industries.length > 1
-      ? `<div class="c2-filters" data-c2-filters role="group" aria-label="Filter by industry"><button type="button" data-filter="all" aria-pressed="true">All work</button>${industries
-          .map((i) => `<button type="button" data-filter="${esc(i)}" aria-pressed="false">${esc(i)}</button>`)
+    types.length > 1
+      ? `<div class="c2-filters" data-c2-filters role="group" aria-label="Filter work"><button type="button" data-filter="all" aria-pressed="true">All work</button>${types
+          .map((t) => `<button type="button" data-filter="${esc(t)}" aria-pressed="false">${esc(FILTER_LABELS[t] || t)}</button>`)
           .join("")}</div>`
       : "";
+  const cards = projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("");
   return `
-<div class="c2 c2-work">
+<div class="c2 c2-work">${uiStyles(ctx)}
   <section class="c2-hero c2-hero--work">
     <div class="c2-hero-bloom" aria-hidden="true"></div>
     <div class="c2-hero-inner">
       <div class="title_2_20 gradient" data-c2-reveal>Selected Work</div>
       <h1 class="c2-h1" data-c2-reveal><span class="c2-line2">Built with our partners.</span><span class="c2-line2"><span class="c2-spectrum c2-clone">Proven in the field.</span></span></h1>
-      <p class="body_16 text-grey-light c2-lede" data-c2-reveal>Platforms, products and AI systems Cosmiron has designed, engineered and shipped with the companies behind them.</p>
+      <p class="body_16 text-grey-light c2-lede" data-c2-reveal>Platforms, products and AI systems Cosmiron has designed, engineered and shipped, with our partners and as our own products.</p>
     </div>
   </section>
 
-  <section class="c2-work-list" aria-label="Collaborations">
+  <section class="c2-work-list" aria-label="Work">
     <div class="c2-container">
       ${filters}
-      <div class="c2-exhibits" data-c2-stagger>${projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`)).join("")}
+      <div class="c2-exhibits" data-c2-stagger>${cards}
       </div>
     </div>
   </section>
@@ -250,26 +371,8 @@ function partnersSection(p, R) {
 function caseStudyBody(p, R) {
   const check = `${R}${ASSETS}686cc068490683bbb3377d04_bullet-list.svg`;
   const cross = `${R}${ASSETS}686cc0f520a992816d8b15dc_bullet-list-cross.svg`;
-  const hoverImage = `${R}${ASSETS}682c7cb62b8800a7594c5abd_hover_card_img.png`;
   const host = p.client.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
   const logo = media(R, p, p.client.logo);
-
-  const capabilityCard = (c) => `
-        <div class="case-card">
-          <div class="card-initial">
-            <div class="c2-card-top">${caption(c.name)}${c.phase ? `<span class="c2-card-phase">${esc(c.phase)}</span>` : ""}</div>
-            <div class="div-block-593">
-              <div class="div-block-495 gap-16">
-                <div class="title_24 white">${esc(c.title)}</div>
-                ${c.summary ? `<p class="c2-card-summary">${esc(c.summary)}</p>` : ""}
-                ${c.tags && c.tags.length ? `<div class="c2-card-module"><span class="c2-card-label">${esc(c.tagsLabel || "Highlights")}</span><div class="c2-card-tags">${c.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div></div>` : ""}
-                <ul role="list" class="list body_14 gap-10 text-grey-light-home">${c.roles.map((r) => `<li class="list-card"><div>${esc(r)}</div></li>`).join("")}</ul>
-              </div>
-              ${c.output ? `<div class="c2-card-output"><span class="c2-card-label">Delivered</span><span class="c2-card-output-value">${esc(c.output)}</span></div>` : ""}
-            </div>
-          </div>
-          <img src="${hoverImage}" loading="lazy" alt="" class="image-140">
-        </div>`;
 
   const quote =
     p.quote && !isDraft(p, "quote")
@@ -334,7 +437,7 @@ ${partnersSection(p, R)}
       </div>
     </div>
     <div class="crads-container c2-capabilities">
-      <div class="div-block-439">${p.capabilities.map(capabilityCard).join("")}
+      <div class="div-block-439">${p.capabilities.map((c) => capabilityCard(c, R)).join("")}
       </div>
     </div>
   </section>
@@ -387,6 +490,178 @@ ${closingSection(R, {
 </div>`;
 }
 
+/* ---------------- Product page ---------------- */
+
+// A Cosmiron product: the same rhythm as a case study, told with the product's own
+// screens. Problem cards, screens, AI features and the signing flow all embed live UI.
+function productBody(p, R) {
+  const ctx = { R, css: new Map() };
+  const view = (spec, opts) => uiView(ctx, p, spec, opts);
+  const check = `${R}${ASSETS}686cc068490683bbb3377d04_bullet-list.svg`;
+  const host = p.client.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+  const { problem, ai, craft } = p;
+
+  const body = `
+  <section class="c2-hero c2-hero--case c2-hero--product">
+    <div class="c2-hero-bloom" aria-hidden="true"></div>
+    <div class="c2-hero-inner">
+      <a class="c2-back" data-c2-transition href="../index.html"><span aria-hidden="true">←</span> All work</a>
+      <div class="title_2_20 gradient" data-c2-reveal>${esc(p.type)} · ${esc(p.industry)}</div>
+      <h1 class="c2-h1" data-c2-reveal>${twoLines(p.title, "c2-spectrum")}</h1>
+      <p class="body_16 text-grey-light c2-lede" data-c2-reveal>${esc(p.summary)}</p>
+      <dl class="c2-facts" data-c2-reveal>
+        <div><dt>Product</dt><dd>${logoChip(R, p)}${esc(p.client.name)}</dd></div>
+        <div><dt>Built for</dt><dd>${esc(p.audience)}</dd></div>
+        <div><dt>Industry</dt><dd>${esc(p.industry)}</dd></div>
+        <div><dt>Since</dt><dd>${esc(p.since)}</dd></div>
+        <div><dt>Status</dt><dd><span class="c2-status">${esc(p.status)}</span></dd></div>
+        <div><dt>Website</dt><dd><a href="${esc(p.client.url)}" target="_blank" rel="noopener">${esc(host)}<span aria-hidden="true"> ↗</span></a></dd></div>
+      </dl>
+    </div>
+    <div class="c2-hero-stage c2-hero-stage--device" data-c2-parallax="30">${view(p.hero, { scroll: "hero" })}</div>
+  </section>
+  <div class="c2-bridge" aria-hidden="true"></div>
+
+  <section class="section white c2-section c2-problems">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption(problem.label, "light-grey")}
+        <h2 class="c2-h3">${twoLines(problem.title)}</h2>
+        <p class="body_16 text-grey-light">${esc(problem.body)}</p>
+      </div>
+      <div class="c2-problem-grid" data-c2-stagger>${problem.cards
+        .map(
+          (c) => `
+        <article class="c2-problem">
+          <div class="c2-problem-copy">
+            <span class="c2-label">${esc(c.label)}</span>
+            <h3 class="c2-problem-title">${esc(c.problem)}</h3>
+            <p class="body_15 text-grey-light c2-problem-fix">${esc(c.fix)}</p>
+          </div>
+          <div class="c2-problem-stage">${view(c.ui, { variant: "tile" })}</div>
+        </article>`,
+        )
+        .join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="c2-owned">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption("Why we built it")}
+        <p class="c2-statement">${esc(p.why)}</p>
+      </div>
+      <div class="c2-head c2-head--flush" data-c2-reveal>
+        <h2 class="c2-h3 white">${twoLines(p.ownedTitle)}</h2>
+      </div>
+    </div>
+    <div class="crads-container c2-capabilities">
+      <div class="div-block-439">${p.capabilities.map((c) => capabilityCard(c, R)).join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="c2-inside c2-inside--product">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption(p.screensHead.label)}
+        <h2 class="c2-h3 white">${twoLines(p.screensHead.title)}</h2>
+        <p class="body_16 text-grey-light">${esc(p.screensHead.body)}</p>
+      </div>
+      <div class="c2-uifigs">${p.screens
+        .map(
+          (s, i) => `
+        <figure class="c2-uifig${i % 2 ? " c2-uifig--flip" : ""}">
+          <figcaption class="c2-uifig-copy" data-c2-reveal>
+            <span class="c2-label">${esc(s.label)}</span>
+            <span class="c2-uifig-title">${esc(s.title)}</span>
+            <span class="c2-uifig-body">${esc(s.caption)}</span>
+          </figcaption>
+          <div class="c2-uifig-stage${s.float ? " c2-uifig-stage--float" : ""}" data-c2-rise>${s.ui.map((u) => view(u)).join("")}${s.float ? `<div class="c2-uifig-float">${view(s.float, { variant: "tile", scroll: false })}</div>` : ""}</div>
+        </figure>`,
+        )
+        .join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="c2-ai">
+    <div class="c2-container c2-inside-grid">
+      <div class="c2-inside-copy">
+        <div data-c2-reveal>${caption(ai.label)}</div>
+        <h2 class="c2-h3 white" data-c2-reveal>${esc(ai.title[0])}<br><span class="text-gradient">${esc(ai.title[1])}</span></h2>
+        <p class="body_16 text-grey-light" data-c2-reveal>${esc(ai.body)}</p>
+        <div class="c2-ai-lead" data-c2-reveal>
+          <div class="c2-ai-meta"><span class="c2-model">${esc(ai.assistant.model)}</span></div>
+          <span class="title_24 white">${esc(ai.assistant.title)}</span>
+          <p class="body_15 text-grey-light">${esc(ai.assistant.body)}</p>
+          <ul role="list" class="list body_14 gap-10 text-grey-light-home c2-features">${ai.assistant.points.map((t) => `<li class="list-card"><div>${esc(t)}</div></li>`).join("")}</ul>
+        </div>
+      </div>
+      <div class="c2-ai-list">${ai.features
+        .map(
+          (f) => `
+        <figure class="c2-ai-item">
+          <div class="c2-ai-stage" data-c2-rise>${f.paper ? `<img class="c2-ai-paper" src="${media(R, p, f.paper.src)}" alt="${esc(f.paper.alt)}" loading="lazy">` : ""}${view(f.ui)}</div>
+          <figcaption class="c2-ai-copy">
+            <div class="c2-ai-meta"><span class="c2-model">${esc(f.model)}</span>${f.technique ? `<span class="c2-label">${esc(f.technique)}</span>` : ""}</div>
+            <span class="title_24 white">${esc(f.title)}</span>
+            <span class="body_15 text-grey-light">${esc(f.body)}</span>
+          </figcaption>
+        </figure>`,
+        )
+        .join("")}
+      </div>
+    </div>
+  </section>
+
+  <section class="section white c2-section c2-craft">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption(craft.label, "light-grey")}
+        <h2 class="c2-h3">${twoLines(craft.title)}</h2>
+        ${craft.body.map((t) => `<p class="body_16 text-grey-light">${esc(t)}</p>`).join("")}
+      </div>
+      <ol role="list" class="c2-flow">${craft.steps
+        .map(
+          (s, i) => `
+        <li class="c2-flow-step" data-c2-rise>${view(s.ui)}<span class="c2-flow-label"><b>${String(i + 1).padStart(2, "0")}</b>${esc(s.label)}</span></li>`,
+        )
+        .join("")}
+      </ol>
+      <ul role="list" class="c2-proofpoints" data-c2-stagger>${craft.points.map((t) => `<li><img src="${check}" alt="" class="bullet-icon" loading="lazy"><span>${esc(t)}</span></li>`).join("")}</ul>
+    </div>
+  </section>
+
+  <section class="c2-stack">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption("Built with")}
+        <h2 class="c2-h3 white">Modern, proven tools,<br><span class="text-gradient">chosen to last.</span></h2>
+      </div>
+      <div class="tags_wrap c2-tags" data-c2-stagger>${p.stack.map((t) => `<div class="tag-solutions"><div>${esc(t)}</div></div>`).join("")}</div>
+      ${p.aiNote ? `<p class="body_15 text-grey-light c2-ai-note">Plus ${esc(p.aiNote)}.</p>` : ""}
+    </div>
+  </section>
+${closingSection(R, {
+  label: "Build with Cosmiron",
+  lineA: "Need a product like this?",
+  lineB: "Let's build it together.",
+  primary: { href: `${R}${CONTACT_PAGE}`, label: "Let's talk" },
+  secondary: { href: "../index.html", label: "All work" },
+  inner: `
+    <div class="c2-container">
+      <div class="c2-head c2-head--flush" data-c2-reveal>${caption("What changed", "")}</div>
+      <p class="c2-outcome" data-c2-linefill>${esc(p.outcome)}</p>
+    </div>`,
+})}`;
+
+  return `
+<div class="c2 c2-case c2-product" style="--c2-tint:${esc(p.client.brand)}">${uiStyles(ctx)}${body}
+</div>`;
+}
+
 /* ---------------- additions inside existing pages ---------------- */
 
 // Each addition lives between <!-- c2:name:start --> and <!-- c2:name:end --> markers,
@@ -417,20 +692,21 @@ function injectInto(file, blocks) {
 
 function selectedWorkSection(projects, R) {
   if (!projects.length) return "";
-  const lead = projects[0];
-  const quote =
-    lead.quote && !isDraft(lead, "quote")
-      ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(lead.quote.text)}</blockquote><figcaption>${esc(lead.quote.by)}</figcaption></figure>`
-      : "";
-  return `<div class="c2 c2-home-work">
+  const ctx = { R, css: new Map() };
+  const lead = projects.find((p) => p.quote && !isDraft(p, "quote"));
+  const quote = lead
+    ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(lead.quote.text)}</blockquote><figcaption>${esc(lead.quote.by)}</figcaption></figure>`
+    : "";
+  const cards = projects.map((p) => exhibitCard(p, R, `${R}work/${p.slug}/index.html`, ctx)).join("");
+  return `<div class="c2 c2-home-work">${uiStyles(ctx)}
   <section class="c2-section c2-selected" aria-label="Selected work">
     <div class="c2-container">
       <div class="c2-head" data-c2-reveal>
         ${caption("Selected work", "")}
         <h2 class="c2-h3"><span class="c2-line2">Real products.</span><span class="c2-line2"><span class="text-gradient c2-clone">Real partners.</span></span></h2>
-        <p class="body_16 text-grey-light">A look at what Cosmiron has designed, engineered and shipped with the companies behind it.</p>
+        <p class="body_16 text-grey-light">A look at what Cosmiron has designed, engineered and shipped, with our partners and as our own products.</p>
       </div>
-      <div class="c2-exhibits" data-c2-stagger>${projects.map((p) => exhibitCard(p, R, `${R}work/${p.slug}/index.html`)).join("")}
+      <div class="c2-exhibits" data-c2-stagger>${cards}
       </div>
       ${quote}
       <div class="c2-selected-more">${outlineButton(`${R}work/index.html`, "See all work")}</div>
@@ -445,15 +721,15 @@ function proofRow(projects, R, label, tone = "") {
   return `<div class="c2 c2-proof-wrap">
   <section class="c2-proof${tone ? ` c2-proof--${tone}` : ""}" aria-label="${esc(label)}">
     <div class="c2-container">
-      <div class="c2-proof-head" data-c2-reveal>${caption(label)}<p class="c2-proof-lede">See it working for a real partner.</p></div>
+      <div class="c2-proof-head" data-c2-reveal>${caption(label)}<p class="c2-proof-lede">See it working in real products.</p></div>
       <div class="c2-proof-list" data-c2-stagger>${projects
         .map(
           (p) => `
         <a class="c2-proof-item" data-c2-transition href="${R}work/${p.slug}/index.html" style="--c2-tint:${esc(p.client.brand)}">
-          <span class="c2-logo-chip"><img src="${media(R, p, p.client.logo)}" alt="" loading="lazy"></span>
+          ${logoChip(R, p)}
           <span class="c2-proof-copy"><span class="c2-proof-name">${esc(p.project)}</span><span class="c2-proof-line">${esc(p.headline)}</span></span>
           <span class="c2-proof-tags">${p.capabilities.map((c) => `<span>${esc(c.name)}</span>`).join("")}</span>
-          <span class="c2-exhibit-cta">View case study <span aria-hidden="true">→</span></span>
+          <span class="c2-exhibit-cta">${isProduct(p) ? "View product" : "View case study"} <span aria-hidden="true">→</span></span>
         </a>`,
         )
         .join("")}
@@ -465,12 +741,12 @@ function proofRow(projects, R, label, tone = "") {
 
 function injectAdditions(projects) {
   const featured = projects.filter((p) => p.featured);
-  const assets = (R) => [
-    ["c2-styles", "</head>", `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">`],
+  const assets = (R, fonts = false) => [
+    ["c2-styles", "</head>", `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">${fonts ? `\n${UI_FONTS}` : ""}`],
     ["c2-script", "</body>", `<script src="${R}c2/cosmiron-2.js"></script>`],
   ];
   const home = "index.html";
-  injectInto(home, [...assets("./"), ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")]]);
+  injectInto(home, [...assets("./", featured.some(isProduct)), ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")]]);
   const what = "whatwedo-cosmiron/pages/what-we-do/index.html";
   injectInto(what, [...assets(rootPrefix(what)), ["built-with", '<section class="section custom_bg">', proofRow(featured, rootPrefix(what), "Built with these services", "plum")]]);
   const approach = "ourapproach/pages/our-approach/index.html";
@@ -485,7 +761,9 @@ function loadProjects() {
     .filter((f) => f.endsWith(".json"))
     .map((f) => {
       const p = JSON.parse(read(`${dir}/${f}`));
-      const missing = REQUIRED.filter((k) => p[k] === undefined || p[k] === "");
+      const required = REQUIRED[p.kind || "collaboration"];
+      if (!required) throw new Error(`${dir}/${f}: unknown kind "${p.kind}"`);
+      const missing = required.filter((k) => p[k] === undefined || p[k] === "");
       if (missing.length) throw new Error(`${dir}/${f}: missing ${missing.join(", ")}`);
       return p;
     })
@@ -508,7 +786,7 @@ write(
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       name: "Cosmiron AI: Selected Work",
-      hasPart: projects.map((p) => ({ "@type": "CreativeWork", name: p.project })),
+      hasPart: projects.map((p) => ({ "@type": isProduct(p) ? "SoftwareApplication" : "CreativeWork", name: p.project })),
     },
   }),
 );
@@ -516,21 +794,34 @@ console.log(`  page        written          ${workFile}`);
 
 for (const p of projects) {
   const file = `work/${p.slug}/index.html`;
+  const R = rootPrefix(file);
+  const product = isProduct(p);
   write(
     file,
     shell({
       file,
-      title: `${p.project} | Cosmiron AI Case Study`,
+      title: product ? `${p.project} | A Cosmiron AI Product` : `${p.project} | Cosmiron AI Case Study`,
       description: p.summary,
-      body: caseStudyBody(p, rootPrefix(file)),
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "CreativeWork",
-        name: p.project,
-        description: p.summary,
-        creator: { "@type": "Organization", name: "Cosmiron AI" },
-        about: { "@type": "Organization", name: p.client.name, legalName: p.client.legal, url: p.client.url },
-      },
+      body: product ? productBody(p, R) : caseStudyBody(p, R),
+      jsonLd: product
+        ? {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: p.project,
+            description: p.summary,
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "Web, Android, iOS",
+            url: p.client.url,
+            creator: { "@type": "Organization", name: "Cosmiron AI" },
+          }
+        : {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            name: p.project,
+            description: p.summary,
+            creator: { "@type": "Organization", name: "Cosmiron AI" },
+            about: { "@type": "Organization", name: p.client.name, legalName: p.client.legal, url: p.client.url },
+          },
     }),
   );
   console.log(`  page        written          ${file}`);

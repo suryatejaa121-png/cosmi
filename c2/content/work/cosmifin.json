@@ -1,0 +1,209 @@
+{
+  "slug": "cosmifin",
+  "kind": "product",
+  "featured": true,
+  "rank": 2,
+  "draft": [],
+  "client": {
+    "name": "CosmiFin",
+    "maker": "A Cosmiron product",
+    "url": "https://fin.cosmiron.ai",
+    "logo": "logo.png",
+    "chip": "#0a0a1a",
+    "brand": "#7C3AED"
+  },
+  "project": "CosmiFin",
+  "title": ["CosmiFin", "Startup finance, run from your phone."],
+  "headline": "A mobile finance app that runs a startup's cash, payroll, GST and contracts.",
+  "summary": "Company and personal wallets, payroll files, GST and TDS, and e-signatures in one installable app, with an AI assistant that shows its working.",
+  "audience": "Indian startups and agencies",
+  "industry": "Fintech",
+  "type": "Cosmiron product",
+  "status": "Live",
+  "since": "2026",
+  "hero": {
+    "file": "assistant.html",
+    "alt": "CosmiFin AI answering three questions about the books: subscription spend this quarter, which clients are overdue, and the top three clients by revenue"
+  },
+  "card": [
+    { "file": "assistant.html", "alt": "CosmiFin AI answering a question about subscription spend" },
+    { "file": "dashboard.html", "state": "company", "alt": "CosmiFin dashboard with the company balance, quick actions and budget status" }
+  ],
+  "problem": {
+    "label": "The problem",
+    "title": ["Startups run their money", "out of spreadsheets."],
+    "body": "Founders collect client payments directly, hand money to the team with no record it arrived, chase reimbursements from memory, build salary bank files by hand and find out about a missed GSTR-3B or an unrecovered TDS credit too late. CosmiFin puts all of it in one mobile app, where every rupee in or out is a workflow with a second person confirming it.",
+    "cards": [
+      {
+        "label": "Cash to the team",
+        "problem": "Cash handed to staff with no record it arrived.",
+        "fix": "A transfer stays pending until the person receiving it confirms. They can also dispute it with a note.",
+        "ui": { "file": "cash-handover.html", "alt": "A ₹25,000 transfer marked Pending, with Confirm Receipt and Dispute buttons for the person receiving it" }
+      },
+      {
+        "label": "Reimbursements",
+        "problem": "Reimbursements chased from memory.",
+        "fix": "Employees mark what they paid themselves and attach the receipts. Once approved it is recorded in their personal wallet, and nobody can approve their own expense.",
+        "ui": { "file": "reimbursement.html", "alt": "A ₹4,280 travel reimbursement with two receipts attached, waiting for Approve or Reject" }
+      },
+      {
+        "label": "Renewals",
+        "problem": "Subscriptions and contracts lapsing unnoticed.",
+        "fix": "Alerts go out 3 days before a tool renews, and 30, 14 and 7 days before a contract expires.",
+        "ui": { "file": "renewal-alert.html", "alt": "Notifications for a subscription renewing soon and a client contract expiring in 14 days" }
+      },
+      {
+        "label": "GST deadlines",
+        "problem": "A missed GSTR-3B, found out too late.",
+        "fix": "Reminders go out on the 11th, 17th and 20th until last month's GST is filed.",
+        "ui": { "file": "deadline-reminder.html", "alt": "File GST reminders for August, due soon, and July, due today" }
+      }
+    ]
+  },
+  "why": "Cosmiron needed it first. Our founders collected client money directly and paid the team from it, and the books lived in an Excel workbook. We built CosmiFin to run our own finances, moved that workbook into it, and have run Cosmiron's finances on it ever since.",
+  "ownedTitle": ["Designed, engineered and run", "by Cosmiron."],
+  "capabilities": [
+    {
+      "name": "Discovery & design",
+      "phase": "Phase 01",
+      "title": "Designed around everyone who touches the money.",
+      "summary": "We mapped how money really moved through a small agency, from client payments to cash in hand, then designed a phone-first app for each person involved.",
+      "tagsLabel": "Designed for",
+      "tags": ["Founder", "Accountant", "Employee"],
+      "roles": ["Discovery and product strategy", "Mobile product and UX design", "Roles, approvals and private wallets", "Plan for moving the Excel workbook in"],
+      "output": "A phone-first finance app for every role"
+    },
+    {
+      "name": "Product engineering",
+      "phase": "Phase 02",
+      "title": "Built every ledger, workflow and file.",
+      "summary": "Wallets, transfers, expenses, salaries, client payments, GST and TDS, each one a workflow with its own records, reminders and checks.",
+      "tagsLabel": "Modules",
+      "tags": ["Wallets", "Transfers", "Expenses", "Payroll", "Client payments", "GST & TDS"],
+      "roles": ["Company and personal wallets with a one-tap switch", "IDFC bulk-pay file with bank details checked first", "Scheduled reminders for salaries, GST and renewals", "Cosmiron's Excel workbook moved in"],
+      "output": "The whole finance desk in one app"
+    },
+    {
+      "name": "AI systems",
+      "phase": "Phase 03",
+      "title": "Put AI to work where you can check it.",
+      "summary": "Four AI features, each one either showing its working or waiting for a person to confirm.",
+      "tagsLabel": "AI features",
+      "tags": ["Finance assistant", "Contract fields", "Receipt reading", "Expense categories"],
+      "roles": ["Finance assistant with 16 read-only tools", "Signature fields found on real contract blanks", "Receipt extraction from photos and PDFs", "One-tap expense categories"],
+      "output": "An AI analyst that shows its queries"
+    },
+    {
+      "name": "Cloud & growth",
+      "phase": "Ongoing",
+      "title": "Shipped as an installable app, still growing.",
+      "summary": "Deployed on AWS in Mumbai and installable on any phone, with push notifications and continuous delivery.",
+      "tagsLabel": "Runs on",
+      "tags": ["AWS Mumbai", "PWA", "Web Push", "GitHub Actions"],
+      "roles": ["AWS EC2 and S3 in the Mumbai region", "Installable PWA with web push", "Continuous delivery with GitHub Actions", "Growing as a Cosmiron product"],
+      "output": "Live at fin.cosmiron.ai"
+    }
+  ],
+  "screensHead": {
+    "label": "Inside CosmiFin",
+    "title": ["The whole finance desk,", "in one app."],
+    "body": "Real CosmiFin screens, shown with a fictional demo company."
+  },
+  "screens": [
+    {
+      "label": "Two wallets",
+      "title": "Company and personal money, kept apart.",
+      "caption": "One tap switches between the company's books and your own wallet. Personal wallets stay private, and employees never see company figures.",
+      "ui": [
+        { "file": "dashboard.html", "state": "company", "alt": "Dashboard in company mode with the company balance, quick actions, budget status and recent activity" },
+        { "file": "dashboard.html", "state": "personal", "alt": "Dashboard in personal mode with a private personal balance and personal activity" }
+      ]
+    },
+    {
+      "label": "Retainer clients",
+      "title": "Late payers stand out at a glance.",
+      "caption": "Retainer payments are generated automatically with GST and TDS split out. A 12-month grid shows what is paid and what is overdue, with due-soon and overdue alerts, partial payments and rate changes.",
+      "ui": [
+        { "file": "payments-grid.html", "state": "as-opened", "alt": "Payments page with totals, a client by month grid and recent payments" }
+      ],
+      "float": { "file": "payments-grid.html", "state": "grid-swiped", "alt": "Client by month grid from June to October with paid, pending and overdue months" }
+    },
+    {
+      "label": "Payroll",
+      "title": "Salary files, ready for the bank portal.",
+      "caption": "Each pay day creates a pending salary, and founders are reminded if it is still unpaid after 3 days. CosmiFin builds the IDFC bulk-pay file with IFSC and account numbers checked first, you upload it to the bank, and a salary can't be marked paid twice.",
+      "ui": [
+        { "file": "payroll-run.html", "state": "new-batch", "alt": "New payroll batch for the IDFC FIRST bulk-pay template, with five employees selected and one held back for incomplete bank details" },
+        { "file": "payroll-run.html", "state": "batch-ready", "alt": "Payroll batch for September with the bulk-pay file ready to download and five rows to mark paid" }
+      ]
+    },
+    {
+      "label": "GST and TDS",
+      "title": "Deadlines chase you, not the other way round.",
+      "caption": "Each month's GST shows as accruing, due or filed, and filing records the ARN and challan. TDS your clients withheld is tracked until you recover it.",
+      "ui": [
+        { "file": "gst-tds.html", "state": "gst-filing", "alt": "GST filing page with the current month accruing, August due and earlier months filed" },
+        { "file": "gst-tds.html", "state": "tds-receivables", "alt": "TDS receivables with outstanding entries, two selected to mark recovered" }
+      ]
+    }
+  ],
+  "ai": {
+    "label": "AI inside",
+    "title": ["AI does the busywork.", "You stay in control."],
+    "body": "Four CosmiFin features run on AI. Each one either shows its working or waits for a person to confirm.",
+    "assistant": {
+      "model": "AI assistant",
+      "title": "Ask your books anything.",
+      "body": "Ask in plain language, like \"How much does this client owe us?\" The assistant runs its own queries against live data and shows which ones it ran for every answer.",
+      "points": ["16 read-only tools, so it can't change any data", "Limited to your own company's books", "Employees only get answers about their own records"]
+    },
+    "features": [
+      {
+        "model": "AI contract fields",
+        "technique": "Reasoning · structured output",
+        "title": "Finds where each signer signs.",
+        "body": "Code first pulls the real form fields and ruled lines out of the PDF. The AI only labels those candidates as a signature, name, designation or date, so it can't invent a signing spot, and the founder confirms before anything is sent.",
+        "ui": { "file": "field-detection.html", "alt": "Request signature screen listing eight fields found in a contract, each with the model's reason and a confidence badge" }
+      },
+      {
+        "model": "AI receipt reading",
+        "technique": "Photos · PDFs",
+        "title": "Reads the receipt for you.",
+        "body": "Upload a photo or PDF of a receipt and the vendor, amount, date and category fill themselves in. Nothing is submitted until you have checked it.",
+        "ui": { "file": "receipt-extraction.html", "alt": "Submit expense form filled in from an attached cafe receipt" },
+        "paper": { "src": "ui/receipt-demo.svg", "alt": "" }
+      },
+      {
+        "model": "AI categories",
+        "title": "Picks the category in one tap.",
+        "body": "Tap Suggest and the matching expense category is selected for you. You can still change it.",
+        "ui": { "file": "category-suggestion.html", "alt": "Submit expense form with Software selected after tapping Suggest" }
+      }
+    ]
+  },
+  "craft": {
+    "label": "The hardest part",
+    "title": ["E-signatures with the evidence", "Indian courts ask for."],
+    "body": [
+      "We evaluated Documenso and walked away. Its seal was no stronger than one we could run ourselves, and it would have made a third party part of every court production. So we built signing natively, with OTP-verified signers, a must-scroll reading record, versioned consent and a hash-chained event log.",
+      "Each PDF is sealed with a PKCS#7 signature plus an RFC 3161 timestamp, so the evidence outlives the certificate. The PDF signing library had no RFC 3161 timestamp support, so we wrote that signer ourselves on pkijs."
+    ],
+    "steps": [
+      { "label": "Confirm the emailed code", "ui": { "file": "esign-signer.html", "state": "otp", "alt": "Signer screen asking for the 8-digit code sent by email" } },
+      { "label": "Read to the end", "ui": { "file": "esign-signer.html", "state": "read", "alt": "The contract shown page by page with its SHA-256 fingerprint and a gate that opens only after scrolling to the end" } },
+      { "label": "Sign", "ui": { "file": "esign-signer.html", "state": "sign", "alt": "Signature screen with a drawn signature and a plain note that this is an email and OTP verified signature, not an Aadhaar eSign" } },
+      { "label": "Download the court pack", "ui": { "file": "esign-track.html", "alt": "Signed agreement with both signers, a verified audit chain, and downloads for the signed PDF, s.63 certificate and evidence bundle" } }
+    ],
+    "points": [
+      "An emailed OTP for every signer",
+      "A must-scroll reading record and versioned consent",
+      "A hash-chained audit trail of every event",
+      "A PKCS#7 seal with an RFC 3161 timestamp",
+      "A BSA s.63(4)(c) certificate and evidence bundle",
+      "Refuses document types the IT Act excludes, such as leases over 11 months"
+    ]
+  },
+  "stack": ["React", "Vite", "Tailwind CSS", "PWA (Workbox)", "Web Push", "Node.js", "Express", "MongoDB", "Redis", "Socket.IO", "AWS EC2", "AWS S3 (Mumbai)", "pdf-lib", "@signpdf", "pkijs (RFC 3161)", "ExcelJS", "IDFC BLKPAY file format", "GitHub Actions"],
+  "aiNote": "AI for the assistant, contract fields, receipts and expense categories",
+  "outcome": "Cosmiron's books moved from a spreadsheet to one app where every movement has an owner and deadlines chase the founders."
+}

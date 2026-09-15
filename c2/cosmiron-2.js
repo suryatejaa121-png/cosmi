@@ -16,6 +16,7 @@
   ready(function () {
     initFilters();
     pageCurtain();
+    productUi();
     if (reduceMotion || !window.gsap || !window.ScrollTrigger) return;
     gsap.registerPlugin(ScrollTrigger);
 
@@ -30,6 +31,7 @@
     staggerIn(ease);
     parallax();
     screens(ease);
+    uiScroll();
     lineFill();
 
     window.addEventListener("load", function () { ScrollTrigger.refresh(); });
@@ -94,6 +96,72 @@
         onEnter: function () {
           if (frame) gsap.to(frame, { y: 0, scale: 1, opacity: 1, duration: 1.1, ease: ease });
           if (copy) gsap.to(copy, { y: 0, opacity: 1, duration: 0.9, delay: 0.25, ease: ease });
+        },
+      });
+    });
+    gsap.utils.toArray("[data-c2-rise]").forEach(function (el) {
+      gsap.set(el, { y: 80, scale: 0.96, opacity: 0 });
+      ScrollTrigger.create({
+        trigger: el,
+        start: "top 88%",
+        once: true,
+        onEnter: function () {
+          gsap.to(el, { y: 0, scale: 1, opacity: 1, duration: 1.1, ease: ease });
+        },
+      });
+    });
+  }
+
+  // Product UI is the product's own HTML at its own width (data-w, 390 px for phones).
+  // Zoom each screen to its view so text stays sharp and the layout stays exact.
+  function productUi() {
+    var views = Array.prototype.slice.call(document.querySelectorAll(".c2-ui-view"));
+    if (!views.length) return;
+    function fit(view) {
+      var ui = view.querySelector(".c2-ui");
+      var base = ui && parseFloat(ui.getAttribute("data-w"));
+      if (!base || !view.clientWidth) return;
+      view.style.setProperty("--c2-ui-zoom", (view.clientWidth / base).toFixed(4));
+    }
+    views.forEach(function (view) {
+      fit(view);
+      // Hand-scrolled screens (reduced motion) keep the wheel away from smooth scroll.
+      if (reduceMotion && view.hasAttribute("data-c2-scroll")) view.setAttribute("data-lenis-prevent", "");
+    });
+    if (!window.ResizeObserver) return;
+    var queued = false;
+    var observer = new ResizeObserver(function (entries) {
+      entries.forEach(function (entry) { fit(entry.target); });
+      if (!window.ScrollTrigger || queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        ScrollTrigger.refresh();
+      });
+    });
+    views.forEach(function (view) { observer.observe(view); });
+  }
+
+  // Tall screens scroll inside their phone as the page scrolls past, the way someone
+  // would thumb through the app. The hero's starts once the reader begins scrolling.
+  function uiScroll() {
+    gsap.utils.toArray(".c2-ui-view[data-c2-scroll]").forEach(function (view) {
+      var track = view.querySelector(".c2-ui-scroll");
+      if (!track) return;
+      var hero = view.getAttribute("data-c2-scroll") === "hero";
+      gsap.fromTo(track, { y: 0 }, {
+        // Stop when the screen's last row reaches the bottom of the view (below its top inset).
+        y: function () {
+          var inset = parseFloat(getComputedStyle(view).paddingTop) || 0;
+          return -Math.max(0, track.offsetHeight - (view.clientHeight - inset));
+        },
+        ease: "none",
+        scrollTrigger: {
+          trigger: view,
+          start: hero ? "top 45%" : "top 75%",
+          end: hero ? "bottom top" : "bottom 25%",
+          scrub: 1,
+          invalidateOnRefresh: true,
         },
       });
     });

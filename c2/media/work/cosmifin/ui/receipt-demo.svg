@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="600" viewBox="0 0 360 600">
+  <rect width="360" height="600" fill="#fbfaf6"/>
+  <g font-family="'Courier New', Courier, monospace" fill="#2b2b2b">
+    <text x="180" y="48" font-size="20" font-weight="700" text-anchor="middle">NEELGIRI BREW HOUSE</text>
+    <text x="180" y="72" font-size="12" text-anchor="middle">12th Main, Indiranagar</text>
+    <text x="180" y="90" font-size="12" text-anchor="middle">Bengaluru 560038</text>
+    <text x="180" y="112" font-size="12" text-anchor="middle">GSTIN: 29ABCDE1234F1Z5</text>
+    <text x="180" y="138" font-size="13" font-weight="700" text-anchor="middle">TAX INVOICE</text>
+    <line x1="24" y1="152" x2="336" y2="152" stroke="#2b2b2b" stroke-dasharray="4 3"/>
+    <text x="24" y="176" font-size="12">Bill No: NBH/26-27/004812</text>
+    <text x="24" y="194" font-size="12">Date: 15/09/2026   13:42</text>
+    <text x="24" y="212" font-size="12">Table: 7      Covers: 4</text>
+    <line x1="24" y1="226" x2="336" y2="226" stroke="#2b2b2b" stroke-dasharray="4 3"/>
+    <text x="24" y="248" font-size="12" font-weight="700">Item</text>
+    <text x="220" y="248" font-size="12" font-weight="700" text-anchor="end">Qty</text>
+    <text x="336" y="248" font-size="12" font-weight="700" text-anchor="end">Amount</text>
+    <text x="24" y="272" font-size="12">Filter Coffee</text>
+    <text x="220" y="272" font-size="12" text-anchor="end">4</text>
+    <text x="336" y="272" font-size="12" text-anchor="end">480.00</text>
+    <text x="24" y="294" font-size="12">Masala Dosa</text>
+    <text x="220" y="294" font-size="12" text-anchor="end">4</text>
+    <text x="336" y="294" font-size="12" text-anchor="end">720.00</text>
+    <line x1="24" y1="312" x2="336" y2="312" stroke="#2b2b2b" stroke-dasharray="4 3"/>
+    <text x="24" y="336" font-size="12">Subtotal</text>
+    <text x="336" y="336" font-size="12" text-anchor="end">1,200.00</text>
+    <text x="24" y="356" font-size="12">CGST @ 2.5%</text>
+    <text x="336" y="356" font-size="12" text-anchor="end">30.00</text>
+    <text x="24" y="376" font-size="12">SGST @ 2.5%</text>
+    <text x="336" y="376" font-size="12" text-anchor="end">30.00</text>
+    <line x1="24" y1="392" x2="336" y2="392" stroke="#2b2b2b"/>
+    <text x="24" y="420" font-size="16" font-weight="700">TOTAL</text>
+    <text x="336" y="420" font-size="16" font-weight="700" text-anchor="end">₹1,260.00</text>
+    <line x1="24" y1="434" x2="336" y2="434" stroke="#2b2b2b"/>
+    <text x="24" y="460" font-size="12">Paid by: Card (xxxx 4417)</text>
+    <text x="24" y="478" font-size="12">HSN/SAC: 996331</text>
+    <text x="180" y="524" font-size="12" text-anchor="middle">Thank you. Visit again!</text>
+    <text x="180" y="546" font-size="10" text-anchor="middle">This is a computer generated invoice</text>
+  </g>
+</svg>
