@@ -1,0 +1,138 @@
+{
+  "slug": "resrishti",
+  "featured": true,
+  "rank": 1,
+  "draft": ["quote", "why"],
+  "client": {
+    "name": "ReSrishti",
+    "legal": "GreenEarth Integrated Facility Pvt. Ltd.",
+    "region": "Telangana, India",
+    "url": "https://www.resrishti.com",
+    "logo": "logo.webp",
+    "brand": "#059669"
+  },
+  "project": "ReSrishti Operations Platform",
+  "title": ["ReSrishti Operations Platform", "Pickups, field teams and certificates in one system."],
+  "headline": "An automated operations platform running pickups, field teams and disposal certificates.",
+  "summary": "A zero-landfill recycler's whole operation — public website, workforce app and client portal — rebuilt as one installable platform.",
+  "industry": "Waste management & recycling",
+  "type": "Client collaboration",
+  "status": "Live",
+  "since": "2025",
+  "capabilities": [
+    {
+      "name": "Discovery",
+      "phase": "Phase 01",
+      "title": "Scoped the platform around every role.",
+      "summary": "We mapped how pickups, attendance and certificates really moved through ReSrishti — office, plant floor and client — before writing a line of code.",
+      "tagsLabel": "Roles mapped",
+      "tags": ["Admin", "Manager", "Field employee", "Client"],
+      "roles": ["Operations and workflow mapping", "Roles, permissions and approval flows", "UX for office, field and client screens", "Client-management module spec"],
+      "output": "A platform blueprint every team signed off on"
+    },
+    {
+      "name": "AI Integration",
+      "phase": "Phase 02",
+      "title": "Built every app, portal and workflow.",
+      "summary": "One connected platform — public website, admin, manager and field apps, client portal, pickup pipeline and certificate engine — updating in real time.",
+      "tagsLabel": "Wired together",
+      "tags": ["Socket.IO", "AWS S3", "Email", "Web Push", "PDF engine"],
+      "roles": ["Product engineering across web and mobile", "AI and automation in daily operations", "Real-time updates for every role", "Certificates generated from recorded weights"],
+      "output": "Website, role apps, client portal and certificate engine"
+    },
+    {
+      "name": "AI Deployment",
+      "phase": "Phase 03",
+      "title": "Shipped as one installable platform.",
+      "summary": "Containerised and deployed on AWS, installable on any phone or desktop, with push notifications and check-ins that queue offline until the signal returns.",
+      "tagsLabel": "Runs on",
+      "tags": ["Android", "iOS", "Desktop", "AWS"],
+      "roles": ["Docker builds deployed to AWS EC2", "Continuous integration with GitHub Actions", "Installable PWA with web push", "Rate limiting, secure headers and JWT auth"],
+      "output": "Live at resrishti.com"
+    },
+    {
+      "name": "Support & Growth",
+      "phase": "Ongoing",
+      "title": "Still extending it as operations grow.",
+      "summary": "Regular releases since launch, shaped by how ReSrishti's teams use the platform day to day.",
+      "tagsLabel": "Recent releases",
+      "tags": ["Selfie check-in", "Multi-session attendance", "Attendance corrections", "Client management"],
+      "roles": ["Ongoing support and fixes", "New workflows as operations change", "Client-management rollout", "Automation and AI roadmap"],
+      "output": "Continuous releases since 2025"
+    }
+  ],
+  "context": {
+    "title": ["Operations ran on", "WhatsApp, spreadsheets and paper."],
+    "body": "ReSrishti runs a zero-landfill facility with nine recycling technologies under one roof, serving industrial, hospital, FMCG and corporate clients across Telangana. Day-to-day operations lived in spreadsheets, WhatsApp threads and hand-stitched PDFs — slow for clients who need audit-ready paperwork for ESG reporting.",
+    "before": [
+      "Pickup requests arrived on WhatsApp and were scheduled by hand",
+      "Field attendance was hard to verify from the office",
+      "Certificates of Disposal were typed in Word, signed and scanned",
+      "Client records lived in spreadsheets and PDF threads"
+    ],
+    "after": [
+      "Every pickup tracked from request to weighed, processed and certified",
+      "Geofenced, selfie-verified check-ins with a GPS trail",
+      "Certificates generated as branded PDFs from recorded weights",
+      "Clients self-serve pickups, certificates and impact in their own portal"
+    ]
+  },
+  "why": "They wanted one partner who could turn a facility run on WhatsApp, spreadsheets and paper into a single system — public website, workforce app and client portal — and keep building on it as operations grew.",
+  "deliverables": [
+    "Public website with facility pages, pickup booking and a live impact dashboard",
+    "Admin, manager and field-employee apps in one installable PWA",
+    "Client portal for pickup requests, impact and certificates",
+    "Pickup pipeline from request to weighed, processed and certified",
+    "Auto-generated Certificates of Disposal as branded PDFs",
+    "Automation and AI features across day-to-day operations"
+  ],
+  "features": [
+    "Books and tracks waste pickups from request to certificate",
+    "Verifies field attendance with geofence, live selfie and GPS trail",
+    "Pushes real-time updates by web push, in-app sockets and email",
+    "Generates branded Certificates of Disposal as downloadable PDFs",
+    "Gives clients a self-service portal for pickups, certificates and impact",
+    "Works offline as an installable app on Android, iOS and desktop"
+  ],
+  "craft": {
+    "title": ["Attendance you can trust,", "even without a signal."],
+    "body": "Field teams work from trucks and plant floors with patchy connectivity. Check-ins are geofenced, require a live selfie, and queue offline with background sync, replaying when the phone reconnects — so managers approve attendance against location and photo evidence instead of taking it on trust."
+  },
+  "stack": ["React 19", "Vite", "Tailwind CSS v4", "Framer Motion", "GSAP", "Leaflet", "Recharts", "Node.js", "Express 5", "MongoDB", "Socket.IO", "Web Push (VAPID)", "Background Sync", "Nodemailer", "AWS S3", "AWS EC2", "React PDF", "JWT", "Docker", "GitHub Actions"],
+  "ai": "AI and automation features across daily operations",
+  "outcome": "Pickups, field attendance and Certificates of Disposal now run through one platform instead of WhatsApp threads, spreadsheets and scanned Word documents.",
+  "quote": {
+    "text": "Cosmiron took operations that lived in WhatsApp threads and spreadsheets and turned them into one platform our teams and our clients actually use.",
+    "by": "ReSrishti leadership"
+  },
+  "partners": {
+    "title": ["A platform for a recycler", "trusted by industry leaders."],
+    "body": "ReSrishti handles waste for enterprise partners across quick commerce, aviation, manufacturing, FMCG, telecom, retail, healthcare, logistics and the public sector.",
+    "source": "Partners as listed by ReSrishti on resrishti.com.",
+    "featured": ["Reliance", "P & G", "Foxconn", "Tata Teleservices", "Zomato", "Blinkit"],
+    "list": [
+      { "name": "Blinkit", "logo": "partners/blinkit.svg", "industry": "Quick commerce & food delivery" },
+      { "name": "Zomato", "logo": "partners/zomato.webp", "industry": "Quick commerce & food delivery" },
+      { "name": "CAFS", "logo": "partners/cafs.webp", "industry": "Aviation & airport services" },
+      { "name": "Foxconn", "logo": "partners/foxconn.webp", "industry": "Manufacturing & industrial" },
+      { "name": "Sika", "logo": "partners/sika.webp", "industry": "Manufacturing & industrial" },
+      { "name": "P & G", "logo": "partners/p-and-g.webp", "industry": "FMCG & consumer goods" },
+      { "name": "Dukes", "logo": "partners/dukes.webp", "industry": "FMCG & consumer goods" },
+      { "name": "Tata Teleservices", "logo": "partners/tata-teleservices.webp", "industry": "Technology & telecom" },
+      { "name": "Reliance", "logo": "partners/reliance.webp", "industry": "Retail & conglomerates" },
+      { "name": "J J Hospitals", "logo": "partners/jj-hospitals.webp", "industry": "Healthcare" },
+      { "name": "Central Warehousing Corporation", "logo": "partners/central-warehousing-corporation.webp", "industry": "Logistics & warehousing" },
+      { "name": "Amrabad Tiger Reserve", "logo": "partners/amrabad-tiger-reserve.webp", "industry": "Government & public sector" },
+      { "name": "Lions Club International", "logo": "partners/lions-club-international.svg", "industry": "Institutions & NGOs" }
+    ]
+  },
+  "hero": { "src": "public-homepage.webp", "alt": "ReSrishti public website homepage: Transforming Waste Into Resources, with Book a Pickup and Partner with Us buttons" },
+  "screens": [
+    { "src": "client-impact-dashboard.webp", "title": "Client portal", "caption": "Clients see their diversion impact, certificates and upcoming pickups in one place.", "alt": "ReSrishti client portal dashboard with impact cards and upcoming pickups" },
+    { "src": "certificate-of-disposal.webp", "title": "Certificates of Disposal", "caption": "Every completed pickup produces a branded certificate, ready to download as a PDF.", "alt": "Certificate of Disposal card with a Download PDF button" },
+    { "src": "team-attendance.webp", "title": "Team attendance", "caption": "Managers approve check-ins against geofence status, a live selfie and the GPS trail.", "alt": "Manager team attendance view with approve and reject actions and location status" },
+    { "src": "admin-org-dashboard.webp", "title": "Organisation dashboard", "caption": "Admins oversee every manager, team and leave request across the organisation.", "alt": "Admin organisation dashboard with manager and employee counts and team structure" },
+    { "src": "manager-task-board.webp", "title": "Task board", "caption": "Managers assign prioritised tasks with deadlines, attachments and collaborators.", "alt": "Manager task management board with task cards by priority and status" },
+    { "src": "client-portal-install.webp", "title": "Installable app", "caption": "The whole platform installs to a phone or desktop, with push notifications and offline check-in.", "alt": "ReSrishti client portal sign-in with an install-app prompt" }
+  ]
+}
