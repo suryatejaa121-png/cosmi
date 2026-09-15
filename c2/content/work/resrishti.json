@@ -14,7 +14,7 @@
   "project": "ReSrishti Operations Platform",
   "title": ["ReSrishti Operations Platform", "Pickups, field teams and certificates in one system."],
   "headline": "An automated operations platform running pickups, field teams and disposal certificates.",
-  "summary": "A zero-landfill recycler's whole operation — public website, workforce app and client portal — rebuilt as one installable platform.",
+  "summary": "A zero-landfill recycler's whole operation, from public website to workforce app and client portal, rebuilt as one installable platform.",
   "industry": "Waste management & recycling",
   "type": "Client collaboration",
   "status": "Live",
@@ -24,7 +24,7 @@
       "name": "Discovery",
       "phase": "Phase 01",
       "title": "Scoped the platform around every role.",
-      "summary": "We mapped how pickups, attendance and certificates really moved through ReSrishti — office, plant floor and client — before writing a line of code.",
+      "summary": "We mapped how pickups, attendance and certificates really moved through ReSrishti, across the office, plant floor and client, before writing a line of code.",
       "tagsLabel": "Roles mapped",
       "tags": ["Admin", "Manager", "Field employee", "Client"],
       "roles": ["Operations and workflow mapping", "Roles, permissions and approval flows", "UX for office, field and client screens", "Client-management module spec"],
@@ -34,7 +34,7 @@
       "name": "AI Integration",
       "phase": "Phase 02",
       "title": "Built every app, portal and workflow.",
-      "summary": "One connected platform — public website, admin, manager and field apps, client portal, pickup pipeline and certificate engine — updating in real time.",
+      "summary": "One connected platform spanning the public website, admin, manager and field apps, client portal, pickup pipeline and certificate engine, all updating in real time.",
       "tagsLabel": "Wired together",
       "tags": ["Socket.IO", "AWS S3", "Email", "Web Push", "PDF engine"],
       "roles": ["Product engineering across web and mobile", "AI and automation in daily operations", "Real-time updates for every role", "Certificates generated from recorded weights"],
@@ -63,7 +63,7 @@
   ],
   "context": {
     "title": ["Operations ran on", "WhatsApp, spreadsheets and paper."],
-    "body": "ReSrishti runs a zero-landfill facility with nine recycling technologies under one roof, serving industrial, hospital, FMCG and corporate clients across Telangana. Day-to-day operations lived in spreadsheets, WhatsApp threads and hand-stitched PDFs — slow for clients who need audit-ready paperwork for ESG reporting.",
+    "body": "ReSrishti runs a zero-landfill facility with nine recycling technologies under one roof, serving industrial, hospital, FMCG and corporate clients across Telangana. Day-to-day operations lived in spreadsheets, WhatsApp threads and hand-stitched PDFs, which slowed things down for clients who need audit-ready paperwork for ESG reporting.",
     "before": [
       "Pickup requests arrived on WhatsApp and were scheduled by hand",
       "Field attendance was hard to verify from the office",
@@ -77,7 +77,7 @@
       "Clients self-serve pickups, certificates and impact in their own portal"
     ]
   },
-  "why": "They wanted one partner who could turn a facility run on WhatsApp, spreadsheets and paper into a single system — public website, workforce app and client portal — and keep building on it as operations grew.",
+  "why": "They wanted one partner to turn a facility run on WhatsApp, spreadsheets and paper into a single system spanning the public website, workforce app and client portal, and to keep building on it as operations grew.",
   "deliverables": [
     "Public website with facility pages, pickup booking and a live impact dashboard",
     "Admin, manager and field-employee apps in one installable PWA",
@@ -96,7 +96,7 @@
   ],
   "craft": {
     "title": ["Attendance you can trust,", "even without a signal."],
-    "body": "Field teams work from trucks and plant floors with patchy connectivity. Check-ins are geofenced, require a live selfie, and queue offline with background sync, replaying when the phone reconnects — so managers approve attendance against location and photo evidence instead of taking it on trust."
+    "body": "Field teams work from trucks and plant floors with patchy connectivity. Check-ins are geofenced, require a live selfie, and queue offline with background sync, replaying when the phone reconnects. Managers approve attendance against location and photo evidence instead of taking it on trust."
   },
   "stack": ["React 19", "Vite", "Tailwind CSS v4", "Framer Motion", "GSAP", "Leaflet", "Recharts", "Node.js", "Express 5", "MongoDB", "Socket.IO", "Web Push (VAPID)", "Background Sync", "Nodemailer", "AWS S3", "AWS EC2", "React PDF", "JWT", "Docker", "GitHub Actions"],
   "ai": "AI and automation features across daily operations",

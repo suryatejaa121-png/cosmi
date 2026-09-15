@@ -1519,6 +1519,119 @@
     padding: 1.8vw 2.8vw;
     font-size: 3.2vw;
   }
+
+  /* Calmer, less dense type on phones for the added sections only. */
+  .c2 .c2-h1,
+  .c2 .c2-h3 {
+    font-size: 6vw;
+  }
+  .c2 .c2-outcome {
+    font-size: 5.6vw;
+  }
+  .c2 .c2-hero .title_2_20 {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-hero-inner {
+    gap: 4vw;
+  }
+  .c2 .c2-lede,
+  .c2 .c2-head .body_16 {
+    font-size: 3.47vw;
+    line-height: 150%;
+  }
+  .c2 .c2-back {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-facts {
+    gap: 4vw 3vw;
+    padding: 4.5vw;
+  }
+  .c2 .c2-facts dt {
+    font-size: 2.67vw;
+  }
+  .c2 .c2-facts dd {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-logo-chip {
+    width: 6vw;
+    height: 6vw;
+    border-radius: 1.6vw;
+  }
+  .c2 .c2-statement {
+    font-size: 4.53vw;
+    line-height: 140%;
+  }
+  .c2 .caption {
+    padding: 2.67vw 3.73vw;
+    font-size: 3.2vw;
+  }
+  .c2 .tag-solutions {
+    height: 8.5vw;
+    padding-left: 3.2vw;
+    padding-right: 3.2vw;
+    font-size: 3.2vw;
+  }
+  .c2 .list-card {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-capabilities .title_24,
+  .c2 .c2-screen-copy .title_24 {
+    font-size: 4.53vw;
+  }
+  .c2 .c2-card-summary,
+  .c2 .c2-card-output-value,
+  .c2 .c2-screen-copy .body_15 {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-card-tags span {
+    font-size: 2.93vw;
+  }
+  .c2 .c2-deliver-list li {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-quote blockquote {
+    font-size: 4.53vw;
+  }
+  .c2 .c2-exhibit-meta {
+    flex-wrap: nowrap;
+    gap: 2.67vw;
+  }
+  .c2 .c2-exhibit-meta .caption {
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .c2 .c2-exhibit-meta .c2-status {
+    flex: none;
+  }
+  .c2 .c2-status {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-exhibit-client {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-exhibit-title {
+    font-size: 5.6vw;
+  }
+  .c2 .c2-exhibit-headline {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-exhibit-partners {
+    font-size: 3.2vw;
+  }
+  .c2 .c2-exhibit-cta {
+    padding: 3vw 5vw;
+    font-size: 3.47vw;
+  }
+  .c2 .c2-proof-name {
+    font-size: 4.27vw;
+  }
+  .c2 .c2-industries dt {
+    font-size: 3.47vw;
+  }
+  .c2 .c2-industries dd {
+    font-size: 3.2vw;
+  }
   .c2 .c2-deliver-list li {
     font-size: 4.27vw;
   }
