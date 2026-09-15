@@ -301,6 +301,7 @@
 }
 .c2 .c2-head .body_16 {
   max-width: 46vw;
+  text-wrap: balance;
 }
 
 /* ---------- challenge: before / with Cosmiron ---------- */
@@ -914,6 +915,123 @@
   box-shadow: 0 4vw 7vw -2.5vw rgba(6, 3, 16, 0.9);
 }
 
+/* ---------- homepage: selected work ---------- */
+.c2 .c2-selected {
+  padding: 7vw 0 3vw;
+  background-color: var(--c2-paper);
+}
+.c2 .c2-selected a.c2-exhibit-link {
+  background-color: var(--c2-night);
+}
+.c2 .c2-selected .c2-quote {
+  margin-top: 4.17vw;
+}
+.c2 .c2-selected-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 3vw;
+}
+
+/* ---------- what we do / our approach: built with this ---------- */
+.c2 .c2-proof {
+  padding: 5vw 0;
+  background-color: var(--c2-night);
+}
+/* What we do's sections sit on the site's plum dark (#190f2a), not night. */
+.c2 .c2-proof--plum {
+  background-color: #190f2a;
+}
+.c2 .c2-proof-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.04vw;
+  margin-bottom: 2.08vw;
+}
+.c2 .c2-proof-lede {
+  color: var(--c2-lavender);
+  font-size: 1.11vw;
+}
+.c2 .c2-proof-list {
+  display: grid;
+  gap: 0.83vw;
+}
+.c2 a.c2-proof-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 2.08vw;
+  overflow: hidden;
+  padding: 1.67vw 2.08vw;
+  border: 1px solid rgba(201, 182, 255, 0.1);
+  border-radius: 1.67vw;
+  background-color: rgba(41, 31, 57, 0.45);
+  color: #fff;
+  text-decoration: none;
+  transition: border-color 0.6s var(--c2-ease);
+}
+.c2 a.c2-proof-item::before {
+  content: "";
+  position: absolute;
+  inset: -40% 45% -40% -10%;
+  background: radial-gradient(50% 50% at 30% 50%, color-mix(in srgb, var(--c2-tint) 32%, transparent), transparent 70%);
+  opacity: 0.5;
+  transition: opacity 0.8s var(--c2-ease);
+  pointer-events: none;
+}
+.c2 a.c2-proof-item:hover {
+  border-color: rgba(201, 182, 255, 0.24);
+}
+.c2 a.c2-proof-item:hover::before {
+  opacity: 1;
+}
+.c2 a.c2-proof-item > * {
+  position: relative;
+  z-index: 1;
+}
+.c2 .c2-proof-item .c2-logo-chip {
+  width: 3.33vw;
+  height: 3.33vw;
+  border-radius: 0.97vw;
+}
+.c2 .c2-proof-copy {
+  display: grid;
+  gap: 0.28vw;
+}
+.c2 .c2-proof-name {
+  font-size: 1.39vw;
+  font-weight: 500;
+  letter-spacing: -0.03vw;
+  line-height: 125%;
+}
+.c2 .c2-proof-line {
+  color: var(--c2-lavender);
+  font-size: 0.97vw;
+  line-height: 140%;
+}
+.c2 .c2-proof-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35vw;
+  max-width: 22vw;
+}
+.c2 .c2-proof-tags span {
+  padding: 0.42vw 0.69vw;
+  border-radius: 100vw;
+  background-color: rgba(207, 177, 255, 0.1);
+  font-size: 0.76vw;
+  line-height: 1;
+}
+.c2 .c2-proof-item .c2-exhibit-cta {
+  margin-top: 0;
+}
+.c2 a.c2-proof-item:hover .c2-exhibit-cta {
+  background-position: right;
+}
+
 /* ---------- tablet ---------- */
 @media screen and (max-width: 767px) {
   .c2 .c2-container,
@@ -1042,6 +1160,56 @@
   .c2 .c2-exhibit-partners {
     max-width: none;
     font-size: 2.33vw;
+  }
+  .c2 .c2-selected {
+    padding: 14vw 0 6vw;
+  }
+  .c2 .c2-selected .c2-quote {
+    margin-top: 9vw;
+  }
+  .c2 .c2-selected-more {
+    margin-top: 7vw;
+  }
+  .c2 .c2-proof {
+    padding: 12vw 0;
+  }
+  .c2 .c2-proof-head {
+    gap: 2vw;
+    margin-bottom: 5vw;
+  }
+  .c2 .c2-proof-lede {
+    font-size: 2.67vw;
+  }
+  .c2 a.c2-proof-item {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 3vw 4vw;
+    padding: 4vw;
+    border-radius: 4vw;
+  }
+  .c2 .c2-proof-item .c2-logo-chip {
+    width: 8vw;
+    height: 8vw;
+    border-radius: 2.2vw;
+  }
+  .c2 .c2-proof-name {
+    font-size: 3.33vw;
+  }
+  .c2 .c2-proof-line {
+    font-size: 2.33vw;
+  }
+  .c2 .c2-proof-tags {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    max-width: none;
+    gap: 1vw;
+  }
+  .c2 .c2-proof-tags span {
+    padding: 1.1vw 1.8vw;
+    font-size: 1.95vw;
+  }
+  .c2 .c2-proof-item .c2-exhibit-cta {
+    grid-column: 1 / -1;
+    justify-self: start;
   }
   .c2 .c2-compare {
     grid-template-columns: 1fr;
@@ -1332,6 +1500,24 @@
   }
   .c2 .c2-exhibit-partners {
     font-size: 3.47vw;
+  }
+  .c2 .c2-proof-lede {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-proof-item .c2-logo-chip {
+    width: 11vw;
+    height: 11vw;
+    border-radius: 3vw;
+  }
+  .c2 .c2-proof-name {
+    font-size: 4.8vw;
+  }
+  .c2 .c2-proof-line {
+    font-size: 3.73vw;
+  }
+  .c2 .c2-proof-tags span {
+    padding: 1.8vw 2.8vw;
+    font-size: 3.2vw;
   }
   .c2 .c2-deliver-list li {
     font-size: 4.27vw;

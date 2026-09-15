@@ -387,6 +387,96 @@ ${closingSection(R, {
 </div>`;
 }
 
+/* ---------------- additions inside existing pages ---------------- */
+
+// Each addition lives between <!-- c2:name:start --> and <!-- c2:name:end --> markers,
+// inserted immediately before a unique anchor. Re-running replaces only what is between
+// the markers, so nothing else in the existing page is ever rewritten.
+function inject(html, name, anchor, content) {
+  const start = `<!-- c2:${name}:start -->`;
+  const end = `<!-- c2:${name}:end -->`;
+  const block = `${start}\n${content}\n${end}`;
+  const at = html.indexOf(start);
+  if (at >= 0) {
+    const close = html.indexOf(end, at);
+    if (close < 0) throw new Error(`c2:${name}: start marker without end marker`);
+    return html.slice(0, at) + block + html.slice(close + end.length);
+  }
+  const count = html.split(anchor).length - 1;
+  if (count !== 1) throw new Error(`c2:${name}: expected anchor ${anchor} exactly once, found ${count}`);
+  return html.replace(anchor, `${block}\n${anchor}`);
+}
+
+function injectInto(file, blocks) {
+  const before = read(file);
+  let html = before;
+  for (const [name, anchor, content] of blocks) html = inject(html, name, anchor, content);
+  if (html !== before) write(file, html);
+  console.log(`  additions   ${html !== before ? "updated  " : "unchanged"}        ${file}`);
+}
+
+function selectedWorkSection(projects, R) {
+  if (!projects.length) return "";
+  const lead = projects[0];
+  const quote =
+    lead.quote && !isDraft(lead, "quote")
+      ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(lead.quote.text)}</blockquote><figcaption>${esc(lead.quote.by)}</figcaption></figure>`
+      : "";
+  return `<div class="c2 c2-home-work">
+  <section class="c2-section c2-selected" aria-label="Selected work">
+    <div class="c2-container">
+      <div class="c2-head" data-c2-reveal>
+        ${caption("Selected work", "")}
+        <h2 class="c2-h3"><span class="c2-line2">Real products.</span><span class="c2-line2"><span class="text-gradient c2-clone">Real partners.</span></span></h2>
+        <p class="body_16 text-grey-light">A look at what Cosmiron has designed, engineered and shipped with the companies behind it.</p>
+      </div>
+      <div class="c2-exhibits" data-c2-stagger>${projects.map((p) => exhibitCard(p, R, `${R}work/${p.slug}/index.html`)).join("")}
+      </div>
+      ${quote}
+      <div class="c2-selected-more">${outlineButton(`${R}work/index.html`, "See all work")}</div>
+    </div>
+  </section>
+</div>`;
+}
+
+// tone matches the page's own section colour (e.g. "plum" on What we do).
+function proofRow(projects, R, label, tone = "") {
+  if (!projects.length) return "";
+  return `<div class="c2 c2-proof-wrap">
+  <section class="c2-proof${tone ? ` c2-proof--${tone}` : ""}" aria-label="${esc(label)}">
+    <div class="c2-container">
+      <div class="c2-proof-head" data-c2-reveal>${caption(label)}<p class="c2-proof-lede">See it working for a real partner.</p></div>
+      <div class="c2-proof-list" data-c2-stagger>${projects
+        .map(
+          (p) => `
+        <a class="c2-proof-item" data-c2-transition href="${R}work/${p.slug}/index.html" style="--c2-tint:${esc(p.client.brand)}">
+          <span class="c2-logo-chip"><img src="${media(R, p, p.client.logo)}" alt="" loading="lazy"></span>
+          <span class="c2-proof-copy"><span class="c2-proof-name">${esc(p.project)}</span><span class="c2-proof-line">${esc(p.headline)}</span></span>
+          <span class="c2-proof-tags">${p.capabilities.map((c) => `<span>${esc(c.name)}</span>`).join("")}</span>
+          <span class="c2-exhibit-cta">View case study <span aria-hidden="true">→</span></span>
+        </a>`,
+        )
+        .join("")}
+      </div>
+    </div>
+  </section>
+</div>`;
+}
+
+function injectAdditions(projects) {
+  const featured = projects.filter((p) => p.featured);
+  const assets = (R) => [
+    ["c2-styles", "</head>", `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">`],
+    ["c2-script", "</body>", `<script src="${R}c2/cosmiron-2.js"></script>`],
+  ];
+  const home = "index.html";
+  injectInto(home, [...assets("./"), ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")]]);
+  const what = "whatwedo-cosmiron/pages/what-we-do/index.html";
+  injectInto(what, [...assets(rootPrefix(what)), ["built-with", '<section class="section custom_bg">', proofRow(featured, rootPrefix(what), "Built with these services", "plum")]]);
+  const approach = "ourapproach/pages/our-approach/index.html";
+  injectInto(approach, [...assets(rootPrefix(approach)), ["built-with", '<section class="section light-grey last">', proofRow(featured, rootPrefix(approach), "Built with this approach")]]);
+}
+
 /* ---------------- run ---------------- */
 
 function loadProjects() {
@@ -446,3 +536,5 @@ for (const p of projects) {
   console.log(`  page        written          ${file}`);
   if ((p.draft || []).length) console.log(`  draft       left out         ${p.slug}: ${p.draft.join(", ")}`);
 }
+
+injectAdditions(projects);
