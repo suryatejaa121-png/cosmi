@@ -53,6 +53,10 @@ function rootPrefix(file) {
   return depth === 0 ? "./" : "../".repeat(depth);
 }
 const isProduct = (p) => p.kind === "product";
+// Cache-busting query for the c2 stylesheet and script, so phones never keep a stale copy.
+const assetVersion = (file) => createHash("sha1").update(read(file)).digest("hex").slice(0, 10);
+const cssHref = (R) => `${R}c2/cosmiron-2.css?v=${assetVersion("c2/cosmiron-2.css")}`;
+const jsSrc = (R) => `${R}c2/cosmiron-2.js?v=${assetVersion("c2/cosmiron-2.js")}`;
 
 /* ---------------- 1. Work link on existing pages ---------------- */
 
@@ -116,7 +120,7 @@ function shell({ file, title, description, body, jsonLd }) {
   for (const key of ["og:title", "twitter:title"]) html = setMeta(html, key, title);
 
   const head = [
-    `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">`,
+    `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">`,
     body.includes('class="c2-ui"') ? UI_FONTS : "",
     jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
   ]
@@ -133,7 +137,7 @@ function shell({ file, title, description, body, jsonLd }) {
   html = html.replace(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g, (tag, code) =>
     /UnicornStudio|div-block-214|input-custom/.test(code) ? "" : tag,
   );
-  html = html.replace("</body>", `  <script src="${R}c2/cosmiron-2.js"></script>\n</body>`);
+  html = html.replace("</body>", `  <script src="${jsSrc(R)}"></script>\n</body>`);
   return html;
 }
 
@@ -742,8 +746,8 @@ function proofRow(projects, R, label, tone = "") {
 function injectAdditions(projects) {
   const featured = projects.filter((p) => p.featured);
   const assets = (R, fonts = false) => [
-    ["c2-styles", "</head>", `<link href="${R}c2/cosmiron-2.css" rel="stylesheet" type="text/css">${fonts ? `\n${UI_FONTS}` : ""}`],
-    ["c2-script", "</body>", `<script src="${R}c2/cosmiron-2.js"></script>`],
+    ["c2-styles", "</head>", `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">${fonts ? `\n${UI_FONTS}` : ""}`],
+    ["c2-script", "</body>", `<script src="${jsSrc(R)}"></script>`],
   ];
   const home = "index.html";
   injectInto(home, [...assets("./", featured.some(isProduct)), ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")]]);

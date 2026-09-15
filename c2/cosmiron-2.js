@@ -113,25 +113,32 @@
   }
 
   // Product UI is the product's own HTML at its own width (data-w, 390 px for phones).
-  // Zoom each screen to its view so text stays sharp and the layout stays exact.
+  // Scale each screen to its view with a transform (layout stays exact, and iOS Safari
+  // doesn't re-inflate the text the way it does under zoom), and give its track the
+  // scaled height so it scrolls and centres like a normal box.
   function productUi() {
     var views = Array.prototype.slice.call(document.querySelectorAll(".c2-ui-view"));
     if (!views.length) return;
     function fit(view) {
-      var ui = view.querySelector(".c2-ui");
+      var ui = view && view.querySelector(".c2-ui");
+      var track = view && view.querySelector(".c2-ui-scroll");
       var base = ui && parseFloat(ui.getAttribute("data-w"));
-      if (!base || !view.clientWidth) return;
-      view.style.setProperty("--c2-ui-zoom", (view.clientWidth / base).toFixed(4));
+      if (!base || !track || !view.clientWidth) return;
+      var scale = view.clientWidth / base;
+      view.style.setProperty("--c2-ui-scale", scale.toFixed(4));
+      track.style.height = Math.ceil(ui.offsetHeight * scale) + "px";
     }
     views.forEach(function (view) {
       fit(view);
       // Hand-scrolled screens (reduced motion) keep the wheel away from smooth scroll.
       if (reduceMotion && view.hasAttribute("data-c2-scroll")) view.setAttribute("data-lenis-prevent", "");
     });
+    // Web fonts arriving late change a screen's height, so refit then too.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { views.forEach(fit); });
     if (!window.ResizeObserver) return;
     var queued = false;
     var observer = new ResizeObserver(function (entries) {
-      entries.forEach(function (entry) { fit(entry.target); });
+      entries.forEach(function (entry) { fit(entry.target.closest(".c2-ui-view")); });
       if (!window.ScrollTrigger || queued) return;
       queued = true;
       requestAnimationFrame(function () {
@@ -139,7 +146,10 @@
         ScrollTrigger.refresh();
       });
     });
-    views.forEach(function (view) { observer.observe(view); });
+    views.forEach(function (view) {
+      observer.observe(view);
+      observer.observe(view.querySelector(".c2-ui"));
+    });
   }
 
   // Tall screens scroll inside their phone as the page scrolls past, the way someone
