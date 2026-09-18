@@ -20,6 +20,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from 
 import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { voicePage, voiceBand, productsPage } from "./voice.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ASSETS = "cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/";
@@ -85,6 +86,27 @@ function ensureWorkLinks() {
   }
 }
 
+// A "Products" link right after each Work link (desktop nav, mobile nav, footer).
+function ensureProductsLinks() {
+  for (const file of EXISTING_PAGES) {
+    let html = read(file);
+    if (html.includes('data-c2="products-link"')) {
+      console.log(`  products    already present  ${file}`);
+      continue;
+    }
+    const href = `${rootPrefix(file)}products/index.html`;
+    let added = 0;
+    html = html.replace(/<a\b([^>]*data-c2="work-link"[^>]*)>([\s\S]*?)<\/a>/g, (anchor, attrs, inner) => {
+      added += 1;
+      const productAttrs = attrs.replace(/\shref="[^"]*"/, ` href="${href}"`).replace('data-c2="work-link"', 'data-c2="products-link"');
+      return `${anchor}<a${productAttrs}>${inner.replace(/>(\s*)Work(\s*)</g, ">$1Products$2<")}</a>`;
+    });
+    if (added !== 3) throw new Error(`${file}: expected 3 Work links to follow with Products, found ${added}`);
+    write(file, html);
+    console.log(`  products    added x${added}        ${file}`);
+  }
+}
+
 /* ---------------- 2. page shell ---------------- */
 
 function setMeta(html, key, value) {
@@ -94,7 +116,7 @@ function setMeta(html, key, value) {
   });
 }
 
-function shell({ file, title, description, body, jsonLd }) {
+function shell({ file, title, description, body, jsonLd, current = "work-link", css = [], js = [] }) {
   const R = rootPrefix(file);
   let html = read(SHELL_PAGE);
 
@@ -107,9 +129,9 @@ function shell({ file, title, description, body, jsonLd }) {
     .split("@@ROOT@@").join(R)
     .split("@@SHELL@@").join(R + SHELL_ASSET_DIR);
 
-  // Current-page state belongs to Work, not About.
+  // Current-page state belongs to this page's section (Work or Products), not About.
   html = html.replace(/\saria-current="page"/g, "").replace(/\sw--current\b/g, "");
-  html = html.replace(/<a\b([^>]*data-c2="work-link"[^>]*)>/g, (tag, attrs) =>
+  html = html.replace(new RegExp(`<a\\b([^>]*data-c2="${current}"[^>]*)>`, "g"), (tag, attrs) =>
     /class="nav-link desktop/.test(attrs)
       ? `<a${attrs.replace(/class="nav-link desktop w-inline-block"/, 'class="nav-link desktop w-inline-block w--current"')} aria-current="page">`
       : tag,
@@ -121,6 +143,7 @@ function shell({ file, title, description, body, jsonLd }) {
 
   const head = [
     `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">`,
+    ...css.map((href) => `<link href="${href}" rel="stylesheet" type="text/css">`),
     body.includes('class="c2-ui"') ? UI_FONTS : "",
     jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
   ]
@@ -137,7 +160,7 @@ function shell({ file, title, description, body, jsonLd }) {
   html = html.replace(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g, (tag, code) =>
     /UnicornStudio|div-block-214|input-custom/.test(code) ? "" : tag,
   );
-  html = html.replace("</body>", `  <script src="${jsSrc(R)}"></script>\n</body>`);
+  html = html.replace("</body>", `  <script src="${jsSrc(R)}"></script>\n${js.map((src) => `  <script src="${src}"></script>\n`).join("")}</body>`);
   return html;
 }
 
@@ -504,6 +527,12 @@ function productBody(p, R) {
   const check = `${R}${ASSETS}686cc068490683bbb3377d04_bullet-list.svg`;
   const host = p.client.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
   const { problem, ai, craft } = p;
+  // The inside section plays as one pinned phone: every screen state is a beat, and the
+  // copy alongside changes when the beats move on to the next group of screens.
+  const beats = [];
+  p.screens.forEach((s, group) =>
+    s.ui.forEach((spec, i) => beats.push({ group, spec, float: i === s.ui.length - 1 ? s.float : null })),
+  );
 
   const body = `
   <section class="c2-hero c2-hero--case c2-hero--product">
@@ -511,7 +540,7 @@ function productBody(p, R) {
     <div class="c2-hero-inner">
       <a class="c2-back" data-c2-transition href="../index.html"><span aria-hidden="true">←</span> All work</a>
       <div class="title_2_20 gradient" data-c2-reveal>${esc(p.type)} · ${esc(p.industry)}</div>
-      <h1 class="c2-h1" data-c2-reveal>${twoLines(p.title, "c2-spectrum")}</h1>
+      <h1 class="c2-h1 c2-kinetic" data-c2-kinetic>${twoLines(p.title, "c2-spectrum")}</h1>
       <p class="body_16 text-grey-light c2-lede" data-c2-reveal>${esc(p.summary)}</p>
       <dl class="c2-facts" data-c2-reveal>
         <div><dt>Product</dt><dd>${logoChip(R, p)}${esc(p.client.name)}</dd></div>
@@ -536,7 +565,7 @@ function productBody(p, R) {
       <div class="c2-problem-grid" data-c2-stagger>${problem.cards
         .map(
           (c) => `
-        <article class="c2-problem">
+        <article class="c2-problem" data-c2-tilt>
           <div class="c2-problem-copy">
             <span class="c2-label">${esc(c.label)}</span>
             <h3 class="c2-problem-title">${esc(c.problem)}</h3>
@@ -573,24 +602,42 @@ function productBody(p, R) {
         <h2 class="c2-h3 white">${twoLines(p.screensHead.title)}</h2>
         <p class="body_16 text-grey-light">${esc(p.screensHead.body)}</p>
       </div>
-      <div class="c2-uifigs">${p.screens
-        .map(
-          (s, i) => `
-        <figure class="c2-uifig${i % 2 ? " c2-uifig--flip" : ""}">
-          <figcaption class="c2-uifig-copy" data-c2-reveal>
+    </div>
+    <div class="c2-seq" data-c2-seq>
+      <div class="c2-container c2-seq-inner">
+        <div class="c2-seq-copy">${p.screens
+          .map(
+            (s, i) => `
+          <article class="c2-seq-step" data-step="${i}">
             <span class="c2-label">${esc(s.label)}</span>
-            <span class="c2-uifig-title">${esc(s.title)}</span>
-            <span class="c2-uifig-body">${esc(s.caption)}</span>
-          </figcaption>
-          <div class="c2-uifig-stage${s.float ? " c2-uifig-stage--float" : ""}" data-c2-rise>${s.ui.map((u) => view(u)).join("")}${s.float ? `<div class="c2-uifig-float">${view(s.float, { variant: "tile", scroll: false })}</div>` : ""}</div>
-        </figure>`,
-        )
-        .join("")}
+            <h3 class="c2-uifig-title">${esc(s.title)}</h3>
+            <p class="c2-uifig-body">${esc(s.caption)}</p>
+          </article>`,
+          )
+          .join("")}
+          <ol class="c2-seq-rail" role="list">${p.screens
+            .map((s, i) => `<li data-step="${i}"><b>${String(i + 1).padStart(2, "0")}</b><span>${esc(s.label)}</span></li>`)
+            .join("")}
+          </ol>
+        </div>
+        <div class="c2-seq-stage">${beats
+          .map(
+            (b, i) => `
+          <div class="c2-seq-frame c2-device" data-beat="${i}" data-step="${b.group}">${view(b.spec, { variant: "screen" })}</div>${
+            b.float
+              ? `
+          <div class="c2-seq-float" data-beat="${i}">${view(b.float, { variant: "tile", scroll: false })}</div>`
+              : ""
+          }`,
+          )
+          .join("")}
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="c2-ai">
+  <section class="c2-ai c2-ai--rail">
+    <div class="c2-ai-pin">
     <div class="c2-container c2-inside-grid">
       <div class="c2-inside-copy">
         <div data-c2-reveal>${caption(ai.label)}</div>
@@ -603,7 +650,7 @@ function productBody(p, R) {
           <ul role="list" class="list body_14 gap-10 text-grey-light-home c2-features">${ai.assistant.points.map((t) => `<li class="list-card"><div>${esc(t)}</div></li>`).join("")}</ul>
         </div>
       </div>
-      <div class="c2-ai-list">${ai.features
+      <div class="c2-ai-rail-view"><div class="c2-ai-list" data-c2-rail>${ai.features
         .map(
           (f) => `
         <figure class="c2-ai-item">
@@ -616,11 +663,19 @@ function productBody(p, R) {
         </figure>`,
         )
         .join("")}
-      </div>
+      </div></div>
+    </div>
     </div>
   </section>
 
   <section class="section white c2-section c2-craft">
+    <div class="c2-seal" data-c2-seal aria-hidden="true">
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle class="c2-seal-ring" cx="60" cy="60" r="54" stroke="#C86FFF" stroke-width="1.5"></circle>
+        <circle class="c2-seal-ring c2-seal-ring--inner" cx="60" cy="60" r="44" stroke="#FE881B" stroke-width="1"></circle>
+        <path class="c2-seal-tick" d="M41 61.5 L54 75 L80 46" stroke="#1A0B54" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
     <div class="c2-container">
       <div class="c2-head" data-c2-reveal>
         ${caption(craft.label, "light-grey")}
@@ -743,14 +798,19 @@ function proofRow(projects, R, label, tone = "") {
 </div>`;
 }
 
-function injectAdditions(projects) {
+function injectAdditions(projects, voice) {
   const featured = projects.filter((p) => p.featured);
-  const assets = (R, fonts = false) => [
-    ["c2-styles", "</head>", `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">${fonts ? `\n${UI_FONTS}` : ""}`],
-    ["c2-script", "</body>", `<script src="${jsSrc(R)}"></script>`],
+  const assets = (R, { fonts = false, withVoice = false } = {}) => [
+    ["c2-styles", "</head>", `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">${withVoice ? `\n<link href="${voiceCss(R)}" rel="stylesheet" type="text/css">\n<link href="${VOICE_FONTS}" rel="stylesheet">` : ""}${fonts ? `\n${UI_FONTS}` : ""}`],
+    ["c2-script", "</body>", `<script src="${jsSrc(R)}"></script>${withVoice ? `\n<script src="${voiceJs(R)}"></script>` : ""}`],
   ];
   const home = "index.html";
-  injectInto(home, [...assets("./", featured.some(isProduct)), ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")]]);
+  injectInto(home, [
+    ...assets("./", { fonts: featured.some(isProduct), withVoice: true }),
+    // CosmiVoice, the flagship, sits directly under the homepage hero.
+    ["cosmivoice", '<div class="container mobile_0">', voiceBand(voice, "./", H)],
+    ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")],
+  ]);
   const what = "whatwedo-cosmiron/pages/what-we-do/index.html";
   injectInto(what, [...assets(rootPrefix(what)), ["built-with", '<section class="section custom_bg">', proofRow(featured, rootPrefix(what), "Built with these services", "plum")]]);
   const approach = "ourapproach/pages/our-approach/index.html";
@@ -774,8 +834,16 @@ function loadProjects() {
     .sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
 }
 
+// Helpers the CosmiVoice templates (c2/voice.mjs) share with the rest of the build.
+const H = { esc, caption, ctaButton, outlineButton, closingSection, contact: (R) => `${R}${CONTACT_PAGE}` };
+const voiceCss = (R) => `${R}c2/cosmivoice.css?v=${assetVersion("c2/cosmivoice.css")}`;
+const voiceJs = (R) => `${R}c2/cosmivoice.js?v=${assetVersion("c2/cosmivoice.js")}`;
+// Noto for the Indian scripts CosmiVoice shows; browsers fetch only the scripts a page uses.
+const VOICE_FONTS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Kannada:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&family=Noto+Sans+Telugu:wght@400;500&display=swap";
+
 console.log("Cosmiron 2.0 build");
 ensureWorkLinks();
+ensureProductsLinks();
 
 const projects = loadProjects();
 const workFile = "work/index.html";
@@ -832,4 +900,51 @@ for (const p of projects) {
   if ((p.draft || []).length) console.log(`  draft       left out         ${p.slug}: ${p.draft.join(", ")}`);
 }
 
-injectAdditions(projects);
+/* ---------------- products: the ecosystem and CosmiVoice ---------------- */
+
+const voice = JSON.parse(read("c2/content/products/cosmivoice.json"));
+// A product logo shows once its file is in c2/media/products/; until then the icon stays.
+for (const p of voice.ecosystem.products) {
+  if (p.logo && !existsSync(join(ROOT, "c2/media/products", p.logo))) {
+    console.log(`  logo        missing, icon shown  ${p.name}: c2/media/products/${p.logo}`);
+    delete p.logo;
+  }
+}
+const productPages = [
+  {
+    file: "products/index.html",
+    title: "Products | Cosmiron AI - AI Employees for Real Business Operations",
+    description: voice.ecosystem.body,
+    body: (R) => productsPage(voice, R, H),
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Cosmiron AI products",
+      hasPart: voice.ecosystem.products.map((p) => ({ "@type": "SoftwareApplication", name: p.name, description: p.role })),
+    },
+  },
+  {
+    file: "products/cosmivoice/index.html",
+    title: "CosmiVoice | AI Voice Employees by Cosmiron AI (In Development)",
+    description: voice.summary,
+    body: (R) => voicePage(voice, R, H),
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: voice.name,
+      description: voice.summary,
+      applicationCategory: "BusinessApplication",
+      creator: { "@type": "Organization", name: "Cosmiron AI" },
+    },
+  },
+];
+for (const page of productPages) {
+  const R = rootPrefix(page.file);
+  write(
+    page.file,
+    shell({ ...page, body: page.body(R), current: "products-link", css: [voiceCss(R), VOICE_FONTS], js: [voiceJs(R)] }),
+  );
+  console.log(`  page        written          ${page.file}`);
+}
+
+injectAdditions(projects, voice);

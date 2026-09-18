@@ -2337,3 +2337,281 @@
     scrollbar-width: none;
   }
 }
+
+/* ---------- product: kinetic headline ---------- */
+.c2 .c2-kinetic .c2-line2 {
+  will-change: transform, clip-path;
+}
+
+/* ---------- product: the pinned screen sequence ---------- */
+/* One phone, held in place while its screens play through; the copy beside it
+   changes with each group. Without motion or JS it falls back to a plain column. */
+.c2 .c2-seq {
+  position: relative;
+  z-index: 7;
+}
+.c2 .c2-seq-inner {
+  display: grid;
+  grid-template-columns: 30vw minmax(0, 1fr);
+  align-items: center;
+  gap: 4vw;
+  min-height: 100vh;
+  padding: 5vw 0;
+}
+.c2 .c2-seq-copy {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 3.5vw;
+}
+.c2 .c2-seq-step {
+  grid-area: 1 / 1;
+  display: grid;
+  justify-items: start;
+  gap: 1.11vw;
+  margin: 0;
+}
+.c2 .c2-seq-step h3 {
+  margin: 0;
+}
+.c2 .c2-seq-rail {
+  grid-area: 2 / 1;
+  display: grid;
+  gap: 0.9vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.c2 .c2-seq-rail li {
+  display: flex;
+  align-items: center;
+  gap: 0.83vw;
+  color: var(--c2-dusk);
+  font-size: 0.97vw;
+  line-height: 130%;
+  transition: color 0.6s var(--c2-ease);
+}
+.c2 .c2-seq-rail li::before {
+  content: "";
+  width: 1.6vw;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.45;
+  transition: width 0.6s var(--c2-ease), opacity 0.6s var(--c2-ease);
+}
+.c2 .c2-seq-rail li b {
+  font-size: 0.76vw;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+.c2 .c2-seq-rail li.is-active {
+  color: #fff;
+}
+.c2 .c2-seq-rail li.is-active::before {
+  width: 3.4vw;
+  opacity: 1;
+  background-color: transparent;
+  background-image: var(--c2-spectrum);
+  height: 2px;
+}
+.c2 .c2-seq-stage {
+  position: relative;
+  justify-self: center;
+  width: 23vw;
+  aspect-ratio: 390 / 844;
+}
+.c2 .c2-seq-stage::before {
+  content: "";
+  position: absolute;
+  inset: 6% -45% 8%;
+  border-radius: 50%;
+  background: radial-gradient(50% 50% at 50% 50%, color-mix(in srgb, var(--c2-tint) 45%, transparent), rgba(172, 36, 255, 0.16) 55%, transparent 72%);
+  filter: blur(3vw);
+  pointer-events: none;
+}
+.c2 .c2-seq-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+}
+.c2 .c2-seq-frame .c2-ui-view {
+  height: 100%;
+  aspect-ratio: auto;
+}
+.c2 .c2-seq-float {
+  position: absolute;
+  right: -13vw;
+  bottom: 7vw;
+  z-index: 3;
+  width: 25vw;
+  padding: 0.49vw;
+  border: 1px solid rgba(201, 182, 255, 0.2);
+  border-radius: 1.67vw;
+  background-color: #0d0a15;
+  box-shadow: 0 3vw 6vw -2vw rgba(6, 3, 16, 0.9);
+}
+.c2 .c2-seq-float .c2-ui-view--tile {
+  border-radius: 1.25vw;
+}
+
+@media screen and (max-width: 767px) {
+  .c2 .c2-seq-inner {
+    grid-template-columns: 1fr;
+    gap: 7vw;
+    min-height: 100svh;
+    padding: 10vw 0;
+  }
+  .c2 .c2-seq-copy {
+    gap: 0;
+    min-height: 40vw;
+    align-content: start;
+  }
+  .c2 .c2-seq-step {
+    gap: 2.5vw;
+  }
+  .c2 .c2-seq-rail {
+    display: none;
+  }
+  .c2 .c2-seq-stage {
+    width: 62vw;
+  }
+  .c2 .c2-seq-float {
+    right: -2vw;
+    bottom: 10vw;
+    width: 48vw;
+    padding: 1vw;
+    border-radius: 3.5vw;
+  }
+  /* The stage glow is wider than the phone; keep it inside a small screen. */
+  .c2 .c2-seq-stage::before {
+    inset: 6% -10% 8%;
+  }
+  .c2 .c2-seq-float .c2-ui-view--tile {
+    border-radius: 2.67vw;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .c2 .c2-seq-stage {
+    width: 66vw;
+  }
+  .c2 .c2-seq-float {
+    width: 54vw;
+  }
+}
+
+/* No motion (or no JS): the sequence reads as a plain column of screens. */
+@media (prefers-reduced-motion: reduce) {
+  .c2 .c2-seq-inner {
+    display: block;
+    min-height: 0;
+  }
+  .c2 .c2-seq-copy {
+    display: block;
+  }
+  .c2 .c2-seq-step {
+    margin-bottom: 5vw;
+  }
+  .c2 .c2-seq-stage {
+    position: static;
+    display: grid;
+    justify-items: center;
+    gap: 6vw;
+    width: auto;
+    aspect-ratio: auto;
+  }
+  .c2 .c2-seq-stage::before {
+    display: none;
+  }
+  .c2 .c2-seq-frame {
+    position: static;
+    width: 24vw;
+  }
+  .c2 .c2-seq-frame .c2-ui-view {
+    height: auto;
+    aspect-ratio: 390 / 844;
+  }
+  .c2 .c2-seq-float {
+    position: static;
+    width: 26vw;
+  }
+}
+
+/* ---------- product: the AI rail runs sideways while the heading holds ---------- */
+.c2 .c2-ai-rail-view {
+  min-width: 0;
+}
+/* The rail pins this wrapper, not the section: a pinned section sits in the page's
+   flex column, where ScrollTrigger reserves no room and the next section rides over it. */
+.c2 .c2-ai-pin {
+  position: relative;
+}
+@media screen and (min-width: 992px) {
+  .c2 .c2-ai--rail {
+    overflow-x: clip;
+  }
+  .c2 .c2-ai--rail .c2-ai-pin {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .c2 .c2-ai--rail .c2-inside-grid {
+    align-items: center;
+    width: 83vw;
+  }
+  .c2 .c2-ai--rail .c2-ai-rail-view {
+    overflow: hidden;
+  }
+  .c2 .c2-ai--rail .c2-ai-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4vw;
+    width: max-content;
+    will-change: transform;
+  }
+  /* One feature per window (83vw container less the 27vw copy column and its 6vw gap),
+     so the rail settles with a whole phone in view rather than one cut by the edge. */
+  .c2 .c2-ai--rail .c2-ai-item {
+    width: 50vw;
+  }
+}
+
+/* ---------- product: cards lean towards the cursor ---------- */
+.c2 .c2-problem-grid {
+  perspective: 1400px;
+}
+.c2 [data-c2-tilt] {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ---------- product: the signing seal draws itself ---------- */
+.c2 .c2-seal {
+  position: absolute;
+  top: 7vw;
+  right: 5vw;
+  z-index: 1;
+  width: 9vw;
+  pointer-events: none;
+}
+.c2 .c2-seal svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.c2 .c2-seal-ring,
+.c2 .c2-seal-tick {
+  fill: none;
+}
+@media screen and (max-width: 991px) {
+  .c2 .c2-seal {
+    top: 10vw;
+    right: 16px;
+    width: 18vw;
+  }
+}
+@media screen and (max-width: 767px) {
+  .c2 .c2-seal {
+    display: none;
+  }
+}

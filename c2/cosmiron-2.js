@@ -31,6 +31,11 @@
     staggerIn(ease);
     parallax();
     screens(ease);
+    heroKinetic(ease);
+    uiSequence(ease);
+    aiRail();
+    sealDraw();
+    cardTilt();
     uiScroll();
     lineFill();
 
@@ -112,6 +117,169 @@
     });
   }
 
+  // Hero headline: each line wipes up into view, and the phone settles in under it.
+  function heroKinetic(ease) {
+    var head = document.querySelector("[data-c2-kinetic]");
+    var lines = head && head.querySelectorAll(".c2-line2");
+    if (!lines || !lines.length) return;
+    gsap.set(lines, { yPercent: 26, opacity: 0, clipPath: "inset(-15% 0 105% 0)" });
+    gsap.to(lines, {
+      yPercent: 0,
+      opacity: 1,
+      clipPath: "inset(-15% 0 -15% 0)",
+      duration: 1.25,
+      stagger: 0.14,
+      delay: 0.2,
+      ease: ease,
+    });
+    var stage = document.querySelector(".c2-hero-stage--device");
+    if (stage) gsap.from(stage, { yPercent: 12, scale: 0.94, opacity: 0, duration: 1.5, delay: 0.35, ease: ease });
+  }
+
+  // The inside section plays as one phone held in place while its screens run through,
+  // with the copy beside it changing as each group arrives. Screens cut instead of
+  // cross-fading, which ghosts badly on dense interfaces.
+  function uiSequence(ease) {
+    var seq = document.querySelector("[data-c2-seq]");
+    if (!seq) return;
+    var frames = gsap.utils.toArray(".c2-seq-frame", seq);
+    var steps = gsap.utils.toArray(".c2-seq-step", seq);
+    var rail = gsap.utils.toArray(".c2-seq-rail li", seq);
+    var floats = gsap.utils.toArray(".c2-seq-float", seq);
+    if (frames.length < 2 || !steps.length) return;
+    var stepOf = function (el) { return Number(el.getAttribute("data-step")) || 0; };
+    var floatsAt = function (beat) {
+      return floats.filter(function (el) { return Number(el.getAttribute("data-beat")) === beat; });
+    };
+
+    gsap.set(frames, { autoAlpha: 0 });
+    gsap.set(frames[0], { autoAlpha: 1 });
+    gsap.set(steps, { autoAlpha: 0, y: 26 });
+    gsap.set(steps[0], { autoAlpha: 1, y: 0 });
+    gsap.set(floats, { autoAlpha: 0, y: 36, rotate: 1.5 });
+    if (rail.length) rail[0].classList.add("is-active");
+
+    var tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: seq,
+        start: "top top",
+        end: "+=" + frames.length * 90 + "%",
+        pin: true,
+        scrub: 0.6,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        onUpdate: function (self) {
+          var at = Math.min(frames.length - 1, Math.floor(self.progress * frames.length));
+          var current = stepOf(frames[at]);
+          rail.forEach(function (li, i) { li.classList.toggle("is-active", i === current); });
+        },
+      },
+    });
+
+    frames.forEach(function (frame, i) {
+      var track = frame.querySelector(".c2-ui-scroll");
+      var view = frame.querySelector(".c2-ui-view");
+      var prev = frames[i - 1];
+      // Each screen sits above the one before, so the new one wipes in over a screen
+      // that is still fully drawn: no dim gap between beats, and nothing ghosts.
+      frame.style.zIndex = String(i + 1);
+      if (prev) {
+        var leaving = floatsAt(i - 1);
+        if (leaving.length) tl.to(leaving, { autoAlpha: 0, y: -24, duration: 0.12, ease: "none" });
+        tl.to(frame, { autoAlpha: 1, duration: 0.16, ease: "none" });
+        tl.set(prev, { autoAlpha: 0 });
+        if (stepOf(frame) !== stepOf(prev)) {
+          tl.to(steps[stepOf(prev)], { autoAlpha: 0, y: -26, duration: 0.2, ease: ease }, "<-0.14");
+          tl.to(steps[stepOf(frame)], { autoAlpha: 1, y: 0, duration: 0.24, ease: ease }, "<0.14");
+        }
+      }
+      var arriving = floatsAt(i);
+      if (arriving.length) tl.to(arriving, { autoAlpha: 1, y: 0, rotate: 0, duration: 0.3, ease: ease }, "<0.1");
+      // Then the screen itself scrolls, the way a thumb would move through it.
+      tl.to(track || {}, {
+        y: function () {
+          if (!track || !view) return 0;
+          var inset = parseFloat(getComputedStyle(view).paddingTop) || 0;
+          return -Math.max(0, track.offsetHeight - (view.clientHeight - inset));
+        },
+        duration: 0.7,
+        ease: "none",
+      });
+    });
+  }
+
+  // The AI features run sideways under their heading, held in place while they pass.
+  // Narrow screens keep the plain stacked column.
+  function aiRail() {
+    var rail = document.querySelector("[data-c2-rail]");
+    var view = rail && rail.parentElement;
+    // Pin the wrapper inside the section: pinning a section itself reserves no room,
+    // because the page's sections are a flex column.
+    var section = rail && (rail.closest(".c2-ai-pin") || rail.closest("section"));
+    if (!rail || !view || !section || window.innerWidth < 992) return;
+    var travel = function () { return Math.max(0, rail.scrollWidth - view.clientWidth); };
+    var items = rail.querySelectorAll(".c2-ai-item").length;
+    if (!travel()) return;
+    gsap.to(rail, {
+      x: function () { return -travel(); },
+      ease: "none",
+      scrollTrigger: {
+        trigger: section,
+        start: "top top",
+        end: function () { return "+=" + (travel() + window.innerHeight * 0.5); },
+        pin: true,
+        scrub: 0.6,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        // Settle on a whole feature, so a phone is never left sliced by the edge.
+        snap: items > 1 ? { snapTo: 1 / (items - 1), duration: 0.25, delay: 0.04, ease: "power1.inOut" } : false,
+      },
+    });
+  }
+
+  // The signing seal draws itself as the section arrives: rings first, then the tick.
+  function sealDraw() {
+    var seal = document.querySelector("[data-c2-seal]");
+    if (!seal) return;
+    var strokes = gsap.utils.toArray("path, circle", seal);
+    if (!strokes.length) return;
+    strokes.forEach(function (el) {
+      var length = el.getTotalLength ? el.getTotalLength() : 0;
+      if (!length) return;
+      gsap.set(el, { strokeDasharray: length, strokeDashoffset: length });
+    });
+    gsap.to(strokes, {
+      strokeDashoffset: 0,
+      ease: "none",
+      stagger: 0.15,
+      scrollTrigger: { trigger: seal.closest("section"), start: "top 75%", end: "top 15%", scrub: 0.8 },
+    });
+    gsap.fromTo(seal, { rotate: -12, opacity: 0 }, {
+      rotate: 0,
+      opacity: 1,
+      ease: "none",
+      scrollTrigger: { trigger: seal.closest("section"), start: "top 80%", end: "top 30%", scrub: 0.8 },
+    });
+  }
+
+  // Cards lean a little towards the cursor. Touch and trackpad-less devices skip it.
+  function cardTilt() {
+    if (window.matchMedia("(hover: none)").matches) return;
+    gsap.utils.toArray("[data-c2-tilt]").forEach(function (card) {
+      var toY = gsap.quickTo(card, "rotationY", { duration: 0.7, ease: "power3.out" });
+      var toX = gsap.quickTo(card, "rotationX", { duration: 0.7, ease: "power3.out" });
+      card.addEventListener("pointermove", function (e) {
+        var box = card.getBoundingClientRect();
+        toY(((e.clientX - box.left) / box.width - 0.5) * 6);
+        toX(((e.clientY - box.top) / box.height - 0.5) * -6);
+      });
+      card.addEventListener("pointerleave", function () {
+        toY(0);
+        toX(0);
+      });
+    });
+  }
+
   // Product UI is the product's own HTML at its own width (data-w, 390 px for phones).
   // Scale each screen to its view with a transform (layout stays exact, and iOS Safari
   // doesn't re-inflate the text the way it does under zoom), and give its track the
@@ -157,7 +325,8 @@
   function uiScroll() {
     gsap.utils.toArray(".c2-ui-view[data-c2-scroll]").forEach(function (view) {
       var track = view.querySelector(".c2-ui-scroll");
-      if (!track) return;
+      // Screens inside the pinned sequence are driven by its own timeline.
+      if (!track || view.closest("[data-c2-seq]")) return;
       var hero = view.getAttribute("data-c2-scroll") === "hero";
       gsap.fromTo(track, { y: 0 }, {
         // Stop when the screen's last row reaches the bottom of the view (below its top inset).

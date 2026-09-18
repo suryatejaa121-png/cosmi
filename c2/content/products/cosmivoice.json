@@ -1,0 +1,978 @@
+{
+  "slug": "cosmivoice",
+  "name": "CosmiVoice",
+  "status": "In development",
+  "tagline": "Advanced AI voice employees",
+  "summary": "CosmiVoice is building AI voice employees that answer and make real business calls, understand what people need, and act on it: booking, updating, qualifying, routing and following up.",
+  "image": {
+    "src": "voice-profile.webp",
+    "small": "voice-profile-640.webp",
+    "alt": "A glowing profile of a woman wearing a headset, drawn in blue, violet and amber light"
+  },
+  "hero": {
+    "eyebrow": "CosmiVoice · In development",
+    "title": [
+      "Your next employee",
+      "doesn't need a desk."
+    ],
+    "lede": "AI voice employees that answer and make your business calls in the language your customer speaks, then act on every one: booking, updating and following up while the caller is still on the line.",
+    "primary": "Join early access",
+    "secondary": "Watch a call",
+    "note": "Simulated conversations. CosmiVoice is in development and languages will roll out in stages.",
+    "flow": [
+      "Caller",
+      "Phone line",
+      "CosmiVoice",
+      "Your systems"
+    ],
+    "exchanges": [
+      {
+        "lang": "Telugu",
+        "native": "తెలుగు",
+        "code": "te",
+        "agent": "Maya",
+        "business": "SmileCare Dental",
+        "lines": [
+          {
+            "who": "caller",
+            "text": "నాకు వచ్చే వారం అపాయింట్‌మెంట్ బుక్ చేయాలి.",
+            "gloss": "I need to book an appointment next week."
+          },
+          {
+            "who": "ai",
+            "text": "తప్పకుండా. మంగళవారం ఉదయం 10:30కి సమయం ఖాళీగా ఉంది. బుక్ చేయమంటారా?",
+            "gloss": "Of course. Tuesday 10:30 AM is free. Shall I book it?"
+          }
+        ],
+        "intent": "Appointment booking",
+        "action": "Tue 10:30 AM held"
+      },
+      {
+        "lang": "Hindi",
+        "native": "हिन्दी",
+        "code": "hi",
+        "agent": "Dev",
+        "business": "Northwind Finance",
+        "lines": [
+          {
+            "who": "ai",
+            "text": "नमस्ते, मैं Northwind Finance से देव बोल रहा हूँ। आपकी ₹4,200 की किस्त कल देय है।",
+            "gloss": "Hello, this is Dev from Northwind Finance. Your ₹4,200 instalment is due tomorrow."
+          },
+          {
+            "who": "caller",
+            "text": "ठीक है, मैं कल सुबह तक भुगतान कर दूँगा।",
+            "gloss": "Okay, I'll pay by tomorrow morning."
+          }
+        ],
+        "intent": "Payment promise",
+        "action": "Promise date saved"
+      },
+      {
+        "lang": "Tanglish",
+        "native": "Tanglish",
+        "code": "ta-Latn",
+        "agent": "Zara",
+        "business": "Kaveri Store",
+        "lines": [
+          {
+            "who": "caller",
+            "text": "En order innum varala. Eppo deliver aagum?",
+            "gloss": "My order hasn't come yet. When will it arrive?"
+          },
+          {
+            "who": "ai",
+            "text": "Sorry for the delay! Naalaikku 2 mani kulla deliver aagum. Tracking link SMS panniten.",
+            "gloss": "Sorry for the delay! It will arrive by 2 tomorrow. I've sent the tracking link by SMS."
+          }
+        ],
+        "intent": "Delivery status",
+        "action": "Tracking link sent"
+      },
+      {
+        "lang": "English",
+        "native": "English",
+        "code": "en",
+        "agent": "Kabir",
+        "business": "Skyline Homes",
+        "lines": [
+          {
+            "who": "ai",
+            "text": "Hi Rahul, this is Kabir from Skyline Homes. You asked about the 2BHK on Lake Road?"
+          },
+          {
+            "who": "caller",
+            "text": "Yes! Can I see it this weekend?"
+          }
+        ],
+        "intent": "Site visit",
+        "action": "Visit booked · Sat 10 AM"
+      },
+      {
+        "lang": "Hinglish",
+        "native": "Hinglish",
+        "code": "hi-Latn",
+        "agent": "Arjun",
+        "business": "Northwind Finance",
+        "lines": [
+          {
+            "who": "caller",
+            "text": "Home loan ke liye EMI kitni aayegi?",
+            "gloss": "What would the EMI be for a home loan?"
+          },
+          {
+            "who": "ai",
+            "text": "Bilkul batata hoon! Loan amount aur tenure bata dijiye, main abhi EMI calculate kar deta hoon.",
+            "gloss": "Happy to help! Tell me the loan amount and tenure and I'll calculate the EMI right now."
+          }
+        ],
+        "intent": "Loan enquiry",
+        "action": "Lead qualified"
+      }
+    ]
+  },
+  "band": {
+    "eyebrow": "Introducing CosmiVoice",
+    "title": [
+      "AI employees",
+      "that can actually talk."
+    ],
+    "lede": "Our upcoming flagship: voice employees that answer, call, reason and act across your business, in Telugu, Hindi, Tamil, English and the way your customers really speak.",
+    "cta": "Explore CosmiVoice"
+  },
+  "languages": {
+    "label": "Multilingual",
+    "title": [
+      "Speaks the way",
+      "India speaks."
+    ],
+    "body": "Telugu, Hindi, Tamil, Kannada and English, and the mixes people really speak on the phone.",
+    "note": "Language support is in development and will roll out in stages.",
+    "wall": [
+      [
+        "Hello",
+        "नमस्ते",
+        "నమస్కారం",
+        "வணக்கம்",
+        "ನಮಸ್ಕಾರ",
+        "Namaste",
+        "Vanakkam",
+        "Namaskaram"
+      ],
+      [
+        "How can I help?",
+        "मैं आपकी कैसे मदद कर सकती हूँ?",
+        "నేను మీకు ఎలా సహాయం చేయగలను?",
+        "நான் உங்களுக்கு எப்படி உதவ முடியும்?",
+        "ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?"
+      ],
+      [
+        "Booked",
+        "बुक हो गया",
+        "బుక్ అయింది",
+        "புக் ஆகிவிட்டது",
+        "ಬುಕ್ ಆಯಿತು",
+        "Ho gaya",
+        "Aayiduchu",
+        "Ayipoyindi"
+      ]
+    ],
+    "items": [
+      {
+        "id": "en",
+        "name": "English",
+        "native": "English",
+        "code": "en",
+        "caller": "I'd like to book an appointment next week.",
+        "ai": "Of course. Tuesday at 10:30 AM is free. Shall I book it?"
+      },
+      {
+        "id": "hi",
+        "name": "Hindi",
+        "native": "हिन्दी",
+        "code": "hi",
+        "caller": "मुझे अगले हफ़्ते अपॉइंटमेंट बुक करनी है।",
+        "ai": "ज़रूर। मंगलवार सुबह 10:30 बजे का समय खाली है। बुक कर दूँ?"
+      },
+      {
+        "id": "te",
+        "name": "Telugu",
+        "native": "తెలుగు",
+        "code": "te",
+        "caller": "నాకు వచ్చే వారం అపాయింట్‌మెంట్ బుక్ చేయాలి.",
+        "ai": "తప్పకుండా. మంగళవారం ఉదయం 10:30కి సమయం ఖాళీగా ఉంది. బుక్ చేయమంటారా?"
+      },
+      {
+        "id": "ta",
+        "name": "Tamil",
+        "native": "தமிழ்",
+        "code": "ta",
+        "caller": "அடுத்த வாரம் ஒரு அப்பாயின்ட்மென்ட் புக் செய்ய வேண்டும்.",
+        "ai": "நிச்சயமாக. செவ்வாய்க்கிழமை காலை 10:30 மணிக்கு நேரம் இருக்கிறது. புக் செய்யட்டுமா?"
+      },
+      {
+        "id": "kn",
+        "name": "Kannada",
+        "native": "ಕನ್ನಡ",
+        "code": "kn",
+        "caller": "ಮುಂದಿನ ವಾರ ಅಪಾಯಿಂಟ್‌ಮೆಂಟ್ ಬುಕ್ ಮಾಡಬೇಕು.",
+        "ai": "ಖಂಡಿತ. ಮಂಗಳವಾರ ಬೆಳಿಗ್ಗೆ 10:30ಕ್ಕೆ ಸಮಯ ಖಾಲಿ ಇದೆ. ಬುಕ್ ಮಾಡಲೇ?"
+      },
+      {
+        "id": "hinglish",
+        "name": "Hinglish",
+        "native": "Hinglish",
+        "code": "hi-Latn",
+        "mix": "Hindi + English",
+        "caller": "Mujhe next week appointment book karni hai.",
+        "ai": "Bilkul! Tuesday subah 10:30 ka slot free hai. Book kar doon?"
+      },
+      {
+        "id": "tanglish",
+        "name": "Tanglish",
+        "native": "Tanglish",
+        "code": "ta-Latn",
+        "mix": "Tamil + English",
+        "caller": "Next week oru appointment book pannanum.",
+        "ai": "Kandippa! Tuesday morning 10:30 ku slot free-a irukku. Book pannatuma?"
+      },
+      {
+        "id": "tenglish",
+        "name": "Tenglish",
+        "native": "Tenglish",
+        "code": "te-Latn",
+        "mix": "Telugu + English",
+        "caller": "Naaku next week appointment book cheyyali.",
+        "ai": "Tappakunda! Tuesday morning 10:30 ki slot free ga undi. Book cheyyamantara?"
+      }
+    ],
+    "gloss": {
+      "caller": "I'd like to book an appointment next week.",
+      "ai": "Of course. Tuesday at 10:30 AM is free. Shall I book it?"
+    },
+    "switch": {
+      "label": "Switches with the caller",
+      "from": "English",
+      "to": "Telugu",
+      "caller": [
+        {
+          "text": "Can I come tomorrow?",
+          "code": "en"
+        },
+        {
+          "text": "రేపు సాయంత్రం కుదురుతుందా?",
+          "code": "te"
+        }
+      ],
+      "ai": {
+        "text": "రేపు సాయంత్రం 6 గంటలకు ఖాళీ ఉంది. బుక్ చేయనా?",
+        "code": "te"
+      },
+      "gloss": "Is tomorrow evening possible? · Tomorrow at 6 PM is free. Shall I book it?"
+    }
+  },
+  "story": {
+    "label": "What an AI employee does",
+    "title": [
+      "It doesn't just talk.",
+      "It gets the work done."
+    ],
+    "body": "One call, from the first ring to the follow-up.",
+    "steps": [
+      {
+        "n": "01",
+        "title": "The call comes in",
+        "body": "A customer calls at 9:47 pm, long after the front desk has gone home. CosmiVoice answers on the first ring.",
+        "console": {
+          "kind": "ring",
+          "caller": "Priya Nair",
+          "number": "+91 98•••• 4417",
+          "time": "9:47 PM",
+          "tag": "Answered on the first ring"
+        }
+      },
+      {
+        "n": "02",
+        "title": "It understands",
+        "body": "Speech turns into meaning in real time: what they want, how they feel and how urgent it is.",
+        "console": {
+          "kind": "understand",
+          "transcript": "My tooth has been aching since last night. Can I come in soon?",
+          "meters": [
+            [
+              "Intent",
+              "Urgent appointment",
+              94
+            ],
+            [
+              "Sentiment",
+              "Anxious",
+              38
+            ],
+            [
+              "Urgency",
+              "High",
+              86
+            ]
+          ]
+        }
+      },
+      {
+        "n": "03",
+        "title": "It thinks",
+        "body": "Before it answers, it pulls the customer's history, your policies and the live calendar.",
+        "console": {
+          "kind": "think",
+          "cards": [
+            [
+              "Customer",
+              "Returning patient since 2023 · last visit in March · prefers evenings"
+            ],
+            [
+              "Your policy",
+              "Same-day slots are held for pain and emergencies"
+            ],
+            [
+              "Calendar",
+              "Dr. Rao · free at 4:30 PM and 6:15 PM today"
+            ]
+          ]
+        }
+      },
+      {
+        "n": "04",
+        "title": "It acts",
+        "body": "It books, updates, qualifies or transfers. Real actions in your systems, not just words.",
+        "console": {
+          "kind": "act",
+          "items": [
+            [
+              "Calendar",
+              "Appointment booked · today 4:30 PM"
+            ],
+            [
+              "CRM",
+              "Visit reason and pain level recorded"
+            ],
+            [
+              "Team",
+              "Front desk notified of a same-day patient"
+            ]
+          ]
+        }
+      },
+      {
+        "n": "05",
+        "title": "It follows up",
+        "body": "When the call ends, the summary, the next step and the WhatsApp message are already done.",
+        "console": {
+          "kind": "follow",
+          "summary": "Priya Nair called about tooth pain since last night. Booked with Dr. Rao today at 4:30 PM. Reminded to bring her last X-ray.",
+          "message": "Hi Priya, you're booked with Dr. Rao today at 4:30 PM at SmileCare, Indiranagar. Reply R to reschedule."
+        }
+      }
+    ]
+  },
+  "modes": {
+    "label": "Inbound and outbound",
+    "title": [
+      "One AI employee.",
+      "Both directions."
+    ],
+    "items": [
+      {
+        "id": "inbound",
+        "name": "Inbound",
+        "title": "Never miss another customer.",
+        "body": "Every call answered, understood and resolved, day or night.",
+        "flow": [
+          "Call",
+          "Answers",
+          "Understands",
+          "Resolves",
+          "Books · routes · updates CRM"
+        ],
+        "queue": [
+          [
+            "Anita K.",
+            "New booking",
+            "Booked · Thu 11:00"
+          ],
+          [
+            "+91 90•••• 1182",
+            "Billing question",
+            "Routed to accounts"
+          ],
+          [
+            "Rahul S.",
+            "Reschedule",
+            "Moved to Fri 5:30"
+          ]
+        ]
+      },
+      {
+        "id": "outbound",
+        "name": "Outbound",
+        "title": "Your AI sales team starts the conversation.",
+        "body": "It calls, retries, qualifies and books the meetings worth taking.",
+        "flow": [
+          "Lead list",
+          "Calls",
+          "Converses",
+          "Qualifies",
+          "Outcome",
+          "CRM + follow-up"
+        ],
+        "queue": [
+          [
+            "Vikram R.",
+            "Home loan enquiry",
+            "Qualified · meeting booked"
+          ],
+          [
+            "Sana P.",
+            "No answer",
+            "Retrying in 2 hours"
+          ],
+          [
+            "Joseph D.",
+            "Price check",
+            "Not interested · closed"
+          ]
+        ]
+      }
+    ]
+  },
+  "employees": {
+    "label": "Your AI workforce",
+    "title": [
+      "Don't build another chatbot.",
+      "Hire an AI employee."
+    ],
+    "body": "One team, six roles, each with a voice of its own.",
+    "status": "In training",
+    "items": [
+      {
+        "name": "Maya",
+        "role": "AI Receptionist",
+        "hue": "#2BA7FF",
+        "line": "SmileCare Dental, this is Maya. How can I help?"
+      },
+      {
+        "name": "Arjun",
+        "role": "AI Sales Representative",
+        "hue": "#CA45FF",
+        "line": "Hi Vikram, you asked about home loans yesterday. Have two minutes?"
+      },
+      {
+        "name": "Zara",
+        "role": "AI Support Agent",
+        "hue": "#FE881B",
+        "line": "I can see the order. Let me get this sorted for you right now."
+      },
+      {
+        "name": "Dev",
+        "role": "AI Collections Agent",
+        "hue": "#3FD0A8",
+        "line": "Just a reminder about invoice 4417. Would a payment link help?"
+      },
+      {
+        "name": "Ira",
+        "role": "AI Appointment Coordinator",
+        "hue": "#F472B6",
+        "line": "Calling to confirm tomorrow at 10. Still works for you?"
+      },
+      {
+        "name": "Kabir",
+        "role": "AI Lead Follow-up Agent",
+        "hue": "#8B8CFF",
+        "line": "Thanks for your enquiry a few minutes ago. What are you looking for?"
+      }
+    ],
+    "hire": {
+      "title": "Your next hire",
+      "note": "Coming soon"
+    }
+  },
+  "industries": {
+    "label": "Industry agents",
+    "title": [
+      "Same employee.",
+      "Fluent in your business."
+    ],
+    "body": "Pick an industry and watch the agent change.",
+    "items": [
+      {
+        "id": "healthcare",
+        "name": "Healthcare",
+        "agent": "Clinic front desk",
+        "greeting": "City Care Clinic, this is Maya. Are you calling to book or about a recent visit?",
+        "handles": [
+          "Appointments",
+          "Reminders",
+          "Patient enquiries"
+        ],
+        "systems": [
+          "Clinic calendar",
+          "Patient records",
+          "WhatsApp"
+        ],
+        "outcome": "Follow-up booked with Dr. Mehta · reminder set"
+      },
+      {
+        "id": "dental",
+        "name": "Dental",
+        "agent": "Dental receptionist",
+        "greeting": "SmileCare, this is Maya. Is this for a cleaning, a check-up or something hurting?",
+        "handles": [
+          "Booking",
+          "Recalls",
+          "Confirmations"
+        ],
+        "systems": [
+          "Chair schedule",
+          "Patient CRM",
+          "SMS"
+        ],
+        "outcome": "Six-month recall booked · confirmation sent"
+      },
+      {
+        "id": "finance",
+        "name": "Finance",
+        "agent": "Loan desk",
+        "greeting": "Hi, this is Arjun from Northwind Finance about your loan enquiry. Is now a good time?",
+        "handles": [
+          "Lead qualification",
+          "Loan follow-ups",
+          "Collections"
+        ],
+        "systems": [
+          "Loan CRM",
+          "Payments",
+          "Compliance log"
+        ],
+        "outcome": "Qualified · documents list sent · advisor callback booked"
+      },
+      {
+        "id": "realestate",
+        "name": "Real Estate",
+        "agent": "Property desk",
+        "greeting": "Hi, Kabir from Skyline Homes. You asked about the 2BHK on Lake Road?",
+        "handles": [
+          "Lead qualification",
+          "Property enquiries",
+          "Callbacks"
+        ],
+        "systems": [
+          "Listings",
+          "CRM",
+          "Site-visit calendar"
+        ],
+        "outcome": "Budget and timeline captured · site visit Saturday 10 AM"
+      },
+      {
+        "id": "education",
+        "name": "Education",
+        "agent": "Admissions counsellor",
+        "greeting": "Hello, this is Ira from Brightpath Academy admissions. Which programme interests you?",
+        "handles": [
+          "Admissions",
+          "Counselling",
+          "Student enquiries"
+        ],
+        "systems": [
+          "Admissions CRM",
+          "Counsellor calendar",
+          "Email"
+        ],
+        "outcome": "Counselling session booked · brochure sent"
+      },
+      {
+        "id": "ecommerce",
+        "name": "E-commerce",
+        "agent": "Order support",
+        "greeting": "Hi, Zara from Kaveri Store. Is this about order 20814?",
+        "handles": [
+          "Order support",
+          "Delivery updates",
+          "Returns"
+        ],
+        "systems": [
+          "Order system",
+          "Courier tracking",
+          "Helpdesk"
+        ],
+        "outcome": "Delivery rescheduled · refund policy explained"
+      },
+      {
+        "id": "hospitality",
+        "name": "Hospitality",
+        "agent": "Reservations desk",
+        "greeting": "Good evening, The Lake House. Would you like to reserve a table or a room?",
+        "handles": [
+          "Reservations",
+          "Enquiries",
+          "Confirmations"
+        ],
+        "systems": [
+          "Booking engine",
+          "Guest CRM",
+          "WhatsApp"
+        ],
+        "outcome": "Table for four, Friday 8 PM · confirmation sent"
+      }
+    ]
+  },
+  "pipeline": {
+    "label": "What happens during a call",
+    "title": [
+      "Every sentence runs",
+      "through nine stages."
+    ],
+    "body": "What happens between the caller's words and the answer.",
+    "note": "Illustrative stages and timings.",
+    "stages": [
+      {
+        "name": "Voice",
+        "readout": "wave",
+        "detail": "Caller audio · streaming live",
+        "ms": 0
+      },
+      {
+        "name": "Speech understanding",
+        "readout": "text",
+        "detail": "\"I wanted to book sometime next week.\"",
+        "ms": 90
+      },
+      {
+        "name": "Intent detection",
+        "readout": "bars",
+        "detail": "Appointment booking",
+        "bars": [
+          [
+            "Book appointment",
+            94
+          ],
+          [
+            "Reschedule",
+            4
+          ],
+          [
+            "General enquiry",
+            2
+          ]
+        ],
+        "ms": 35
+      },
+      {
+        "name": "Context retrieval",
+        "readout": "list",
+        "detail": "What it knows before it answers",
+        "items": [
+          "Sarah Thomas · returning patient",
+          "Cleanings take 45 minutes",
+          "Dr. Rao free Tue, Wed and Thu"
+        ],
+        "ms": 60
+      },
+      {
+        "name": "Business logic",
+        "readout": "checks",
+        "detail": "Your rules, applied every time",
+        "items": [
+          "Bookings need 24 hours' notice",
+          "Insurance on file",
+          "No double bookings"
+        ],
+        "ms": 15
+      },
+      {
+        "name": "AI response",
+        "readout": "text",
+        "detail": "\"I have Tuesday at 10:30 or Thursday at 4. Which works better?\"",
+        "ms": 180
+      },
+      {
+        "name": "Action",
+        "readout": "code",
+        "detail": "calendar.hold { patient: \"Sarah Thomas\", slot: \"Thu 16:00\" }",
+        "ms": 70
+      },
+      {
+        "name": "CRM · Calendar · API",
+        "readout": "checks",
+        "detail": "Written to your systems",
+        "items": [
+          "Calendar: appointment confirmed",
+          "CRM: visit reason saved",
+          "WhatsApp: confirmation queued"
+        ],
+        "ms": 110
+      },
+      {
+        "name": "Conversation outcome",
+        "readout": "outcome",
+        "detail": "Booked · sentiment positive · no human needed",
+        "ms": 10
+      }
+    ]
+  },
+  "demo": {
+    "label": "Live demo",
+    "title": [
+      "Take a call",
+      "with Maya."
+    ],
+    "body": "Start the call, pick a slot, and watch what happens behind the voice.",
+    "note": "Simulated conversation. No real call is placed.",
+    "business": "SmileCare",
+    "caller": "Sarah Thomas",
+    "opening": "Hi Sarah, this is Maya from SmileCare. I noticed you requested an appointment. How can I help?",
+    "ask": "I wanted to book sometime next week.",
+    "signals": [
+      [
+        "Intent",
+        "Appointment booking"
+      ],
+      [
+        "Sentiment",
+        "Positive"
+      ],
+      [
+        "Priority",
+        "Normal"
+      ]
+    ],
+    "offer": "I have a few openings with Dr. Rao next week. Which of these works for you?",
+    "slots": [
+      "Tue · 10:30 AM",
+      "Wed · 2:15 PM",
+      "Thu · 4:00 PM"
+    ],
+    "pick": "{slot} works for me.",
+    "confirm": "Perfect. You're booked for {slot} with Dr. Rao. I'll send the details on WhatsApp.",
+    "actions": [
+      "Calendar · appointment booked",
+      "CRM · Sarah's record updated",
+      "WhatsApp · confirmation sent"
+    ],
+    "message": "SmileCare: Hi Sarah, you're booked for {slot} with Dr. Rao. Reply R to reschedule."
+  },
+  "architecture": {
+    "label": "Architecture",
+    "title": [
+      "The voice interface",
+      "for your entire business."
+    ],
+    "body": "It sits between the phone network and the systems you already run.",
+    "inputs": [
+      "Phone numbers",
+      "Inbound lines",
+      "Outbound campaigns"
+    ],
+    "core": "CosmiVoice",
+    "outputs": [
+      {
+        "name": "AI intelligence",
+        "detail": "Speech, understanding, reasoning and voice"
+      },
+      {
+        "name": "Business knowledge",
+        "detail": "Your website, documents, FAQs and policies"
+      },
+      {
+        "name": "CRM",
+        "detail": "Customer records, leads and call outcomes"
+      },
+      {
+        "name": "Calendar",
+        "detail": "Live availability, bookings and reschedules"
+      },
+      {
+        "name": "Payments",
+        "detail": "Reminders, payment links and promise dates"
+      },
+      {
+        "name": "WhatsApp & SMS",
+        "detail": "Confirmations, summaries and follow-ups"
+      },
+      {
+        "name": "Your APIs",
+        "detail": "Webhooks and internal systems"
+      }
+    ]
+  },
+  "analytics": {
+    "label": "Analytics",
+    "title": [
+      "Every call becomes",
+      "something you can measure."
+    ],
+    "body": "Every call, measured.",
+    "note": "Illustrative data. CosmiVoice is in development.",
+    "kpis": [
+      [
+        "Calls handled",
+        "12,480"
+      ],
+      [
+        "Leads qualified",
+        "1,126"
+      ],
+      [
+        "Appointments booked",
+        "842"
+      ],
+      [
+        "Resolution rate",
+        "88.7%"
+      ],
+      [
+        "Cost per conversation",
+        "₹11.40"
+      ]
+    ],
+    "days": [
+      "1 Sep",
+      "2 Sep",
+      "3 Sep",
+      "4 Sep",
+      "5 Sep",
+      "6 Sep",
+      "7 Sep",
+      "8 Sep",
+      "9 Sep",
+      "10 Sep",
+      "11 Sep",
+      "12 Sep",
+      "13 Sep",
+      "14 Sep"
+    ],
+    "inbound": [
+      612,
+      640,
+      598,
+      702,
+      731,
+      522,
+      488,
+      668,
+      710,
+      745,
+      772,
+      560,
+      515,
+      790
+    ],
+    "outbound": [
+      210,
+      260,
+      305,
+      290,
+      340,
+      120,
+      90,
+      330,
+      360,
+      395,
+      410,
+      150,
+      110,
+      430
+    ],
+    "outcomes": [
+      [
+        "Booked",
+        842
+      ],
+      [
+        "Qualified",
+        1126
+      ],
+      [
+        "Resolved",
+        3910
+      ],
+      [
+        "Escalated",
+        761
+      ]
+    ],
+    "sentiment": [
+      [
+        "Positive",
+        64
+      ],
+      [
+        "Neutral",
+        27
+      ],
+      [
+        "Negative",
+        9
+      ]
+    ]
+  },
+  "ecosystem": {
+    "label": "The Cosmiron ecosystem",
+    "title": [
+      "Not just AI tools.",
+      "AI employees for real operations."
+    ],
+    "body": "Each one built around how real businesses run.",
+    "products": [
+      {
+        "name": "CosmiVoice",
+        "role": "AI voice employees",
+        "status": "In development",
+        "href": "products/cosmivoice/index.html",
+        "flagship": true,
+        "hue": "#CA45FF",
+        "glyph": "voice"
+      },
+      {
+        "name": "CosmiFin",
+        "role": "Startup finance, run from your phone",
+        "status": "Live",
+        "href": "work/cosmifin/index.html",
+        "hue": "#3FD0A8",
+        "glyph": "fin",
+        "logo": "logos/cosmifin.webp"
+      },
+      {
+        "name": "Cosmident",
+        "role": "AI-powered dental examination",
+        "status": "In development",
+        "hue": "#2BA7FF",
+        "glyph": "dent",
+        "logo": "logos/cosmident.webp"
+      },
+      {
+        "name": "CosmiOps",
+        "role": "AI-powered business operations",
+        "status": "In development",
+        "hue": "#FE881B",
+        "glyph": "ops"
+      },
+      {
+        "name": "CosmiMails",
+        "role": "AI-powered email communication",
+        "status": "In development",
+        "hue": "#F472B6",
+        "glyph": "mails"
+      }
+    ],
+    "tagline": "AI employees for real operations",
+    "core": "logos/cosmiron.webp"
+  },
+  "close": {
+    "label": "Early access",
+    "title": [
+      "Hire your first",
+      "AI employee."
+    ],
+    "body": "Tell us about your calls. We'll invite you to early access first.",
+    "primary": "Join early access",
+    "secondary": "See our products"
+  }
+}
