@@ -88,7 +88,8 @@ function ensureWorkLinks() {
 
 // A "Products" link right after each Work link (desktop nav, mobile nav, footer).
 function ensureProductsLinks() {
-  for (const file of EXISTING_PAGES) {
+  // The homepage is left exactly as approved (its nav has no Products link).
+  for (const file of EXISTING_PAGES.filter((f) => f !== "index.html")) {
     let html = read(file);
     if (html.includes('data-c2="products-link"')) {
       console.log(`  products    already present  ${file}`);
@@ -805,10 +806,10 @@ function injectAdditions(projects, voice) {
     ["c2-script", "</body>", `<script src="${jsSrc(R)}"></script>${withVoice ? `\n<script src="${voiceJs(R)}"></script>` : ""}`],
   ];
   const home = "index.html";
+  // Never inject inside the homepage's own sections: their Webflow scroll animations
+  // depend on the layout. Only the approved Selected work section, between sections.
   injectInto(home, [
-    ...assets("./", { fonts: featured.some(isProduct), withVoice: true }),
-    // CosmiVoice, the flagship, sits directly under the homepage hero.
-    ["cosmivoice", '<div class="container mobile_0">', voiceBand(voice, "./", H)],
+    ...assets("./", { fonts: featured.some(isProduct) }),
     ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")],
   ]);
   const what = "whatwedo-cosmiron/pages/what-we-do/index.html";
