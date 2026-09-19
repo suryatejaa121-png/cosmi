@@ -88,8 +88,10 @@ function ensureWorkLinks() {
 
 // A "Products" link right after each Work link (desktop nav, mobile nav, footer).
 function ensureProductsLinks() {
-  // The homepage is left exactly as approved (its nav has no Products link).
-  for (const file of EXISTING_PAGES.filter((f) => f !== "index.html")) {
+  // On the homepage only the nav gets it (desktop and mobile menu); its footer and
+  // everything else stay exactly as approved.
+  for (const file of EXISTING_PAGES) {
+    const home = file === "index.html";
     let html = read(file);
     if (html.includes('data-c2="products-link"')) {
       console.log(`  products    already present  ${file}`);
@@ -98,11 +100,12 @@ function ensureProductsLinks() {
     const href = `${rootPrefix(file)}products/index.html`;
     let added = 0;
     html = html.replace(/<a\b([^>]*data-c2="work-link"[^>]*)>([\s\S]*?)<\/a>/g, (anchor, attrs, inner) => {
+      if (home && !/\bnav-link\b/.test(attrs)) return anchor;
       added += 1;
       const productAttrs = attrs.replace(/\shref="[^"]*"/, ` href="${href}"`).replace('data-c2="work-link"', 'data-c2="products-link"');
       return `${anchor}<a${productAttrs}>${inner.replace(/>(\s*)Work(\s*)</g, ">$1Products$2<")}</a>`;
     });
-    if (added !== 3) throw new Error(`${file}: expected 3 Work links to follow with Products, found ${added}`);
+    if (added !== (home ? 2 : 3)) throw new Error(`${file}: expected ${home ? 2 : 3} Work links to follow with Products, found ${added}`);
     write(file, html);
     console.log(`  products    added x${added}        ${file}`);
   }
