@@ -1,0 +1,158 @@
+<!-- Cosmident AI — Examiner review queue + marking panel.
+     Self-contained mockup. Demo data only, fictional candidate/patient.
+     A borderline station is checked against the rubric; the examiner can
+     approve the automated marks or override. Fonts NOT embedded. -->
+<style>
+  .cd-ui, .cd-ui * { box-sizing: border-box; }
+  .cd-ui {
+    --bg:#f6f5fa; --sunken:#eeecf6; --panel:#ffffff; --tint:#ede9fe;
+    --line:#e7e4f0; --linestrong:#d0cbe2; --ink:#161022; --ink2:#3e3654;
+    --muted:#6e6686; --faint:#9c95b2; --accent:#6d28d9; --accentRing:#8b5cf6;
+    --accentSoft:#ede9fe; --ok:#0e9f6e; --danger:#e5484d; --dangerSoft:#fce7e7; --warn:#ca7a08;
+    --grad:linear-gradient(100deg,#4353ff 0%,#7c3aed 60%,#8b3dff 100%);
+    width:1280px; color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 580px at 50% 104%, rgba(139,92,246,.22), rgba(167,139,250,.10) 46%, transparent 72%),
+      radial-gradient(920px 520px at 90% -6%, rgba(67,83,255,.15), transparent 58%), var(--bg);
+    padding:20px 28px 32px;
+  }
+  .cd-ui .overline{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accentRing); }
+  .cd-ui .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; }
+  .cd-ui .nav{ display:flex; align-items:center; gap:12px; height:56px; padding:0 20px; background:#fff;
+    border:1px solid var(--line); border-radius:16px; box-shadow:0 10px 30px -14px rgba(46,26,90,.20); margin-bottom:22px; }
+  .cd-ui .ring{ width:20px; height:20px; border-radius:50%;
+    background:conic-gradient(from 210deg,#f7a04b,#ec4899,#8b5cf6,#4353ff,#f7a04b);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px)); }
+  .cd-ui .brand{ font-weight:800; letter-spacing:-.02em; font-size:18px; }
+  .cd-ui .by{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+
+  .cd-ui .head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .cd-ui .head h1{ font-size:24px; font-weight:600; letter-spacing:-.01em; margin:0; }
+  .cd-ui .head .cnt{ font-size:14px; color:var(--muted); }
+
+  .cd-ui .layout{ display:grid; grid-template-columns:256px 1fr; gap:24px; align-items:start; }
+
+  /* queue */
+  .cd-ui .queue{ display:flex; flex-direction:column; gap:8px; }
+  .cd-ui .q{ text-align:left; width:100%; border:1px solid var(--line); border-radius:20px; background:linear-gradient(163deg,#fff,#f4f1fe); padding:10px 14px; cursor:pointer; }
+  .cd-ui .q.on{ box-shadow:0 0 0 2px var(--accent); }
+  .cd-ui .q .c{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); }
+  .cd-ui .q .t{ display:block; font-size:14px; margin-top:2px; }
+
+  /* panels */
+  .cd-ui .panel{ border:1px solid var(--line); border-radius:24px; background:linear-gradient(163deg,#fff 0%,#fcfbff 44%,#f4f1fe 100%);
+    box-shadow:0 1px 2px -1px rgba(46,26,90,.07),0 16px 40px -24px rgba(46,26,90,.20); padding:20px; margin-bottom:20px; }
+  .cd-ui .panel h2{ font-size:20px; font-weight:600; margin:2px 0 0; }
+  .cd-ui .code{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); }
+  .cd-ui .scenario{ font-size:14px; color:var(--muted); margin:10px 0 0; }
+  .cd-ui .task{ margin-top:12px; border-radius:12px; background:var(--bg); padding:12px 14px; font-size:14px; }
+  .cd-ui .task .k{ font-weight:600; margin:0 0 3px; }
+  .cd-ui .task p{ margin:0; color:var(--ink2); }
+  .cd-ui .subhd{ font-size:14px; font-weight:600; margin:0 0 8px; }
+  .cd-ui .transcript{ font-size:14px; line-height:1.6; }
+  .cd-ui .transcript p{ margin:0 0 8px; }
+  .cd-ui .transcript .who{ font-weight:600; color:var(--accentRing); }
+
+  /* rubric */
+  .cd-ui .rule{ font-size:12px; color:var(--muted); margin:0 0 6px; }
+  .cd-ui .crit{ list-style:none; margin:0; padding:0; }
+  .cd-ui .crit li{ border-top:1px solid var(--line); padding:12px 0; display:flex; gap:12px; align-items:flex-start; }
+  .cd-ui .crit li:first-child{ border-top:0; }
+  .cd-ui .cb{ width:18px; height:18px; border-radius:5px; border:2px solid var(--linestrong); margin-top:1px; flex:0 0 auto; display:grid; place-items:center; font-size:12px; color:#fff; }
+  .cd-ui .cb.on{ background:var(--accent); border-color:var(--accent); }
+  .cd-ui .crit .desc{ flex:1; }
+  .cd-ui .crit .row1{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .cd-ui .tag-crit{ font-size:11px; border-radius:5px; padding:1px 7px; background:var(--dangerSoft); color:var(--danger); font-weight:600; }
+  .cd-ui .wt{ font-size:12px; color:var(--muted); }
+  .cd-ui .note{ margin-top:6px; width:100%; border:1px solid var(--linestrong); border-radius:10px; padding:7px 10px; font:inherit; font-size:13px; color:var(--ink); background:#fff; }
+  .cd-ui .note::placeholder{ color:var(--faint); }
+
+  .cd-ui .actions{ display:flex; gap:12px; justify-content:flex-end; }
+  .cd-ui .btn{ display:inline-flex; align-items:center; gap:8px; border-radius:12px; padding:11px 18px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid transparent; }
+  .cd-ui .btn-ghost{ background:transparent; border-color:var(--linestrong); color:var(--ink); }
+  .cd-ui .btn-primary{ color:#fff; background:var(--grad); box-shadow:0 12px 30px -10px rgba(124,58,237,.7); }
+</style>
+
+<div class="cd-ui" style="width:1280px">
+  <div class="nav"><span class="ring"></span><span class="brand">Cosmident AI</span><span class="by">by CosmironAI</span></div>
+
+  <div class="head">
+    <h1>Review queue</h1>
+    <span class="cnt">4 pending</span>
+  </div>
+
+  <div class="layout">
+    <!-- queue -->
+    <aside class="queue">
+      <button class="q on"><span class="c">A11</span><span class="t">Breaking difficult news — extraction</span></button>
+      <button class="q"><span class="c">A9</span><span class="t">Acute dental pain — new patient</span></button>
+      <button class="q"><span class="c">DTP3</span><span class="t">Recurrent lower-jaw swelling</span></button>
+      <button class="q"><span class="c">ME-ANA</span><span class="t">Anaphylaxis — medical emergency</span></button>
+    </aside>
+
+    <!-- active marking panel -->
+    <div>
+      <div class="panel">
+        <span class="code">A11 · Actor consult</span>
+        <h2>Breaking difficult news — extraction</h2>
+        <p class="scenario">A 29-year-old is told their lower-right molar cannot be saved and needs extraction. Assess how the candidate delivers the news and responds to the patient’s concerns.</p>
+        <div class="task"><p class="k">Task</p><p>Explain the diagnosis and the recommended treatment, check understanding, and agree the next step.</p></div>
+      </div>
+
+      <div class="panel">
+        <p class="subhd">Candidate submission — transcript</p>
+        <div class="transcript">
+          <p><span class="who">Candidate:</span> Thanks for coming in. I’m afraid I’ve got some news about that back tooth that isn’t what we’d hoped.</p>
+          <p><span class="who">Patient:</span> Oh… go on.</p>
+          <p><span class="who">Candidate:</span> So we’ll need to take the tooth out because it’s got an apical abscess and it’s non-vital, okay?</p>
+          <p><span class="who">Patient:</span> Right… take it out. Is there nothing else you can do?</p>
+          <p><span class="who">Candidate:</span> Not really, no. Take some ibuprofen and we’ll sort it at your next appointment.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="subhd">Rubric</p>
+        <p class="rule">Pass rule: ≥ 4 of 6 criteria, and all critical criteria met.</p>
+        <ul class="crit">
+          <li>
+            <span class="cb on">✓</span>
+            <span class="desc"><span class="row1"><span>Fired a warning shot before the news</span><span class="wt">×1</span></span>
+              <input class="note" placeholder="note (optional)" value="Clear warning shot — good."></span>
+          </li>
+          <li>
+            <span class="cb on">✓</span>
+            <span class="desc"><span class="row1"><span>Allowed a pause for the patient to react</span><span class="wt">×1</span></span>
+              <input class="note" placeholder="note (optional)"></span>
+          </li>
+          <li>
+            <span class="cb"></span>
+            <span class="desc"><span class="row1"><span>Checked the patient’s prior understanding</span><span class="wt">×1</span></span>
+              <input class="note" placeholder="note (optional)" value="Not attempted."></span>
+          </li>
+          <li>
+            <span class="cb"></span>
+            <span class="desc"><span class="row1"><span>Explained diagnosis in plain language (no unexplained jargon)</span><span class="tag-crit">critical</span><span class="wt">×2</span></span>
+              <input class="note" placeholder="note (optional)" value="Used ‘apical abscess / non-vital’ without explaining."></span>
+          </li>
+          <li>
+            <span class="cb"></span>
+            <span class="desc"><span class="row1"><span>Offered alternatives / clear next steps</span><span class="wt">×1</span></span>
+              <input class="note" placeholder="note (optional)"></span>
+          </li>
+          <li>
+            <span class="cb on">✓</span>
+            <span class="desc"><span class="row1"><span>Confirmed consent to proceed</span><span class="wt">×1</span></span>
+              <input class="note" placeholder="note (optional)"></span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost">Approve as-is</button>
+        <button class="btn btn-primary">Submit my marks (override)</button>
+      </div>
+    </div>
+  </div>
+</div>

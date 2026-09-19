@@ -21,6 +21,7 @@ import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { voicePage, voiceBand, productsPage } from "./voice.mjs";
+import { dentPage } from "./dent.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ASSETS = "cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/";
@@ -148,7 +149,8 @@ function shell({ file, title, description, body, jsonLd, current = "work-link", 
   const head = [
     `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">`,
     ...css.map((href) => `<link href="${href}" rel="stylesheet" type="text/css">`),
-    body.includes('class="c2-ui"') ? UI_FONTS : "",
+    body.includes('class="cf-ui"') ? UI_FONTS : "",
+    /class="cd-ui[ "]/.test(body) ? DENT_UI_FONTS : "",
     jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : "",
   ]
     .filter(Boolean)
@@ -231,6 +233,13 @@ function capabilityCard(c, R) {
 // a page shows exactly one state; cosmiron-2.js zooms it to fit.
 const UI_FONTS =
   '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">';
+// Cosmident's screens are set in the app's own faces.
+const DENT_UI_FONTS =
+  '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">';
+// An export without its own reset gets one, so the host page's element styles can't
+// reach inside it. It goes first: the screen's own rules still win.
+const uiReset = (cls) =>
+  `.${cls}{all:revert;display:block;font-size:16px;font-style:normal;font-weight:400;font-variant:normal;font-stretch:normal;letter-spacing:normal;word-spacing:normal;text-align:left;text-indent:0;text-transform:none;text-shadow:none;text-decoration:none;white-space:normal;word-break:normal;overflow-wrap:normal;hyphens:manual;visibility:visible;cursor:auto;direction:ltr;-webkit-text-size-adjust:100%;text-size-adjust:100%}.${cls} :where(:not(svg,svg *,img,video,canvas,iframe)){all:revert;-webkit-text-size-adjust:100%;text-size-adjust:100%}`;
 const UI_MEDIA = "@@C2_UI_MEDIA@@";
 const uiCache = new Map();
 
@@ -249,7 +258,7 @@ function divAt(html, start) {
 function loadUi(p, fileName) {
   const key = `${p.slug}/${fileName}`;
   if (uiCache.has(key)) return uiCache.get(key);
-  const dir = `c2/media/work/${p.slug}/ui`;
+  const dir = p.uiDir || `c2/media/work/${p.slug}/ui`;
   const source = read(`${dir}/${fileName}`);
   const styles = [...source.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
   if (styles.length !== 1) throw new Error(`${dir}/${fileName}: expected one <style>, found ${styles.length}`);
@@ -273,16 +282,26 @@ function loadUi(p, fileName) {
     return `${UI_MEDIA}${name}`;
   });
 
-  const root = markup.match(/^<div class="cf-ui" style="width:(\d+)px">/);
-  if (!root) throw new Error(`${dir}/${fileName}: expected a <div class="cf-ui" style="width:…px"> root`);
+  // Each product scopes its export under its own root class (cf-ui, cd-ui, …).
+  const root = markup.match(/^<div class="(c[a-z]-ui)" style="width:(\d+)px">/);
+  if (!root) throw new Error(`${dir}/${fileName}: expected a <div class="c?-ui" style="width:…px"> root`);
+  const cls = root[1];
+  let css = /all:\s*revert/.test(styles[0]) ? styles[0] : `${uiReset(cls)}\n${styles[0]}`;
+  // Screens written one by one reuse class names (.bars, .nav) with different rules;
+  // a class per screen keeps each file's rules to its own screen.
+  if (p.uiScope) {
+    const scope = `${cls}--${fileName.replace(/\.html$/, "")}`;
+    css = css.replace(new RegExp(`\\.${cls}(?![\\w-])`, "g"), `.${cls}.${scope}`);
+    markup = markup.replace(/^<div class="(c[a-z]-ui)"/, `<div class="$1 ${scope}"`);
+  }
   const states = new Map();
-  for (const m of markup.matchAll(/<div class="cf-ui-state" data-state="([^"]+)" style="([^"]*)">/g)) {
+  for (const m of markup.matchAll(new RegExp(`<div class="${cls}-state" data-state="([^"]+)" style="([^"]*)">`, "g"))) {
     const width = Number((m[2].match(/width:\s*(\d+)px/) || [])[1]);
     if (!width) throw new Error(`${dir}/${fileName}: state "${m[1]}" has no pixel width`);
-    states.set(m[1], { width, html: `<div class="cf-ui" style="width:${width}px">${divAt(markup, m.index)}</div>` });
+    states.set(m[1], { width, html: `<div class="${cls}" style="width:${width}px">${divAt(markup, m.index)}</div>` });
   }
-  if (!states.size) states.set("default", { width: Number(root[1]), html: markup });
-  const ui = { css: styles[0], states };
+  if (!states.size) states.set("default", { width: Number(root[2]), html: markup });
+  const ui = { css, states, prefix };
   uiCache.set(key, ui);
   return ui;
 }
@@ -295,7 +314,12 @@ function uiView(ctx, p, spec, { variant = "device", scroll = true } = {}) {
   if (!state) throw new Error(`${p.slug}: ${spec.file} has no state "${spec.state || "default"}" (has ${[...ui.states.keys()].join(", ")})`);
   if (!spec.alt) throw new Error(`${p.slug}: ${spec.file} ${spec.state || ""} needs alt text`);
   ctx.css.set(`${p.slug}/${spec.file}`, ui.css);
-  const html = state.html.split(UI_MEDIA).join(`${ctx.R}c2/media/work/${p.slug}/ui/`).replace(/<img\b(?![^>]*\sloading=)/g, '<img loading="lazy"');
+  // A screen shown twice on one page gets its ids prefixed again, so they stay unique.
+  ctx.uses = ctx.uses || new Map();
+  const use = (ctx.uses.get(spec.file) || 0) + 1;
+  ctx.uses.set(spec.file, use);
+  const markup = use === 1 ? state.html : state.html.split(ui.prefix).join(`${ui.prefix}${use}-`);
+  const html = markup.split(UI_MEDIA).join(p.uiDir ? `${ctx.R}${p.uiDir}/` : `${ctx.R}c2/media/work/${p.slug}/ui/`).replace(/<img\b(?![^>]*\sloading=)/g, '<img loading="lazy"');
   const scrollAttr = scroll ? ` data-c2-scroll${scroll === true ? "" : `="${esc(scroll)}"`}` : "";
   const view = `<div class="c2-ui-view${variant === "tile" ? " c2-ui-view--tile" : ""}"${scrollAttr} role="img" aria-label="${esc(spec.alt)}"><div class="c2-ui-scroll"><div class="c2-ui" data-w="${state.width}" style="width:${state.width}px" inert>${html}</div></div></div>`;
   return variant === "device" ? `<div class="c2-device">${view}</div>` : view;
@@ -328,7 +352,26 @@ function exhibitCard(p, R, href, ctx) {
         </article>`;
 }
 
-function workIndexBody(projects, R) {
+// A product with its own page under /products on the Work page: same exhibit card,
+// linking to that page. In-development products get the amber status.
+function productCard(v, R, tags, { slug, tint, logo, stage, live = false }) {
+  return `
+        <article class="c2-exhibit" data-c2-work data-tags="${esc(tags.join("|"))}" style="--c2-tint:${tint}">
+          <a class="c2-exhibit-link" data-c2-transition href="${R}products/${slug}/index.html">
+            <div class="c2-exhibit-copy">
+              <div class="c2-exhibit-meta">${caption(v.card.industry)}<span class="c2-status${live ? "" : " c2-status--dev"}">${esc(v.status)}</span></div>
+              <div class="c2-exhibit-client"><span class="c2-logo-chip c2-logo-chip--full" style="--c2-chip:#0c0a14"><img src="${R}c2/media/products/logos/${logo}" alt="" loading="lazy"></span>A Cosmiron product</div>
+              <h2 class="c2-exhibit-title">${esc(v.name)}</h2>
+              <p class="c2-exhibit-headline c2-spectrum">${esc(v.card.headline)}</p>
+              <div class="tags_wrap">${v.card.tags.map((t) => `<div class="tag-solutions"><div>${esc(t)}</div></div>`).join("")}</div>
+              <span class="c2-exhibit-cta">Explore ${esc(v.name)} <span aria-hidden="true">→</span></span>
+            </div>
+            ${stage}
+          </a>
+        </article>`;
+}
+
+function workIndexBody(projects, R, voice, dent) {
   const ctx = { R, css: new Map() };
   const types = [...new Set(projects.map((p) => p.type).filter(Boolean))];
   const filters =
@@ -337,7 +380,25 @@ function workIndexBody(projects, R) {
           .map((t) => `<button type="button" data-filter="${esc(t)}" aria-pressed="false">${esc(FILTER_LABELS[t] || t)}</button>`)
           .join("")}</div>`
       : "";
-  const cards = projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("");
+  const cards =
+    projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("") +
+    (dent
+      ? productCard(dent, R, ["Cosmiron product", dent.card.industry], {
+          slug: "cosmident",
+          tint: "#7C3AED",
+          logo: "cosmident.webp",
+          live: true,
+          stage: `<div class="c2-exhibit-stage">${frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt)}</div>`,
+        })
+      : "") +
+    (voice
+      ? productCard(voice, R, ["Cosmiron product", voice.card.industry], {
+          slug: "cosmivoice",
+          tint: "#CA45FF",
+          logo: "cosmiron.webp",
+          stage: `<div class="c2-exhibit-stage c2-exhibit-stage--portrait"><img src="${R}c2/media/products/cosmivoice/${voice.image.small}" alt="${esc(voice.image.alt)}" width="640" height="640" loading="lazy"></div>`,
+        })
+      : "");
   return `
 <div class="c2 c2-work">${uiStyles(ctx)}
   <section class="c2-hero c2-hero--work">
@@ -842,6 +903,8 @@ function loadProjects() {
 const H = { esc, caption, ctaButton, outlineButton, closingSection, contact: (R) => `${R}${CONTACT_PAGE}` };
 const voiceCss = (R) => `${R}c2/cosmivoice.css?v=${assetVersion("c2/cosmivoice.css")}`;
 const voiceJs = (R) => `${R}c2/cosmivoice.js?v=${assetVersion("c2/cosmivoice.js")}`;
+const dentCss = (R) => `${R}c2/cosmident.css?v=${assetVersion("c2/cosmident.css")}`;
+const dentJs = (R) => `${R}c2/cosmident.js?v=${assetVersion("c2/cosmident.js")}`;
 // Noto for the Indian scripts CosmiVoice shows; browsers fetch only the scripts a page uses.
 const VOICE_FONTS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Kannada:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&family=Noto+Sans+Telugu:wght@400;500&display=swap";
 
@@ -850,6 +913,8 @@ ensureWorkLinks();
 ensureProductsLinks();
 
 const projects = loadProjects();
+const voice = JSON.parse(read("c2/content/products/cosmivoice.json"));
+const dent = JSON.parse(read("c2/content/products/cosmident.json"));
 const workFile = "work/index.html";
 write(
   workFile,
@@ -857,12 +922,16 @@ write(
     file: workFile,
     title: "Work | Cosmiron AI - Selected Collaborations and Products",
     description: "Platforms, products and AI systems Cosmiron AI has designed, engineered and shipped with its partners.",
-    body: workIndexBody(projects, rootPrefix(workFile)),
+    body: workIndexBody(projects, rootPrefix(workFile), voice, dent),
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       name: "Cosmiron AI: Selected Work",
-      hasPart: projects.map((p) => ({ "@type": isProduct(p) ? "SoftwareApplication" : "CreativeWork", name: p.project })),
+      hasPart: [
+        ...projects.map((p) => ({ "@type": isProduct(p) ? "SoftwareApplication" : "CreativeWork", name: p.project })),
+        { "@type": "SoftwareApplication", name: dent.name },
+        { "@type": "SoftwareApplication", name: voice.name },
+      ],
     },
   }),
 );
@@ -906,7 +975,6 @@ for (const p of projects) {
 
 /* ---------------- products: the ecosystem and CosmiVoice ---------------- */
 
-const voice = JSON.parse(read("c2/content/products/cosmivoice.json"));
 // A product logo shows once its file is in c2/media/products/; until then the icon stays.
 for (const p of voice.ecosystem.products) {
   if (p.logo && !existsSync(join(ROOT, "c2/media/products", p.logo))) {
@@ -942,11 +1010,56 @@ const productPages = [
     },
   },
 ];
+const DENT_UI = "c2/media/products/cosmident/ui";
+function dentBody(R) {
+  const ctx = { R, css: new Map() };
+  const p = { slug: "cosmident", uiDir: DENT_UI, uiScope: true };
+  // A screen shows once its export exists; until then the section renders without it.
+  // The patient screen was exported with a placeholder silhouette; the app itself shows a
+  // live AI avatar there, so the page swaps in a clip of the app's own patient avatar.
+  const av = dent.screens && dent.screens.avatar;
+  const avatar = (html) =>
+    html.replace(
+      /<div class="face"[^>]*>[\s\S]*?<\/svg>\s*<\/div>/,
+      `<div class="face cd-avatar"><video data-cd-avatar muted loop playsinline preload="none" poster="${R}c2/media/products/cosmident/${av.poster}" src="${R}c2/media/products/cosmident/${av.video}"></video></div>`,
+    );
+  const screen = (spec) => {
+    if (!spec || !existsSync(join(ROOT, DENT_UI, spec.file))) return "";
+    const html = uiView(ctx, p, spec, { variant: "tile", scroll: Boolean(spec.scroll) });
+    return av && spec.file === av.screen ? avatar(html) : html;
+  };
+  const html = dentPage(dent, R, { ...H, screen });
+  return `${uiStyles(ctx)}${html}`;
+}
+productPages.push({
+  file: "products/cosmident/index.html",
+  title: "Cosmident AI | AI Mock Exams for Dental Registration, by Cosmiron AI",
+  description: dent.summary,
+  body: dentBody,
+  css: [dentCss],
+  js: [dentJs],
+  jsonLd: {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: dent.name,
+    description: dent.summary,
+    applicationCategory: "EducationalApplication",
+    url: dent.url,
+    creator: { "@type": "Organization", name: "Cosmiron AI" },
+  },
+});
+
 for (const page of productPages) {
   const R = rootPrefix(page.file);
   write(
     page.file,
-    shell({ ...page, body: page.body(R), current: "products-link", css: [voiceCss(R), VOICE_FONTS], js: [voiceJs(R)] }),
+    shell({
+      ...page,
+      body: page.body(R),
+      current: "products-link",
+      css: [voiceCss(R), VOICE_FONTS, ...(page.css || []).map((f) => f(R))],
+      js: [voiceJs(R), ...(page.js || []).map((f) => f(R))],
+    }),
   );
   console.log(`  page        written          ${page.file}`);
 }

@@ -1,0 +1,300 @@
+<!-- Cosmident AI — the Coach's Debrief (feedback report).
+     Self-contained mockup. Demo data only, fictional candidate. Shows the
+     verdict hero, component score bars, circuit strip, the marksheet, and the
+     "top fixes" swap cards (criteria with quoted evidence). Fonts NOT embedded:
+     display/body 'Plus Jakarta Sans', values 'IBM Plex Mono'. -->
+<style>
+  .cd-ui, .cd-ui * { box-sizing: border-box; }
+  .cd-ui {
+    /* report palette (light "debrief" tokens, aliasing the v3 theme) */
+    --ground:#f6f5fa; --grounddeep:#eeecf6; --surface:#ffffff;
+    --ink:#161022; --soft:#55506a; --line:#e0dcec;
+    --accent:#6d28d9; --accentwash:#efeafd;
+    --ok:#0e9f6e; --okwash:#dcf5ea; --warn:#ca7a08; --warnwash:#fbefd6;
+    --danger:#e5484d; --dangerwash:#fce7e7;
+    --grad:linear-gradient(100deg,#4353ff 0%,#7c3aed 60%,#8b3dff 100%);
+    width:1280px; color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:var(--ground); padding:0 0 40px;
+  }
+  .cd-ui .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .wrap{ max-width:960px; margin:0 auto; padding:0 24px; }
+  .cd-ui .kicker{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); }
+
+  /* sticky-style report bar */
+  .cd-ui .bar{ display:flex; align-items:center; gap:12px; height:56px; padding:0 24px; background:#fff; border-bottom:1px solid var(--line); }
+  .cd-ui .ring{ width:20px; height:20px; border-radius:50%;
+    background:conic-gradient(from 210deg,#f7a04b,#ec4899,#8b5cf6,#4353ff,#f7a04b);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px)); }
+  .cd-ui .brand{ font-weight:800; letter-spacing:-.02em; font-size:17px; }
+  .cd-ui .bar .right{ margin-left:auto; display:flex; gap:8px; }
+  .cd-ui .btn-ghost{ border:1px solid #d0cbe2; background:transparent; color:var(--ink); border-radius:10px; padding:7px 14px; font-size:13px; font-weight:600; cursor:pointer; }
+
+  /* hero */
+  .cd-ui .hero{ padding-top:36px; }
+  .cd-ui .hero-grid{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:32px; align-items:start; margin-top:12px; }
+  .cd-ui h1{ font-size:52px; font-weight:600; line-height:1.05; margin:0; letter-spacing:-.02em; }
+  .cd-ui .verdict-pill{ display:inline-block; border-radius:999px; padding:6px 16px; font-size:14px; font-weight:700; letter-spacing:.04em; margin-left:14px; vertical-align:middle; }
+  .cd-ui .pill-pass{ background:var(--okwash); color:var(--ok); }
+  .cd-ui .coach{ display:flex; gap:12px; margin-top:20px; }
+  .cd-ui .coach .av{ width:34px; height:34px; border-radius:50%; background:var(--grad); flex:0 0 auto; }
+  .cd-ui .coach p{ margin:0; font-size:17px; line-height:1.5; color:var(--ink); }
+  .cd-ui .arc-sub{ text-align:center; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:13px; color:var(--soft); margin-top:4px; }
+
+  /* component range bars */
+  .cd-ui .bars{ margin-top:40px; display:flex; flex-direction:column; gap:20px; }
+  .cd-ui .rb-top{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:6px; }
+  .cd-ui .rb-label{ font-size:14px; font-weight:600; }
+  .cd-ui .rb-right{ display:flex; align-items:baseline; gap:12px; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:14px; }
+  .cd-ui .rb-verdict{ font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
+  .cd-ui .t-ok{ color:var(--ok); } .cd-ui .t-warn{ color:var(--warn); } .cd-ui .t-danger{ color:var(--danger); }
+  .cd-ui .track{ position:relative; height:8px; border-radius:999px; background:var(--line); }
+  .cd-ui .zone{ position:absolute; top:0; bottom:0; right:0; border-radius:0 999px 999px 0; background:var(--okwash); }
+  .cd-ui .tick{ position:absolute; top:-4px; bottom:-4px; width:1px; background:var(--soft); }
+  .cd-ui .marker{ position:absolute; top:50%; width:14px; height:14px; border-radius:50%; transform:translate(-7px,-50%); }
+  .cd-ui .m-ok{ background:var(--ok); } .cd-ui .m-warn{ background:#fff; border:2px solid var(--warn); } .cd-ui .m-danger{ background:var(--danger); }
+  .cd-ui .passmark{ margin:4px 0 0; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; color:var(--soft); }
+
+  /* circuit strip */
+  .cd-ui .circuit{ margin-top:40px; border-top:1px solid var(--line); padding-top:24px; }
+  .cd-ui .nodes{ display:flex; align-items:center; list-style:none; padding:0; margin:14px 0 0; }
+  .cd-ui .nodes li{ display:flex; align-items:center; flex:1; }
+  .cd-ui .nodes li:last-child{ flex:0 0 auto; }
+  .cd-ui .node{ width:18px; height:18px; border-radius:50%; flex:0 0 auto; }
+  .cd-ui .n-ok{ background:var(--ok); } .cd-ui .n-fail{ background:var(--danger); }
+  .cd-ui .n-skip{ background:var(--grounddeep); border:1px solid var(--line); }
+  .cd-ui .n-pend{ background:transparent; border:2px dashed var(--warn); }
+  .cd-ui .link{ flex:1; height:1px; margin:0 4px; background:var(--line); }
+  .cd-ui .ends{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; color:var(--soft); margin-top:8px; }
+
+  /* section title */
+  .cd-ui .sec-title{ font-size:22px; font-weight:600; margin:44px 0 4px; letter-spacing:-.01em; }
+
+  /* marksheet card */
+  .cd-ui .card{ background:var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow:0 10px 30px -18px rgba(46,26,90,.4); overflow:hidden; margin-top:16px; }
+  .cd-ui .ms-sum{ display:flex; align-items:center; gap:24px; border-bottom:1px solid var(--line); background:var(--grounddeep); padding:16px 20px; }
+  .cd-ui .ms-sum .r{ margin-left:auto; display:flex; gap:20px; }
+  .cd-ui .ms-sum .big{ font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .cd-ui .ms-sum .lbl{ font-size:14px; color:var(--soft); }
+  .cd-ui .ms-row{ padding:16px 20px; border-bottom:1px solid var(--line); }
+  .cd-ui .ms-row:last-child{ border-bottom:0; }
+  .cd-ui .ms-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .cd-ui .code{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; color:var(--soft); background:var(--grounddeep); border-radius:5px; padding:2px 8px; }
+  .cd-ui .ms-title{ font-size:15px; font-weight:600; flex:1; }
+  .cd-ui .frac{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:14px; color:var(--soft); }
+  .cd-ui .pf{ border-radius:999px; padding:3px 12px; font-size:11px; font-weight:700; }
+  .cd-ui .pf-pass{ background:var(--okwash); color:var(--ok); } .cd-ui .pf-fail{ background:var(--dangerwash); color:var(--danger); }
+  .cd-ui .cols{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .cd-ui .col-h{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin:0 0 8px; display:flex; align-items:center; gap:6px; }
+  .cd-ui .col ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .cd-ui .col li{ display:flex; gap:8px; font-size:14px; line-height:1.4; }
+  .cd-ui .gl{ width:16px; height:16px; border-radius:50%; flex:0 0 auto; display:grid; place-items:center; font-size:11px; font-weight:700; }
+  .cd-ui .gl-ok{ background:var(--okwash); color:var(--ok); } .cd-ui .gl-x{ background:var(--dangerwash); color:var(--danger); }
+
+  /* top fixes / swap cards */
+  .cd-ui .fix{ display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:start; margin-top:16px; }
+  .cd-ui .fix .num{ font-size:64px; font-weight:600; line-height:1; color:var(--ink); opacity:.9; }
+  .cd-ui .fixcard{ background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:24px; box-shadow:0 10px 30px -18px rgba(46,26,90,.4); }
+  .cd-ui .sev{ display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--danger); }
+  .cd-ui .sev.mod{ color:var(--warn); }
+  .cd-ui .fix h3{ font-size:20px; font-weight:600; line-height:1.3; margin:12px 0 16px; }
+  .cd-ui .yousaid{ border-radius:12px; background:var(--ground); padding:16px; }
+  .cd-ui .yousaid p{ margin:6px 0 0; border-left:1px solid var(--line); padding-left:12px; font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:13px; line-height:1.6; color:var(--ink); }
+  .cd-ui .arrow{ display:flex; justify-content:center; color:var(--soft); margin:12px 0; }
+  .cd-ui .slip{ position:relative; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:12px; background:var(--surface); padding:16px 16px 16px 20px; }
+  .cd-ui .slip .q{ position:absolute; top:-2px; left:12px; font-size:40px; font-weight:600; color:var(--accent); opacity:.35; }
+  .cd-ui .slip p{ margin:0 0 0 24px; font-size:15px; font-weight:500; line-height:1.5; }
+  .cd-ui .slip .foot{ display:flex; align-items:center; justify-content:space-between; margin:10px 0 0 24px; }
+  .cd-ui .slip .say{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; color:var(--soft); }
+  .cd-ui .slip .copy{ color:var(--accent); font-size:12px; font-weight:600; border:0; background:transparent; cursor:pointer; }
+</style>
+
+<div class="cd-ui" style="width:1280px">
+  <div class="bar">
+    <span class="ring"></span><span class="brand">Cosmident AI</span>
+    <span class="kicker" style="margin-left:8px">Coach’s Debrief</span>
+    <span class="right">
+      <button class="btn-ghost">Print / save PDF</button>
+      <button class="btn-ghost">View progress</button>
+    </span>
+  </div>
+
+  <div class="wrap hero">
+    <p class="kicker">Mock circuit debrief — 19 September 2026</p>
+    <div class="hero-grid">
+      <div>
+        <h1>You passed, Alex.<span class="verdict-pill pill-pass">PASS</span></h1>
+        <div class="coach">
+          <span class="av"></span>
+          <p>Strong communication carried this circuit. Your clinical reasoning is close behind — tighten your special-tests and safety-netting and you’ll have real margin, not a squeak.</p>
+        </div>
+      </div>
+
+      <!-- verdict arc -->
+      <div>
+        <svg width="168" height="168" viewBox="0 0 168 168" role="img" aria-label="Overall pass rate 76%">
+          <circle cx="84" cy="84" r="72" fill="none" stroke="#e0dcec" stroke-width="12"/>
+          <circle cx="84" cy="84" r="72" fill="none" stroke="#0e9f6e" stroke-width="12" stroke-linecap="round"
+                  stroke-dasharray="452.4" stroke-dashoffset="108.6" transform="rotate(-90 84 84)"/>
+          <text x="84" y="82" text-anchor="middle" font-size="42" font-weight="600" fill="#161022" font-family="'Plus Jakarta Sans',sans-serif">76</text>
+          <text x="84" y="104" text-anchor="middle" font-size="15" fill="#55506a" font-family="'IBM Plex Mono',monospace">%</text>
+        </svg>
+        <p class="arc-sub">9 / 12 stations</p>
+      </div>
+    </div>
+
+    <!-- component range bars -->
+    <div class="bars">
+      <!-- Communication 82 pass -->
+      <div>
+        <div class="rb-top"><span class="rb-label">Communication</span>
+          <span class="rb-right"><span>82%</span><span class="rb-verdict t-ok">pass</span><span class="t-ok">+12</span></span></div>
+        <div class="track"><div class="zone" style="left:70%"></div><div class="tick" style="left:70%"></div><div class="marker m-ok" style="left:82%"></div></div>
+        <p class="passmark">pass mark 70</p>
+      </div>
+      <!-- Clinical reasoning 74 pass -->
+      <div>
+        <div class="rb-top"><span class="rb-label">Clinical reasoning</span>
+          <span class="rb-right"><span>74%</span><span class="rb-verdict t-ok">pass</span><span class="t-ok">+4</span></span></div>
+        <div class="track"><div class="zone" style="left:70%"></div><div class="tick" style="left:70%"></div><div class="marker m-ok" style="left:74%"></div></div>
+        <p class="passmark">pass mark 70</p>
+      </div>
+      <!-- Professionalism 68 borderline -->
+      <div>
+        <div class="rb-top"><span class="rb-label">Professionalism &amp; safety</span>
+          <span class="rb-right"><span>68%</span><span class="rb-verdict t-warn">borderline</span><span class="t-warn">−2</span></span></div>
+        <div class="track"><div class="zone" style="left:70%"></div><div class="tick" style="left:70%"></div><div class="marker m-warn" style="left:68%"></div></div>
+        <p class="passmark">pass mark 70</p>
+      </div>
+    </div>
+
+    <!-- circuit strip -->
+    <div class="circuit">
+      <p class="kicker">Your path through the circuit</p>
+      <ol class="nodes">
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-fail"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-pend"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span><span class="link"></span></li>
+        <li><span class="node n-skip"></span><span class="link"></span></li>
+        <li><span class="node n-ok"></span></li>
+      </ol>
+      <div class="ends"><span>A9</span><span>ME-ANA</span></div>
+    </div>
+  </div>
+
+  <!-- marksheet -->
+  <div class="wrap">
+    <h2 class="sec-title">Your marksheet</h2>
+    <div class="card">
+      <div class="ms-sum">
+        <div><p class="kicker">Your marksheet</p><p style="margin:2px 0 0;font-size:15px">Every criterion, marked correct or missed.</p></div>
+        <div class="r">
+          <span class="big t-ok">48</span><span class="lbl">correct</span>
+          <span class="big t-danger">14</span><span class="lbl">missed</span>
+        </div>
+      </div>
+
+      <!-- station row 1 -->
+      <div class="ms-row">
+        <div class="ms-head">
+          <span class="code">A9</span><span class="ms-title">Acute dental pain — new patient</span>
+          <span class="frac">6/7</span><span class="pf pf-pass">Pass</span>
+        </div>
+        <div class="cols">
+          <div class="col">
+            <p class="col-h t-danger">✕ Missed · 1</p>
+            <ul><li><span class="gl gl-x">!</span> Did not safety-net (when to seek urgent care)</li></ul>
+          </div>
+          <div class="col">
+            <p class="col-h t-ok">✓ Correct · 6</p>
+            <ul>
+              <li><span class="gl gl-ok">✓</span> Established the presenting complaint</li>
+              <li><span class="gl gl-ok">✓</span> Characterised the pain (SOCRATES)</li>
+              <li><span class="gl gl-ok">✓</span> Screened red flags (swelling, systemic)</li>
+              <li><span class="gl gl-ok">✓</span> Empathetic, patient-led manner</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- station row 2 -->
+      <div class="ms-row">
+        <div class="ms-head">
+          <span class="code">A11</span><span class="ms-title">Breaking difficult news — extraction</span>
+          <span class="frac">3/6</span><span class="pf pf-fail">Fail</span>
+        </div>
+        <div class="cols">
+          <div class="col">
+            <p class="col-h t-danger">✕ Missed · 3</p>
+            <ul>
+              <li><span class="gl gl-x">!</span> Did not check the patient’s prior understanding</li>
+              <li><span class="gl gl-x">!</span> Used jargon without explaining it</li>
+              <li><span class="gl gl-x">!</span> Did not offer alternatives / next steps</li>
+            </ul>
+          </div>
+          <div class="col">
+            <p class="col-h t-ok">✓ Correct · 3</p>
+            <ul>
+              <li><span class="gl gl-ok">✓</span> Warned shot before the news</li>
+              <li><span class="gl gl-ok">✓</span> Allowed a pause for the patient to react</li>
+              <li><span class="gl gl-ok">✓</span> Confirmed consent to proceed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- top fixes with quoted evidence -->
+  <div class="wrap">
+    <h2 class="sec-title">Your top fixes</h2>
+
+    <div class="fix">
+      <span class="num">1</span>
+      <div class="fixcard">
+        <span class="sev">● Cost you a criterion</span>
+        <h3>Explain, then check understanding — don’t assume it landed.</h3>
+        <div class="yousaid">
+          <p class="kicker">You said</p>
+          <p>“So we’ll need to take the tooth out because it’s got an apical abscess and it’s non-vital, okay?”</p>
+        </div>
+        <div class="arrow">
+          <svg width="20" height="18" viewBox="0 0 20 18"><path d="M10 1v12m0 0-4.5-4.5M10 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="slip">
+          <span class="q">“</span>
+          <p>“The tooth can’t be saved because the nerve inside has died and there’s an infection at the root. The best option is to remove it. Before I go on — how does that sound, and what questions do you have?”</p>
+          <div class="foot"><span class="say">say this at your next attempt</span><button class="copy">Copy</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fix">
+      <span class="num">2</span>
+      <div class="fixcard">
+        <span class="sev mod">● Worth easy marks</span>
+        <h3>Always safety-net: tell the patient when to seek urgent help.</h3>
+        <div class="yousaid">
+          <p class="kicker">You said</p>
+          <p>“Take some ibuprofen and we’ll sort it at your next appointment.”</p>
+        </div>
+        <div class="arrow">
+          <svg width="20" height="18" viewBox="0 0 20 18"><path d="M10 1v12m0 0-4.5-4.5M10 13l4.5-4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="slip">
+          <span class="q">“</span>
+          <p>“Ibuprofen will help in the meantime. But if the swelling spreads, you struggle to swallow or open your mouth, or you feel feverish, please seek urgent care the same day.”</p>
+          <div class="foot"><span class="say">say this at your next attempt</span><button class="copy">Copy</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,233 @@
+{
+  "slug": "cosmident",
+  "name": "Cosmident AI",
+  "status": "Live",
+  "statusLine": "Live · onboarding our first partner academies",
+  "url": "https://cosmident.cosmiron.ai",
+  "summary": "AI mock exams for the UK dental registration exams, run under an academy's own brand, with a spoken AI patient and a mark sheet with evidence the moment a candidate finishes.",
+  "mark": {
+    "src": "mark.webp",
+    "alt": "Cosmident AI logo: a gradient C with a tooth and an orbit"
+  },
+  "hero": {
+    "eyebrow": "Cosmident AI · Live",
+    "title": [
+      "The mock exam,",
+      "reinvented."
+    ],
+    "lede": "AI mock exams for the UK dental registration exams, under your academy's brand. Candidates sit a timed circuit, talk to an AI patient and get a mark sheet with evidence the moment they finish.",
+    "primary": "Book a demo",
+    "watch": "Watch the demo",
+    "secondary": "cosmident.cosmiron.ai"
+  },
+  "facts": [
+    [
+      "30+",
+      "exam stations"
+    ],
+    [
+      "54 min",
+      "phase-locked long case"
+    ],
+    [
+      "15 · 8 min",
+      "questions in the emergencies viva"
+    ],
+    [
+      "Speak or type",
+      "scored the same way"
+    ]
+  ],
+  "gap": {
+    "label": "The gap",
+    "title": [
+      "Candidates fail",
+      "without knowing why."
+    ],
+    "cards": [
+      {
+        "title": "No feedback from the regulator",
+        "body": "Failing candidates get no marks, no mark sheets and no model answers."
+      },
+      {
+        "title": "Mocks that don't scale",
+        "body": "Actors, a venue and senior examiners, all on one fixed day."
+      },
+      {
+        "title": "A spoken exam, rehearsed alone",
+        "body": "The exam is timed and spoken. Most practice happens from books."
+      }
+    ]
+  },
+  "sitting": {
+    "label": "Inside a sitting",
+    "title": [
+      "A full mock circuit,",
+      "run like the real one."
+    ],
+    "steps": [
+      {
+        "title": "Written and drawing stations",
+        "body": "Forms, prescriptions, tooth diagrams and radiograph marking, on a clock the server keeps."
+      },
+      {
+        "title": "The AI patient",
+        "body": "A spoken consultation. The patient reveals only what the candidate asks for."
+      },
+      {
+        "title": "The long case",
+        "body": "54 minutes in four locked phases. New results release as the case unfolds."
+      },
+      {
+        "title": "Medical emergencies viva",
+        "body": "An AI examiner asks 15 questions in 8 minutes, and probes when an answer falls short.",
+        "viva": {
+          "questions": 15,
+          "clock": "08:00",
+          "label": "Medical emergencies viva"
+        }
+      },
+      {
+        "title": "The mark sheet",
+        "body": "Instant, criterion by criterion, with the candidate's own words as evidence."
+      }
+    ]
+  },
+  "demo": {
+    "label": "Product demo",
+    "title": [
+      "Watch a sitting",
+      "in action."
+    ],
+    "youtube": "K9SRJXYXYmg",
+    "poster": "demo-poster.webp",
+    "play": "Play the Cosmident AI product demo",
+    "youtubeLink": "Watch on YouTube",
+    "tryLink": "Try it at cosmident.cosmiron.ai"
+  },
+  "audit": {
+    "label": "Marking you can audit",
+    "title": [
+      "No black box.",
+      "Every mark shows its evidence."
+    ],
+    "points": [
+      "Every criterion quotes the candidate's own words",
+      "The platform adds up the totals, never the AI",
+      "A safety-critical miss fails the station",
+      "Uncertain attempts go to a human"
+    ]
+  },
+  "human": {
+    "label": "Examiner review",
+    "title": [
+      "Humans keep",
+      "the final word."
+    ],
+    "body": "Academy examiners can review any attempt, read the transcript and the AI's reasoning, and override any score."
+  },
+  "academy": {
+    "label": "Built for academies",
+    "title": [
+      "Your brand.",
+      "Our engine."
+    ],
+    "items": [
+      [
+        "Your brand",
+        "Your name and colours on the platform your candidates use."
+      ],
+      [
+        "Your questions",
+        "Load your own stations, rubrics and model answers."
+      ],
+      [
+        "Your rules",
+        "Set the station mix, timing and pass marks."
+      ],
+      [
+        "Your website",
+        "Embed it on your own site with a small widget."
+      ]
+    ]
+  },
+  "how": {
+    "label": "How it works",
+    "title": [
+      "From onboarding",
+      "to the next attempt."
+    ],
+    "steps": [
+      "The academy is onboarded with its brand, questions and rubrics",
+      "Candidates pick a station, the circuit, the long case, the viva or a full mock",
+      "They sit it under real timing, by voice or by typing",
+      "A mark sheet, debrief and training plan arrive instantly",
+      "Progress shows what to practise next, with unlimited attempts"
+    ]
+  },
+  "disclaimer": "Independent mock preparation for the GDC ORE Part 2. Not affiliated with or endorsed by the GDC. Scores are indicative and do not predict the official result.",
+  "close": {
+    "label": "Book a demo",
+    "title": [
+      "Mock exams",
+      "that run themselves."
+    ],
+    "body": "Bring Cosmident AI to your academy, under your own brand.",
+    "primary": "Book a demo",
+    "secondary": "See our products"
+  },
+  "screens": {
+    "hero": {
+      "file": "patient.html",
+      "alt": "Cosmident AI during a spoken consultation: the AI patient avatar on a video call beside a live transcript of the conversation."
+    },
+    "sitting": [
+      {
+        "file": "written.html",
+        "alt": "A radiograph station: two findings boxed on a panoramic radiograph, with zoom and contrast tools and the list of marked findings."
+      },
+      {
+        "file": "patient.html",
+        "alt": "The AI patient station: the patient avatar answers out loud while the conversation is transcribed."
+      },
+      {
+        "file": "dtp.html",
+        "alt": "The long case: history and examination done, with new investigation results released for the current phase."
+      },
+      null,
+      {
+        "file": "report.html",
+        "alt": "The debrief: a pass verdict, each component scored against the pass mark, and the path through the circuit."
+      }
+    ],
+    "audit": {
+      "file": "report.html",
+      "scroll": true,
+      "alt": "The full mark sheet: every criterion marked correct or missed, then the top fixes, each quoting what the candidate said and a better line to say next time."
+    },
+    "human": {
+      "file": "examiner.html",
+      "scroll": true,
+      "alt": "The examiner review queue: the candidate's transcript, the rubric with critical criteria and notes, and buttons to approve or override the marks."
+    },
+    "avatar": {
+      "screen": "patient.html",
+      "video": "avatar/patient.mp4",
+      "poster": "avatar/patient.webp"
+    }
+  },
+  "card": {
+    "industry": "Dental education",
+    "headline": "AI mock exams for UK dental registration, with a spoken AI patient and a mark sheet the moment candidates finish.",
+    "tags": [
+      "AI patient",
+      "Mock exams",
+      "Automated marking",
+      "Academy platform"
+    ],
+    "image": {
+      "src": "card.webp",
+      "alt": "Cosmident AI consultation screen: the AI patient on a video call beside the live transcript"
+    }
+  }
+}

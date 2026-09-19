@@ -293,8 +293,19 @@
       var base = ui && parseFloat(ui.getAttribute("data-w"));
       if (!base || !track || !view.clientWidth) return;
       var scale = view.clientWidth / base;
+      var changed = view.style.getPropertyValue("--c2-ui-scale") !== scale.toFixed(4);
       view.style.setProperty("--c2-ui-scale", scale.toFixed(4));
       track.style.height = Math.ceil(ui.offsetHeight * scale) + "px";
+      if (changed) relayoutSvgText(view);
+    }
+    // Chrome keeps SVG text laid out for the old scale when only a transform changes,
+    // and can drop it at small scales; taking it out of layout and back redraws it.
+    function relayoutSvgText(view) {
+      var texts = Array.prototype.slice.call(view.querySelectorAll("svg text"));
+      if (!texts.length) return;
+      texts.forEach(function (t) { t.style.display = "none"; });
+      void view.offsetHeight;
+      texts.forEach(function (t) { t.style.display = ""; });
     }
     views.forEach(function (view) {
       fit(view);

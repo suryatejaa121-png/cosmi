@@ -1,0 +1,145 @@
+<!-- Cosmident AI — DTP long case (Diagnosis & Treatment Planning), phased.
+     Self-contained mockup. Demo data only, fictional patient. Shows the four
+     case phases (History → Examination → Investigations → Diagnosis & plan)
+     with progressive disclosure. Fonts NOT embedded. -->
+<style>
+  .cd-ui, .cd-ui * { box-sizing: border-box; }
+  .cd-ui {
+    --bg:#f6f5fa; --sunken:#eeecf6; --panel:#ffffff; --tint:#ede9fe;
+    --line:#e7e4f0; --linestrong:#d0cbe2; --ink:#161022; --ink2:#3e3654;
+    --muted:#6e6686; --faint:#9c95b2; --accent:#6d28d9; --accentRing:#8b5cf6;
+    --ok:#0e9f6e; --okSoft:#dcf5ea; --danger:#e5484d; --warn:#ca7a08;
+    --p-blue:#4353FF; --p-orange:#F59E0B; --p-green:#10B981; --p-present:#8B3DFF;
+    --grad:linear-gradient(100deg,#4353ff 0%,#7c3aed 60%,#8b3dff 100%);
+    width:1280px; color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 580px at 50% 104%, rgba(139,92,246,.22), rgba(167,139,250,.10) 46%, transparent 72%),
+      radial-gradient(920px 520px at 90% -6%, rgba(67,83,255,.15), transparent 58%), var(--bg);
+    padding:20px 28px 32px;
+  }
+  .cd-ui .overline{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accentRing); }
+  .cd-ui .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .nav{ display:flex; align-items:center; gap:12px; height:56px; padding:0 20px; background:#fff;
+    border:1px solid var(--line); border-radius:16px; box-shadow:0 10px 30px -14px rgba(46,26,90,.20); margin-bottom:22px; }
+  .cd-ui .ring{ width:20px; height:20px; border-radius:50%;
+    background:conic-gradient(from 210deg,#f7a04b,#ec4899,#8b5cf6,#4353ff,#f7a04b);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px)); }
+  .cd-ui .brand{ font-weight:800; letter-spacing:-.02em; font-size:18px; }
+  .cd-ui .by{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .cd-ui .st-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px; }
+  .cd-ui .st-title{ font-size:24px; font-weight:600; letter-spacing:-.01em; margin:2px 0 0; }
+  .cd-ui .timer{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:7px 16px; background:#fff;
+    border:1px solid var(--line); box-shadow:0 1px 2px -1px rgba(46,26,90,.08); font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .timer .lab{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+
+  /* phase stepper */
+  .cd-ui .steps{ display:flex; align-items:center; list-style:none; padding:0; margin:0 0 18px; }
+  .cd-ui .step{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+  .cd-ui .dot{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; font-size:13px; font-weight:700; border:1px solid var(--line); flex:0 0 auto; }
+  .cd-ui .dot.done{ background:var(--okSoft); color:var(--ok); border-color:rgba(14,159,110,.4); }
+  .cd-ui .dot.active{ background:var(--p-green); color:#fff; border-color:transparent; box-shadow:0 12px 30px -10px rgba(16,185,129,.55); }
+  .cd-ui .dot.locked{ background:var(--sunken); color:var(--faint); }
+  .cd-ui .step .nm{ font-size:14px; white-space:nowrap; }
+  .cd-ui .step .nm.active{ font-weight:600; color:var(--ink); }
+  .cd-ui .step .nm.done{ color:var(--muted); }
+  .cd-ui .step .nm.locked{ color:var(--faint); }
+  .cd-ui .connector{ flex:1; height:1px; margin:0 10px; background:var(--line); }
+  .cd-ui .connector.done{ background:rgba(14,159,110,.4); }
+
+  .cd-ui .panel{ border:1px solid var(--line); border-radius:24px; background:linear-gradient(163deg,#fff 0%,#fcfbff 44%,#f4f1fe 100%);
+    box-shadow:0 1px 2px -1px rgba(46,26,90,.07),0 16px 40px -24px rgba(46,26,90,.20); padding:20px; margin-bottom:16px; }
+  .cd-ui .scenario{ font-size:15px; line-height:1.65; color:var(--ink2); }
+  .cd-ui .scenario b{ color:var(--ink); }
+
+  /* progressive-disclosure release panel (green) */
+  .cd-ui .release{ border:1px solid rgba(16,185,129,.4); border-radius:20px; background:rgba(16,185,129,.06); padding:16px 18px; margin-bottom:16px; }
+  .cd-ui .release .hd{ display:flex; align-items:center; gap:8px; color:var(--ok); font-weight:600; font-size:14px; margin:0 0 10px; }
+  .cd-ui .release .grp{ margin-bottom:10px; }
+  .cd-ui .release ul{ margin:4px 0 0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:8px; }
+  .cd-ui .release li{ font-size:14px; color:var(--ink); }
+  .cd-ui .kv{ display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:4px 10px; }
+  .cd-ui .kv b{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; color:var(--accentRing); }
+
+  /* current-phase form */
+  .cd-ui .form .lab{ display:block; margin:0 0 6px; }
+  .cd-ui .field{ width:100%; border:1px solid var(--linestrong); background:#fff; border-radius:12px; padding:10px 12px; font:inherit; font-size:14px; color:var(--ink); resize:none; }
+  .cd-ui .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .cd-ui .prev{ border:1px solid var(--line); border-radius:16px; background:var(--sunken); padding:14px 16px; color:var(--muted); font-size:14px; display:flex; align-items:center; gap:8px; }
+  .cd-ui .actions{ display:flex; justify-content:flex-end; margin-top:16px; }
+  .cd-ui .btn-primary{ display:inline-flex; align-items:center; gap:8px; color:#fff; background:var(--grad); border:0; border-radius:12px; padding:11px 18px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 12px 30px -10px rgba(124,58,237,.7); }
+</style>
+
+<div class="cd-ui" style="width:1280px">
+  <div class="nav"><span class="ring"></span><span class="brand">Cosmident AI</span><span class="by">by CosmironAI</span></div>
+
+  <div class="st-head">
+    <div>
+      <span class="overline">DTP3 · DTP long case</span>
+      <h2 class="st-title">Recurrent lower-jaw swelling — 42-year-old</h2>
+    </div>
+    <span class="timer"><span class="lab">Investigations</span> 05:20</span>
+  </div>
+
+  <!-- 4-phase stepper -->
+  <ol class="steps">
+    <li class="step">
+      <span class="dot done">✓</span><span class="nm done">History</span>
+      <span class="connector done"></span>
+    </li>
+    <li class="step">
+      <span class="dot done">✓</span><span class="nm done">Examination</span>
+      <span class="connector done"></span>
+    </li>
+    <li class="step">
+      <span class="dot active">3</span><span class="nm active">Investigations</span>
+      <span class="connector"></span>
+    </li>
+    <li class="step" style="flex:0 0 auto">
+      <span class="dot locked">🔒</span><span class="nm locked">Diagnosis &amp; plan</span>
+    </li>
+  </ol>
+
+  <!-- scenario -->
+  <div class="panel">
+    <p class="scenario"><b>Presenting complaint.</b> A 42-year-old attends with a three-month history of intermittent swelling and dull ache in the lower left jaw, worse on eating. No fever. Medically fit and well; non-smoker. On examination a firm, non-tender swelling is noted in the LL molar region with a slightly raised, intact overlying mucosa. You have taken a history and completed your examination. Special investigations for this phase are now released below.</p>
+  </div>
+
+  <!-- released results for this phase -->
+  <div class="release">
+    <p class="hd">✚ New results released for this phase</p>
+    <div class="grp">
+      <span class="overline">Vitality &amp; percussion</span>
+      <ul>
+        <li class="kv"><b>LL6</b> non-vital, TTP +</li>
+        <li class="kv"><b>LL7</b> vital, TTP −</li>
+        <li class="kv"><b>LL8</b> partially erupted</li>
+      </ul>
+    </div>
+    <div class="grp">
+      <span class="overline">Radiograph (periapical + OPG)</span>
+      <ul>
+        <li class="kv"><b>LL6</b> periapical radiolucency, ~8 mm, well-defined</li>
+        <li class="kv"><b>LL6</b> deep distal restoration close to pulp</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- current-phase form -->
+  <div class="panel form">
+    <span class="lab overline">Your investigations &amp; interpretation</span>
+    <div class="grid2" style="margin-top:6px">
+      <div>
+        <span class="lab overline">Special tests you would request</span>
+        <textarea class="field" rows="3">Periapical radiograph LL6; sensibility testing LL5–LL8; percussion & palpation; assess for sinus / expansion of buccal plate.</textarea>
+      </div>
+      <div>
+        <span class="lab overline">Interpretation of findings</span>
+        <textarea class="field" rows="3">Non-vital LL6 with periapical radiolucency consistent with chronic apical periodontitis from a failing deep restoration. Swelling likely a chronic apical (periapical) abscess/granuloma.</textarea>
+      </div>
+    </div>
+    <div class="prev">▸ Previous phases (History, Examination) — locked / read-only</div>
+    <div class="actions"><button class="btn-primary">Continue to diagnosis &amp; plan →</button></div>
+  </div>
+</div>

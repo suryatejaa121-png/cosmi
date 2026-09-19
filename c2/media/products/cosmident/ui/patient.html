@@ -1,0 +1,160 @@
+<!-- Cosmident AI — Live AI patient consultation (OSCE actor station).
+     Self-contained mockup. Demo data only; the patient face is a neutral
+     placeholder, not a real person. Fonts are NOT embedded — load
+     'Plus Jakarta Sans' + 'IBM Plex Mono' on the host page for the intended look. -->
+<style>
+  .cd-ui, .cd-ui * { box-sizing: border-box; }
+  .cd-ui {
+    --bg:#f6f5fa; --sunken:#eeecf6; --panel:#ffffff; --tint:#ede9fe;
+    --line:#e7e4f0; --linestrong:#d0cbe2; --ink:#161022; --ink2:#3e3654;
+    --muted:#6e6686; --faint:#9c95b2; --accent:#6d28d9; --accentStrong:#4353ff;
+    --accentSoft:#ede9fe; --accentRing:#8b5cf6; --live:#8b5cf6;
+    --ok:#0e9f6e; --okSoft:#dcf5ea; --danger:#e5484d; --dangerSoft:#fce7e7;
+    --warn:#ca7a08; --warnSoft:#fbefd6; --rec:#ec4899;
+    --grad:linear-gradient(100deg,#4353ff 0%,#7c3aed 60%,#8b3dff 100%);
+    --grad-ink:linear-gradient(95deg,#5b8bff 0%,#8b5cf6 34%,#d365e8 64%,#f79a63 100%);
+    width:1280px; color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 580px at 50% 104%, rgba(139,92,246,.22), rgba(167,139,250,.10) 46%, transparent 72%),
+      radial-gradient(920px 520px at 90% -6%, rgba(67,83,255,.15), transparent 58%),
+      radial-gradient(800px 480px at 0% 2%, rgba(211,101,232,.11), transparent 56%), var(--bg);
+    padding:20px 28px 32px;
+  }
+  .cd-ui .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .overline{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accentRing); }
+  .cd-ui .grad-ink{ background:var(--grad-ink); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  /* floating white nav pill */
+  .cd-ui .nav{
+    display:flex; align-items:center; gap:12px; height:56px; padding:0 20px;
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    box-shadow:0 10px 30px -14px rgba(46,26,90,.20); margin-bottom:22px;
+  }
+  .cd-ui .ring{ width:20px; height:20px; border-radius:50%;
+    background:conic-gradient(from 210deg,#f7a04b,#ec4899,#8b5cf6,#4353ff,#f7a04b);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px)); }
+  .cd-ui .brand{ font-weight:800; letter-spacing:-.02em; font-size:18px; }
+  .cd-ui .by{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+
+  /* station header */
+  .cd-ui .st-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+  .cd-ui .st-title{ font-size:24px; font-weight:600; letter-spacing:-.01em; margin:2px 0 0; }
+  .cd-ui .timer{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:7px 16px;
+    background:#fff; border:1px solid var(--line); box-shadow:0 1px 2px -1px rgba(46,26,90,.08);
+    font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .timer .lab{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+
+  /* stage */
+  .cd-ui .stage{ display:grid; grid-template-columns:1fr 1fr; gap:16px; height:560px; }
+  .cd-ui .panel{ border:1px solid var(--line); border-radius:24px;
+    background:linear-gradient(163deg,#fff 0%,#fcfbff 44%,#f4f1fe 100%);
+    box-shadow:0 1px 2px -1px rgba(46,26,90,.07),0 16px 40px -24px rgba(46,26,90,.20); }
+  .cd-ui .avatar-tile{ position:relative; overflow:hidden; border:0; border-radius:24px;
+    background:radial-gradient(120% 90% at 20% 0%, rgba(148,187,233,.32), transparent 55%),
+      radial-gradient(110% 80% at 85% 12%, rgba(255,244,230,.20), transparent 50%),
+      radial-gradient(90% 70% at 70% 100%, rgba(103,132,187,.25), transparent 60%),
+      linear-gradient(178deg,#dfe7f2 0%,#b9c6da 45%,#8fa1bd 100%); }
+  .cd-ui .face{ position:absolute; inset:0; display:grid; place-items:end center; }
+  .cd-ui .face svg{ width:60%; height:88%; }
+  .cd-ui .tag{ position:absolute; left:12px; top:12px; z-index:2; display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .cd-ui .live-dot{ width:8px; height:8px; border-radius:50%; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.35); }
+  .cd-ui .ctl{ position:absolute; right:12px; top:12px; z-index:2; display:inline-flex; align-items:center; gap:8px; }
+  .cd-ui .chip{ display:inline-flex; align-items:center; gap:6px; border-radius:999px; background:rgba(255,255,255,.88);
+    backdrop-filter:blur(6px); padding:5px 10px; font-size:12px; color:var(--muted); box-shadow:0 1px 4px rgba(0,0,0,.12); }
+  .cd-ui .chip.mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; color:var(--ink); }
+  .cd-ui .chip.xray{ background:var(--accent); color:#fff; font-weight:600; }
+  .cd-ui .chip.tr{ background:rgba(255,255,255,.92); color:var(--accent); font-weight:600; }
+  .cd-ui .bars{ display:inline-flex; align-items:flex-end; gap:2px; height:12px; }
+  .cd-ui .bars i{ width:3px; background:var(--ok); border-radius:1px; }
+  .cd-ui .caption{ position:absolute; left:0; right:0; bottom:16px; display:flex; justify-content:center; padding:0 16px; z-index:2; }
+  .cd-ui .caption p{ max-width:92%; text-align:center; border-radius:16px; background:rgba(255,255,255,.82);
+    backdrop-filter:blur(6px); padding:10px 16px; box-shadow:0 6px 18px -8px rgba(0,0,0,.3); font-size:16px; font-style:italic; color:var(--ink); margin:0; }
+
+  /* transcript */
+  .cd-ui .tr-panel{ border:1px solid var(--line); border-radius:16px; background:var(--sunken); display:flex; flex-direction:column; overflow:hidden; }
+  .cd-ui .tr-scroll{ flex:1; overflow:hidden; padding:16px; display:flex; flex-direction:column; gap:12px; }
+  .cd-ui .bubble{ max-width:80%; padding:10px 14px; font-size:15px; line-height:1.5; border-radius:20px; }
+  .cd-ui .bubble.ai{ align-self:flex-start; border-top-left-radius:8px; background:#fff; border:1px solid var(--line); color:var(--ink); }
+  .cd-ui .bubble.me{ align-self:flex-end; border-bottom-right-radius:8px; color:#fff;
+    background:linear-gradient(115deg,#4353ff,#8b3dff); box-shadow:0 8px 22px -10px rgba(124,58,237,.65); }
+  .cd-ui .bubble .who{ display:block; font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accentRing); margin-bottom:2px; }
+  .cd-ui .dots{ align-self:flex-start; display:inline-flex; gap:6px; align-items:center; padding:12px 14px; background:#fff; border:1px solid var(--line); border-radius:20px; border-top-left-radius:8px; }
+  .cd-ui .dots i{ width:6px; height:6px; border-radius:50%; background:var(--muted); }
+
+  /* control bar */
+  .cd-ui .controls{ display:flex; align-items:center; gap:12px; margin-top:16px; }
+  .cd-ui .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:12px; padding:10px 16px; font-size:14px; font-weight:600; cursor:pointer; border:1px solid transparent; }
+  .cd-ui .btn-ghost{ background:transparent; border-color:var(--linestrong); color:var(--ink); }
+  .cd-ui .btn-primary{ color:#fff; background:var(--grad); box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 12px 30px -10px rgba(124,58,237,.7); }
+  .cd-ui .status{ display:inline-flex; align-items:center; gap:8px; font-size:14px; color:var(--accent); }
+  .cd-ui .rec{ width:10px; height:10px; border-radius:50%; background:var(--rec); box-shadow:0 0 0 4px rgba(236,72,153,.18); }
+</style>
+
+<div class="cd-ui" style="width:1280px">
+  <!-- floating nav -->
+  <div class="nav">
+    <span class="ring"></span>
+    <span class="brand">Cosmident AI</span>
+    <span class="by">by CosmironAI</span>
+  </div>
+
+  <!-- station header -->
+  <div class="st-head">
+    <div>
+      <span class="overline">A9 · Actor consult</span>
+      <h2 class="st-title">Acute dental pain — new patient</h2>
+    </div>
+    <span class="timer"><span class="lab">Performance</span> 04:12</span>
+  </div>
+
+  <!-- stage: avatar + transcript -->
+  <div class="stage">
+    <!-- avatar tile -->
+    <div class="avatar-tile">
+      <span class="tag"><span class="live-dot"></span>Patient · speaking</span>
+      <div class="ctl">
+        <span class="chip"><span class="bars"><i style="height:5px"></i><i style="height:8px"></i><i style="height:11px"></i><i style="height:12px"></i></span></span>
+        <span class="chip mono">04:12</span>
+        <span class="chip xray">🖼 X-rays &amp; results →</span>
+        <span class="chip tr">💬 Transcript · 6</span>
+      </div>
+
+      <!-- neutral placeholder patient (not a real face) -->
+      <div class="face" aria-label="Patient (placeholder)">
+        <svg viewBox="0 0 200 240" role="img" aria-label="patient silhouette">
+          <defs><linearGradient id="sil" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5b6b86"/><stop offset="1" stop-color="#3c4a63"/>
+          </linearGradient></defs>
+          <circle cx="100" cy="78" r="46" fill="url(#sil)"/>
+          <path d="M20 240 C20 168 52 140 100 140 C148 140 180 168 180 240 Z" fill="url(#sil)"/>
+        </svg>
+      </div>
+
+      <div class="caption">
+        <p>“There’s a bit of swelling on the gum, yes — and it’s tender when I bite.”</p>
+      </div>
+    </div>
+
+    <!-- transcript -->
+    <div class="tr-panel">
+      <div class="tr-scroll">
+        <div class="bubble ai"><span class="who">Patient</span>Morning, doctor. It’s this back tooth — it’s been throbbing since the weekend.</div>
+        <div class="bubble me">I’m sorry to hear that. Can you point to which tooth, and tell me what makes it worse?</div>
+        <div class="bubble ai"><span class="who">Patient</span>Lower right, at the back. Hot drinks set it off, and it kept me up last night.</div>
+        <div class="bubble me">Does anything ease it — painkillers, or cold water?</div>
+        <div class="bubble ai"><span class="who">Patient</span>Ibuprofen takes the edge off for an hour, then it’s back.</div>
+        <div class="bubble me">Thank you. Have you noticed any swelling, or a bad taste in your mouth?</div>
+        <div class="dots"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- control bar -->
+  <div class="controls">
+    <button class="btn btn-ghost">◼ End consultation</button>
+    <span class="status"><span class="rec"></span> Listening…</span>
+  </div>
+</div>

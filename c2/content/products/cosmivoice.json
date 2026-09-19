@@ -940,12 +940,13 @@
         "logo": "logos/cosmifin.webp"
       },
       {
-        "name": "Cosmident",
-        "role": "AI-powered dental examination",
-        "status": "In development",
+        "name": "Cosmident AI",
+        "role": "AI mock exams for dental registration",
+        "status": "Live",
         "hue": "#2BA7FF",
         "glyph": "dent",
-        "logo": "logos/cosmident.webp"
+        "logo": "logos/cosmident.webp",
+        "href": "products/cosmident/index.html"
       },
       {
         "name": "CosmiOps",
@@ -974,5 +975,15 @@
     "body": "Tell us about your calls. We'll invite you to early access first.",
     "primary": "Join early access",
     "secondary": "See our products"
+  },
+  "card": {
+    "industry": "Voice AI",
+    "headline": "AI voice employees that answer, call and act on every business conversation.",
+    "tags": [
+      "Inbound",
+      "Outbound",
+      "Multilingual",
+      "AI workforce"
+    ]
   }
 }

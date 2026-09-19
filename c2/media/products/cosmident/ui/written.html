@@ -1,0 +1,160 @@
+<!-- Cosmident AI — Written / clinical station: radiograph marking tool.
+     Self-contained mockup. Demo data only. The radiograph is a stylised,
+     drawn placeholder (inline SVG) — no real image, no clinic watermark.
+     Fonts NOT embedded: load 'Plus Jakarta Sans' + 'IBM Plex Mono' on the host. -->
+<style>
+  .cd-ui, .cd-ui * { box-sizing: border-box; }
+  .cd-ui {
+    --bg:#f6f5fa; --sunken:#eeecf6; --panel:#ffffff; --tint:#ede9fe;
+    --line:#e7e4f0; --linestrong:#d0cbe2; --ink:#161022; --ink2:#3e3654;
+    --muted:#6e6686; --faint:#9c95b2; --accent:#6d28d9; --accentStrong:#4353ff;
+    --accentSoft:#ede9fe; --accentRing:#8b5cf6; --ok:#0e9f6e; --okSoft:#dcf5ea;
+    --danger:#e5484d; --dangerSoft:#fce7e7; --warn:#ca7a08; --warnSoft:#fbefd6;
+    --grad:linear-gradient(100deg,#4353ff 0%,#7c3aed 60%,#8b3dff 100%);
+    --grad-ink:linear-gradient(95deg,#5b8bff 0%,#8b5cf6 34%,#d365e8 64%,#f79a63 100%);
+    width:1280px; color:var(--ink); line-height:1.5; -webkit-font-smoothing:antialiased;
+    font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    background:
+      radial-gradient(1100px 580px at 50% 104%, rgba(139,92,246,.22), rgba(167,139,250,.10) 46%, transparent 72%),
+      radial-gradient(920px 520px at 90% -6%, rgba(67,83,255,.15), transparent 58%), var(--bg);
+    padding:20px 28px 32px;
+  }
+  .cd-ui .overline{ font-size:11px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accentRing); }
+  .cd-ui .nav{ display:flex; align-items:center; gap:12px; height:56px; padding:0 20px; background:#fff;
+    border:1px solid var(--line); border-radius:16px; box-shadow:0 10px 30px -14px rgba(46,26,90,.20); margin-bottom:22px; }
+  .cd-ui .ring{ width:20px; height:20px; border-radius:50%;
+    background:conic-gradient(from 210deg,#f7a04b,#ec4899,#8b5cf6,#4353ff,#f7a04b);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px));
+    mask:radial-gradient(farthest-side,transparent calc(100% - 3.5px),#000 calc(100% - 3px)); }
+  .cd-ui .brand{ font-weight:800; letter-spacing:-.02em; font-size:18px; }
+  .cd-ui .by{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .cd-ui .st-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; }
+  .cd-ui .st-title{ font-size:24px; font-weight:600; letter-spacing:-.01em; margin:2px 0 0; }
+  .cd-ui .timer{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:7px 16px; background:#fff;
+    border:1px solid var(--line); box-shadow:0 1px 2px -1px rgba(46,26,90,.08); font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .cd-ui .timer .lab{ font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); }
+  .cd-ui .panel{ border:1px solid var(--line); border-radius:24px; background:linear-gradient(163deg,#fff 0%,#fcfbff 44%,#f4f1fe 100%);
+    box-shadow:0 1px 2px -1px rgba(46,26,90,.07),0 16px 40px -24px rgba(46,26,90,.20); padding:20px; }
+  .cd-ui .task{ border:1px solid var(--line); border-radius:16px; background:var(--bg); padding:14px 16px; margin-bottom:16px; }
+  .cd-ui .task .k{ font-size:13px; font-weight:600; margin:0 0 3px; }
+  .cd-ui .task p{ margin:0; font-size:14px; color:var(--ink2); }
+
+  /* marking toolbar */
+  .cd-ui .toolbar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .cd-ui .seg{ display:inline-flex; gap:4px; background:var(--sunken); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .cd-ui .seg button{ border:0; background:transparent; color:var(--muted); font-size:13px; font-weight:600; padding:6px 12px; border-radius:8px; cursor:pointer; }
+  .cd-ui .seg button.on{ background:var(--accent); color:#fff; }
+  .cd-ui .tbtn{ border:1px solid var(--linestrong); background:transparent; color:var(--ink); font-size:12px; font-weight:600; padding:6px 10px; border-radius:10px; cursor:pointer; }
+  .cd-ui .zoom{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:12px; color:var(--muted); }
+  .cd-ui .rng{ display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
+  .cd-ui .rng input{ width:110px; accent-color:var(--accent); }
+  .cd-ui .undo{ margin-left:auto; }
+
+  /* viewport */
+  .cd-ui .viewport{ position:relative; height:520px; border:1px solid var(--line); border-radius:16px; background:#05070c; overflow:hidden; display:grid; place-items:center; }
+  .cd-ui .viewport svg{ width:94%; height:auto; }
+  .cd-ui .box{ position:absolute; border:2px solid var(--accentRing); background:rgba(139,92,246,.18); border-radius:3px; }
+  .cd-ui .box b{ position:absolute; top:-11px; left:-11px; width:22px; height:22px; border-radius:50%; background:var(--accent);
+    color:#fff; font-size:12px; font-weight:700; display:grid; place-items:center; font-family:'IBM Plex Mono',ui-monospace,monospace; }
+
+  /* findings list */
+  .cd-ui .findings{ margin-top:16px; }
+  .cd-ui .findings .lab{ margin:0 0 8px; }
+  .cd-ui .pills{ display:flex; flex-wrap:wrap; gap:8px; list-style:none; padding:0; margin:0; }
+  .cd-ui .pills li{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--sunken); border-radius:999px; padding:5px 12px 5px 6px; font-size:14px; }
+  .cd-ui .pills .n{ width:20px; height:20px; border-radius:50%; background:var(--accentSoft); color:var(--accentRing); font-size:12px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .cd-ui .pills .x{ width:20px; height:20px; border-radius:50%; color:var(--faint); display:grid; place-items:center; cursor:pointer; }
+</style>
+
+<div class="cd-ui" style="width:1280px">
+  <div class="nav">
+    <span class="ring"></span><span class="brand">Cosmident AI</span><span class="by">by CosmironAI</span>
+  </div>
+
+  <div class="st-head">
+    <div>
+      <span class="overline">W4 · Radiographic interpretation</span>
+      <h2 class="st-title">Mark the radiographic findings</h2>
+    </div>
+    <span class="timer"><span class="lab">Performance</span> 03:48</span>
+  </div>
+
+  <div class="panel">
+    <div class="task">
+      <p class="k">Task</p>
+      <p>Review the panoramic radiograph. Draw a box around each significant finding, then confirm your marked findings below. Use zoom and contrast to inspect the image.</p>
+    </div>
+
+    <!-- toolbar -->
+    <div class="toolbar">
+      <div class="seg"><button class="on">Mark</button><button>Pan</button></div>
+      <button class="tbtn">−</button><span class="zoom">100%</span><button class="tbtn">+</button>
+      <button class="tbtn">Invert</button>
+      <span class="rng">Contrast <input type="range" min="60" max="220" value="140" aria-label="Contrast"></span>
+      <button class="tbtn">Reset view</button>
+      <button class="tbtn undo">Undo last mark</button>
+    </div>
+
+    <!-- viewport with drawn radiograph + marks -->
+    <div class="viewport">
+      <svg viewBox="0 0 900 380" role="img" aria-label="Panoramic radiograph (stylised placeholder)">
+        <defs>
+          <radialGradient id="film" cx="50%" cy="46%" r="70%">
+            <stop offset="0" stop-color="#2a3340"/><stop offset="1" stop-color="#0a0e15"/>
+          </radialGradient>
+          <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#8b94a4"/><stop offset="1" stop-color="#59606e"/>
+          </linearGradient>
+        </defs>
+        <rect width="900" height="380" fill="url(#film)"/>
+        <!-- mandible arch -->
+        <path d="M70 150 C70 300 250 340 450 340 C650 340 830 300 830 150"
+              fill="none" stroke="#454e5c" stroke-width="46" stroke-linecap="round" opacity=".55"/>
+        <!-- upper arch -->
+        <path d="M120 120 C220 60 680 60 780 120" fill="none" stroke="#3c4552" stroke-width="30" opacity=".5"/>
+        <!-- rows of teeth (schematic) -->
+        <g fill="url(#bone)">
+          <!-- lower teeth -->
+          <g>
+            <rect x="120" y="250" width="34" height="52" rx="9"/><rect x="164" y="262" width="34" height="54" rx="9"/>
+            <rect x="208" y="272" width="34" height="56" rx="9"/><rect x="252" y="280" width="36" height="58" rx="10"/>
+            <rect x="300" y="286" width="30" height="52" rx="8"/><rect x="340" y="288" width="26" height="48" rx="7"/>
+            <rect x="378" y="290" width="24" height="46" rx="7"/><rect x="414" y="290" width="24" height="46" rx="7"/>
+            <rect x="452" y="290" width="24" height="46" rx="7"/><rect x="490" y="288" width="26" height="48" rx="7"/>
+            <rect x="528" y="286" width="30" height="52" rx="8"/><rect x="568" y="280" width="36" height="58" rx="10"/>
+            <rect x="616" y="272" width="34" height="56" rx="9"/><rect x="660" y="262" width="34" height="54" rx="9"/>
+            <rect x="704" y="250" width="34" height="52" rx="9"/>
+          </g>
+          <!-- upper teeth -->
+          <g opacity=".92">
+            <rect x="150" y="120" width="30" height="46" rx="8"/><rect x="188" y="112" width="30" height="46" rx="8"/>
+            <rect x="226" y="106" width="30" height="46" rx="8"/><rect x="266" y="102" width="28" height="44" rx="7"/>
+            <rect x="304" y="100" width="24" height="42" rx="7"/><rect x="340" y="99" width="22" height="40" rx="6"/>
+            <rect x="376" y="98" width="22" height="40" rx="6"/><rect x="412" y="98" width="22" height="40" rx="6"/>
+            <rect x="448" y="98" width="22" height="40" rx="6"/><rect x="484" y="99" width="22" height="40" rx="6"/>
+            <rect x="520" y="100" width="24" height="42" rx="7"/><rect x="556" y="102" width="28" height="44" rx="7"/>
+            <rect x="596" y="106" width="30" height="46" rx="8"/><rect x="634" y="112" width="30" height="46" rx="8"/>
+            <rect x="672" y="120" width="30" height="46" rx="8"/>
+          </g>
+        </g>
+        <!-- a dark periapical lesion hint (lower-right molar area) -->
+        <circle cx="722" cy="308" r="13" fill="#12161d"/>
+        <!-- a distal radiolucency hint on an upper molar -->
+        <rect x="640" y="120" width="9" height="16" rx="3" fill="#12161d"/>
+      </svg>
+
+      <!-- candidate's marks (percent positioned over the viewport) -->
+      <div class="box" style="left:76%; top:74%; width:7%; height:16%"><b>1</b></div>
+      <div class="box" style="left:69.5%; top:28%; width:6%; height:16%"><b>2</b></div>
+    </div>
+
+    <!-- findings list -->
+    <div class="findings">
+      <p class="lab overline">Marked findings · 2</p>
+      <ul class="pills">
+        <li><span class="n">1</span> LR6 — periapical radiolucency <span class="x">×</span></li>
+        <li><span class="n">2</span> UR7 — distal caries <span class="x">×</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
