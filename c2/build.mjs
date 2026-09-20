@@ -371,6 +371,15 @@ function productCard(v, R, tags, { slug, tint, logo, stage, live = false }) {
         </article>`;
 }
 
+const dentCard = (dent, R) =>
+  productCard(dent, R, ["Cosmiron product", dent.card.industry], {
+    slug: "cosmident",
+    tint: "#7C3AED",
+    logo: "cosmident.webp",
+    live: true,
+    stage: `<div class="c2-exhibit-stage">${frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt)}</div>`,
+  });
+
 function workIndexBody(projects, R, voice, dent) {
   const ctx = { R, css: new Map() };
   const types = [...new Set(projects.map((p) => p.type).filter(Boolean))];
@@ -382,15 +391,7 @@ function workIndexBody(projects, R, voice, dent) {
       : "";
   const cards =
     projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("") +
-    (dent
-      ? productCard(dent, R, ["Cosmiron product", dent.card.industry], {
-          slug: "cosmident",
-          tint: "#7C3AED",
-          logo: "cosmident.webp",
-          live: true,
-          stage: `<div class="c2-exhibit-stage">${frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt)}</div>`,
-        })
-      : "") +
+    (dent ? dentCard(dent, R) : "") +
     (voice
       ? productCard(voice, R, ["Cosmiron product", voice.card.industry], {
           slug: "cosmivoice",
@@ -814,14 +815,16 @@ function injectInto(file, blocks) {
   console.log(`  additions   ${html !== before ? "updated  " : "unchanged"}        ${file}`);
 }
 
-function selectedWorkSection(projects, R) {
+function selectedWorkSection(projects, R, dent) {
   if (!projects.length) return "";
   const ctx = { R, css: new Map() };
   const lead = projects.find((p) => p.quote && !isDraft(p, "quote"));
   const quote = lead
     ? `<figure class="c2-quote" data-c2-reveal><blockquote>${esc(lead.quote.text)}</blockquote><figcaption>${esc(lead.quote.by)}</figcaption></figure>`
     : "";
-  const cards = projects.map((p) => exhibitCard(p, R, `${R}work/${p.slug}/index.html`, ctx)).join("");
+  const cards =
+    projects.map((p) => exhibitCard(p, R, `${R}work/${p.slug}/index.html`, ctx)).join("") +
+    (dent ? dentCard(dent, R) : "");
   return `<div class="c2 c2-home-work">${uiStyles(ctx)}
   <section class="c2-section c2-selected" aria-label="Selected work">
     <div class="c2-container">
@@ -863,7 +866,7 @@ function proofRow(projects, R, label, tone = "") {
 </div>`;
 }
 
-function injectAdditions(projects, voice) {
+function injectAdditions(projects, voice, dent) {
   const featured = projects.filter((p) => p.featured);
   const assets = (R, { fonts = false, withVoice = false } = {}) => [
     ["c2-styles", "</head>", `<link href="${cssHref(R)}" rel="stylesheet" type="text/css">${withVoice ? `\n<link href="${voiceCss(R)}" rel="stylesheet" type="text/css">\n<link href="${VOICE_FONTS}" rel="stylesheet">` : ""}${fonts ? `\n${UI_FONTS}` : ""}`],
@@ -874,7 +877,7 @@ function injectAdditions(projects, voice) {
   // depend on the layout. Only the approved Selected work section, between sections.
   injectInto(home, [
     ...assets("./", { fonts: featured.some(isProduct) }),
-    ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./")],
+    ["selected-work", '<section class="section light-grey last">', selectedWorkSection(featured, "./", dent)],
   ]);
   const what = "whatwedo-cosmiron/pages/what-we-do/index.html";
   injectInto(what, [...assets(rootPrefix(what)), ["built-with", '<section class="section custom_bg">', proofRow(featured, rootPrefix(what), "Built with these services", "plum")]]);
@@ -1064,4 +1067,4 @@ for (const page of productPages) {
   console.log(`  page        written          ${page.file}`);
 }
 
-injectAdditions(projects, voice);
+injectAdditions(projects, voice, dent);
