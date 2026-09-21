@@ -22,6 +22,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { voicePage, voiceBand, productsPage } from "./voice.mjs";
 import { dentPage } from "./dent.mjs";
+import { paisaPage } from "./paisa.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ASSETS = "cdn.prod.website-files.com/6720dd1ab6df0da205830ab1/";
@@ -371,6 +372,22 @@ function productCard(v, R, tags, { slug, tint, logo, stage, live = false }) {
         </article>`;
 }
 
+// A client collaboration told as its own experience: the Work card links to that page.
+const storyCard = (st, R) => `
+        <article class="c2-exhibit" data-c2-work data-tags="${esc(["Collaboration", st.card.industry].join("|"))}" style="--c2-tint:${esc(st.tint)}">
+          <a class="c2-exhibit-link" data-c2-transition href="${R}work/${st.slug}/index.html">
+            <div class="c2-exhibit-copy">
+              <div class="c2-exhibit-meta">${caption(st.card.industry)}<span class="c2-status">${esc(st.card.status)}</span></div>
+              <div class="c2-exhibit-client"><img class="c2-wordmark" src="${R}c2/media/work/${st.slug}/${st.logo}" alt="${esc(st.client)}" loading="lazy">${esc(st.place)}</div>
+              <h2 class="c2-exhibit-title">${esc(st.client)}</h2>
+              <p class="c2-exhibit-headline c2-spectrum">${esc(st.card.headline)}</p>
+              <div class="tags_wrap">${st.card.tags.map((t) => `<div class="tag-solutions"><div>${esc(t)}</div></div>`).join("")}</div>
+              <span class="c2-exhibit-cta">${esc(st.card.cta)} <span aria-hidden="true">→</span></span>
+            </div>
+            <div class="c2-exhibit-stage">${frame(`${R}c2/media/work/${st.slug}/${st.card.image.src}`, st.card.image.alt)}</div>
+          </a>
+        </article>`;
+
 const dentCard = (dent, R) =>
   productCard(dent, R, ["Cosmiron product", dent.card.industry], {
     slug: "cosmident",
@@ -380,7 +397,7 @@ const dentCard = (dent, R) =>
     stage: `<div class="c2-exhibit-stage">${frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt)}</div>`,
   });
 
-function workIndexBody(projects, R, voice, dent) {
+function workIndexBody(projects, R, voice, dent, st) {
   const ctx = { R, css: new Map() };
   const types = [...new Set(projects.map((p) => p.type).filter(Boolean))];
   const filters =
@@ -391,6 +408,7 @@ function workIndexBody(projects, R, voice, dent) {
       : "";
   const cards =
     projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("") +
+    (st ? storyCard(st, R) : "") +
     (dent ? dentCard(dent, R) : "") +
     (voice
       ? productCard(voice, R, ["Cosmiron product", voice.card.industry], {
@@ -908,6 +926,8 @@ const voiceCss = (R) => `${R}c2/cosmivoice.css?v=${assetVersion("c2/cosmivoice.c
 const voiceJs = (R) => `${R}c2/cosmivoice.js?v=${assetVersion("c2/cosmivoice.js")}`;
 const dentCss = (R) => `${R}c2/cosmident.css?v=${assetVersion("c2/cosmident.css")}`;
 const dentJs = (R) => `${R}c2/cosmident.js?v=${assetVersion("c2/cosmident.js")}`;
+const paisaCss = (R) => `${R}c2/paisaexpress.css?v=${assetVersion("c2/paisaexpress.css")}`;
+const paisaJs = (R) => `${R}c2/paisaexpress.js?v=${assetVersion("c2/paisaexpress.js")}`;
 // Noto for the Indian scripts CosmiVoice shows; browsers fetch only the scripts a page uses.
 const VOICE_FONTS = "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Sans+Kannada:wght@400;500&family=Noto+Sans+Tamil:wght@400;500&family=Noto+Sans+Telugu:wght@400;500&display=swap";
 
@@ -918,6 +938,7 @@ ensureProductsLinks();
 const projects = loadProjects();
 const voice = JSON.parse(read("c2/content/products/cosmivoice.json"));
 const dent = JSON.parse(read("c2/content/products/cosmident.json"));
+const story = JSON.parse(read("c2/content/stories/paisaexpress.json"));
 const workFile = "work/index.html";
 write(
   workFile,
@@ -925,13 +946,14 @@ write(
     file: workFile,
     title: "Work | Cosmiron AI - Selected Collaborations and Products",
     description: "Platforms, products and AI systems Cosmiron AI has designed, engineered and shipped with its partners.",
-    body: workIndexBody(projects, rootPrefix(workFile), voice, dent),
+    body: workIndexBody(projects, rootPrefix(workFile), voice, dent, story),
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       name: "Cosmiron AI: Selected Work",
       hasPart: [
         ...projects.map((p) => ({ "@type": isProduct(p) ? "SoftwareApplication" : "CreativeWork", name: p.project })),
+        { "@type": "CreativeWork", name: `${story.client}: ${story.industry}` },
         { "@type": "SoftwareApplication", name: dent.name },
         { "@type": "SoftwareApplication", name: voice.name },
       ],
@@ -1065,6 +1087,45 @@ for (const page of productPages) {
     }),
   );
   console.log(`  page        written          ${page.file}`);
+}
+
+/* ---------------- stories: a client collaboration told as an experience ---------------- */
+
+const storyFile = `work/${story.slug}/index.html`;
+{
+  const R = rootPrefix(storyFile);
+  // The story shows the product's own screens, exported from its components the way
+  // the Cosmident page does. A screen that hasn't been exported yet renders nothing,
+  // so the page still builds while the exports are being written.
+  const PE_UI = `c2/media/work/${story.slug}/ui`;
+  const ctx = { R, css: new Map() };
+  const pe = { slug: story.slug, uiDir: PE_UI, uiScope: true };
+  const screen = (spec) => {
+    if (!spec || !existsSync(join(ROOT, PE_UI, spec.file))) return "";
+    return uiView(ctx, pe, spec, { variant: "tile", scroll: Boolean(spec.scroll) });
+  };
+  const storyBody = paisaPage(story, R, { ...H, screen });
+  write(
+    storyFile,
+    shell({
+      file: storyFile,
+      title: `${story.client} | ${story.industry} rebuilt by Cosmiron AI`,
+      description: story.summary,
+      body: `${uiStyles(ctx)}${storyBody}`,
+      current: "work-link",
+      css: [voiceCss(R), paisaCss(R)],
+      js: [paisaJs(R)],
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "CreativeWork",
+        name: `${story.client}: ${story.industry}`,
+        description: story.summary,
+        creator: { "@type": "Organization", name: "Cosmiron AI" },
+        about: { "@type": "Organization", name: story.client, url: story.url },
+      },
+    }),
+  );
+  console.log(`  page        written          ${storyFile}`);
 }
 
 injectAdditions(projects, voice, dent);

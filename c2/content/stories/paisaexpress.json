@@ -1,0 +1,431 @@
+{
+  "slug": "paisaexpress",
+  "client": "PaisaExpress",
+  "kind": "story",
+  "industry": "Lending operations",
+  "place": "Hyderabad",
+  "url": "https://paisaexpress.co.in",
+  "logo": "logo.webp",
+  "tint": "#1E6FB8",
+  "card": {
+    "industry": "Lending operations",
+    "status": "Live",
+    "headline": "Every enquiry in one funnel, a pipeline the team names themselves, and the chasing handled by the system.",
+    "tags": [
+      "Lead operations",
+      "Automation",
+      "WhatsApp",
+      "AI layer"
+    ],
+    "image": {
+      "src": "card.webp",
+      "alt": "The PaisaExpress pipeline drawn as a mandala of fine lines, its stage names around the rim and the five master statuses inside"
+    },
+    "cta": "See the story"
+  },
+  "close": {
+    "label": "Work with us",
+    "title": [
+      "Your operation,",
+      "rebuilt around the work."
+    ],
+    "body": "We start by watching how the work actually happens.",
+    "primary": "Start a conversation",
+    "secondary": "See all work"
+  },
+  "summary": "An agentic CRM that assigns, answers, tells and chases on its own, with one AI for every customer and one for the owner, and speaks to the team only when a person is needed.",
+  "figures": [
+    {
+      "value": "78",
+      "label": "screens in the lending app"
+    },
+    {
+      "value": "23",
+      "label": "sections in the back office"
+    },
+    {
+      "value": "6",
+      "label": "message moments on the way to disbursed"
+    },
+    {
+      "value": "15",
+      "label": "static service pages"
+    }
+  ],
+  "open": {
+    "pill": "PaisaExpress · Agentic CRM for lending, Hyderabad",
+    "lines": [
+      "It does not wait",
+      "to be told."
+    ],
+    "lede": "PaisaExpress arranges home, personal and business loans, loans against property and credit cards in Hyderabad. Cosmiron built the agentic CRM it runs on, with two AIs living inside its WhatsApp.",
+    "ais": [
+      {
+        "name": "AI for the customer",
+        "say": "Answers every customer from their own file."
+      },
+      {
+        "name": "AI for the owner",
+        "say": "Answers the owner about the whole operation."
+      }
+    ],
+    "legend": [
+      "White is a person",
+      "Spectrum is the system, acting"
+    ]
+  },
+  "who": {
+    "pill": "The client",
+    "lines": [
+      "Five kinds of loan.",
+      "Six ways in."
+    ],
+    "say": "PaisaExpress is a loan distributor in Hyderabad. Every enquiry has to be owned, documented, sent to a lender and followed until it disburses, however it arrived.",
+    "products": [
+      "Home",
+      "Personal",
+      "Business",
+      "Against property",
+      "Credit cards"
+    ],
+    "doors": [
+      "an ad",
+      "a calculator",
+      "a service page",
+      "the chatbot",
+      "a callback form",
+      "a walk-in"
+    ],
+    "join": [
+      "One lead.",
+      "From here the system has it."
+    ]
+  },
+  "customer": {
+    "num": "01 · AI for the customer",
+    "verb": "It answers.",
+    "sub": "The customer, from their own file.",
+    "say": "A customer messages the number, or opens the chat on the website, and AI answers. On WhatsApp it reads that customer's own application and documents before it says a word.",
+    "knows": [
+      "Knows their stage, and the one that comes next",
+      "Knows which documents are in, and which are missing",
+      "Learns a new service page in ten minutes, with no deploy",
+      "Never invents a rate, a fee or an approval"
+    ],
+    "handover": {
+      "title": "And it hands over when",
+      "when": [
+        "the customer asks for a person",
+        "it cannot answer",
+        "six turns have passed",
+        "a human has already replied"
+      ]
+    },
+    "cap": "on WhatsApp · illustrative exchange",
+    "exchange": [
+      {
+        "who": "person",
+        "text": "Where is my home loan file?"
+      },
+      {
+        "who": "ai",
+        "src": "Read from their application · stage Sanction · next Legal / Technical",
+        "text": "It moved to Sanction this morning. Legal and technical checks come next."
+      },
+      {
+        "who": "person",
+        "text": "Do you need anything from me?"
+      },
+      {
+        "who": "ai",
+        "src": "Read from their documents · slips verified · property papers missing",
+        "text": "Your salary slips are verified. The property papers are still missing."
+      },
+      {
+        "who": "person",
+        "text": "Can I speak to someone?"
+      }
+    ],
+    "handed": {
+      "cap": "Handed over. The AI goes quiet.",
+      "text": "Hello, I am your agent. I have your file open."
+    }
+  },
+  "owner": {
+    "num": "02 · AI for the owner",
+    "verb": "It answers.",
+    "sub": "The owner, about the whole operation.",
+    "say": "The owner messages the same number, and the system knows who is asking. It answers from the live pipeline, not from a report someone prepared.",
+    "askTitle": "Ask it about",
+    "asks": [
+      "files gone stale",
+      "leads with no owner",
+      "approvals waiting",
+      "today, this week, this month",
+      "what has disbursed",
+      "each agent's load"
+    ],
+    "notes": [
+      "At 09:00 the morning digest lands in the same chat. Reply to it and the conversation carries on.",
+      "The same brain sits on every back-office screen, where an answer opens the case itself."
+    ],
+    "cap": "to the owner, on WhatsApp · illustrative, invented figures",
+    "exchange": [
+      {
+        "who": "person",
+        "text": "What is stuck today?"
+      },
+      {
+        "who": "ai",
+        "text": "Seven files are past 72 hours. The oldest is a home loan at Sanction, nine days, with Agent 02.",
+        "lights": "stale"
+      },
+      {
+        "who": "person",
+        "text": "And leads with no owner?"
+      },
+      {
+        "who": "ai",
+        "text": "Nine. The oldest came in yesterday evening.",
+        "lights": "lead"
+      },
+      {
+        "who": "person",
+        "text": "Who is carrying the most?"
+      },
+      {
+        "who": "ai",
+        "text": "Agent 03, with fourteen open files.",
+        "lights": "agent"
+      }
+    ],
+    "pipeline": {
+      "title": "The live pipeline, as the AI reads it",
+      "base": "48 files in progress",
+      "stale": "7 past 72 hours",
+      "lead": "9 leads with no owner",
+      "agent": "14 with Agent 03"
+    }
+  },
+  "assigns": {
+    "num": "03",
+    "verb": "It assigns.",
+    "say": "Every lead gets an owner the second it lands, round robin across the agents who can actually log in.",
+    "ways": "Every way in rotates the same: the website, each row of a bulk import, a lead made from a WhatsApp thread.",
+    "agents": [
+      {
+        "name": "Agent 01"
+      },
+      {
+        "name": "Agent 02"
+      },
+      {
+        "name": "Agent 03"
+      },
+      {
+        "name": "Agent 04",
+        "skipped": "cannot log in, skipped"
+      }
+    ],
+    "center": "one lead, one owner, in turn",
+    "none": [
+      "Nobody free? It stays unowned, on purpose.",
+      "And becomes the first line of tomorrow's nudge."
+    ]
+  },
+  "tells": {
+    "num": "04",
+    "verb": "It tells.",
+    "say": "Six moments on the way to disbursed, and the customer hears about each one. A stage sends its own name, so a stage renamed this afternoon still messages correctly tonight.",
+    "note": "No one writes the update. And a message that fails never holds a file back.",
+    "cap": "on WhatsApp · message wording illustrative",
+    "stops": [
+      {
+        "k": "Application received",
+        "v": "Your application is in."
+      },
+      {
+        "k": "Documents requested",
+        "v": "Upload from this link. No login needed."
+      },
+      {
+        "k": "Document verified",
+        "v": "Your document is verified."
+      },
+      {
+        "was": "Credit Stage",
+        "k": "Credit Check",
+        "v": "Renamed this afternoon. Tonight: your file has moved to Credit Check."
+      },
+      {
+        "k": "Sanctioned",
+        "v": "Your loan is sanctioned."
+      },
+      {
+        "k": "Disbursed",
+        "v": "Your loan is disbursed."
+      }
+    ]
+  },
+  "chases": {
+    "num": "05",
+    "verb": "It chases.",
+    "say": "The day arrives already read. Written fresh each morning, under sixty-five words, skipping what is fine and ending on the one thing to act on.",
+    "clock": "09:00",
+    "cap": "09:00 digest · illustrative, invented figures",
+    "digest": [
+      "Morning. Fourteen fresh leads came in overnight and six new logins, a decent start.",
+      "Forty-eight files are in progress, but seven have sat untouched past seventy-two hours.",
+      "First thing: the nine unassigned leads need an agent's name on them"
+    ],
+    "ladder": [
+      [
+        "It looks for, first",
+        "Unassigned leads"
+      ],
+      [
+        "then",
+        "Stale past 72 hours"
+      ],
+      [
+        "then",
+        "Pending approvals"
+      ]
+    ],
+    "again": [
+      "15:00, again",
+      "The sweep pings the owning agent once per stall. A case note resets the clock."
+    ]
+  },
+  "count": {
+    "pill": "What it adds up to",
+    "lines": [
+      "Counted,",
+      "not claimed."
+    ],
+    "teaser": {
+      "tag": "In development",
+      "lines": [
+        "Next,",
+        "it speaks."
+      ],
+      "say": "AI Receptionist and AI Calling, built on CosmiVoice, Cosmiron's own voice product."
+    }
+  },
+  "voice": {
+    "tag": "In development",
+    "name": "CosmiVoice",
+    "by": "a Cosmiron product",
+    "lines": [
+      "Next,",
+      "it speaks."
+    ],
+    "lede": "The system that already answers on WhatsApp is learning to pick up the phone: two AI voice employees built on CosmiVoice, Cosmiron's own voice product, speaking Telugu, Hindi, English and the mix people really use on a call.",
+    "cta": "Meet CosmiVoice",
+    "logoAlt": "CosmiVoice logo: a glowing profile wearing a headset",
+    "idents": [
+      {
+        "kind": "in",
+        "name": "AI Receptionist",
+        "does": "Answers every call that comes in.",
+        "problem": "No enquiry rings out. Not at lunch, not at nine at night."
+      },
+      {
+        "kind": "out",
+        "name": "AI Calling",
+        "does": "Makes every call that should go out.",
+        "problem": "No follow-up waits for someone to find the time."
+      }
+    ]
+  },
+  "receptionist": {
+    "tag": "In development",
+    "built": "built on",
+    "verb": "It picks up.",
+    "sub": "AI Receptionist. Every call in, answered.",
+    "say": "A loan enquiry that rings out is a lead that goes to someone else. The receptionist answers on the first ring, in the caller's language, at any hour, and hands the team a lead that already has an owner.",
+    "speaks": [
+      "Speaks",
+      [
+        "Telugu",
+        "Hindi",
+        "English"
+      ],
+      "and the mix"
+    ],
+    "link": "See how CosmiVoice works",
+    "time": "21:04",
+    "ring": "A call comes in to PaisaExpress. Nobody is at the desk.",
+    "caller": [
+      "Caller",
+      "I want a home loan, around forty lakhs."
+    ],
+    "ai": [
+      "AI Receptionist",
+      "I can help with that. Are you salaried, or do you run a business?"
+    ],
+    "understands": {
+      "title": "It understands",
+      "items": [
+        [
+          "A new loan enquiry",
+          100
+        ],
+        [
+          "A question about a file",
+          9
+        ],
+        [
+          "Something else",
+          4
+        ]
+      ]
+    },
+    "acts": {
+      "title": "Then it acts",
+      "items": [
+        "Lead created, with what was said",
+        "Owner assigned, round robin",
+        "Agent briefed on WhatsApp"
+      ]
+    },
+    "cap": "Illustrative call · in development"
+  },
+  "calling": {
+    "tag": "In development",
+    "built": "built on",
+    "verb": "It calls back.",
+    "sub": "AI Calling. Every follow-up, made.",
+    "say": "Follow-ups slip when the day fills up. The system already finds the files that have gone quiet. Next it makes the call itself, in the customer's language, and writes down what was said.",
+    "note": "The receptionist waits for the phone to ring. This one does not wait.",
+    "link": "See how CosmiVoice works",
+    "dial": "Each mark is a file gone quiet. The hand is the system, dialling.",
+    "ai": [
+      "AI Calling",
+      "Hello, this is PaisaExpress. Your home loan is waiting on the property papers. Can you send them this week?"
+    ],
+    "caller": [
+      "Customer",
+      "Yes. I will upload them by Friday."
+    ],
+    "acts": {
+      "title": "Then, with nobody asking",
+      "items": [
+        "Note logged on the file",
+        "72-hour clock reset",
+        "Reminder set for Friday",
+        "Agent told on WhatsApp"
+      ]
+    },
+    "cap": "Illustrative call · in development"
+  },
+  "brand": {
+    "name": "PaisaExpress",
+    "channel": "on WhatsApp"
+  },
+  "signoff": {
+    "line": "Home, personal and business loans, loans against property and credit cards. Hyderabad.",
+    "by": "Agentic CRM designed and engineered by Cosmiron AI",
+    "link": "Visit PaisaExpress"
+  }
+}

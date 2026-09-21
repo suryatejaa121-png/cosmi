@@ -2638,11 +2638,19 @@
 .c2 a.c2-exhibit-link:hover .c2-exhibit-stage--portrait img {
   transform: scale(1.04);
 }
+.c2 .c2-wordmark {
+  flex: none;
+  width: 7vw;
+  height: auto;
+}
 .c2 .c2-logo-chip--full img {
   width: 100%;
   height: 100%;
 }
 @media screen and (max-width: 767px) {
+  .c2 .c2-wordmark {
+    width: 24vw;
+  }
   .c2 .c2-status--dev::before {
     box-shadow: 0 0 0 0.7vw rgba(254, 136, 27, 0.18);
   }
