@@ -78,17 +78,7 @@ const SPECTRUM_STOPS = `
             <stop offset="0.78" stop-color="#ffd600"></stop>
             <stop offset="1" stop-color="#fe881b"></stop>`;
 
-// The thread: a soft haze, the line, and a signal that keeps travelling along it.
-function thread(id, cls, box, d, grad) {
-  return `
-    <svg class="pe-thread ${cls}" viewBox="0 0 ${box}" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-      <defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" ${grad}>${SPECTRUM_STOPS}
-      </linearGradient></defs>
-      <path class="pe-thread-haze" pathLength="100" stroke="url(#${id})" d="${d}"></path>
-      <path class="pe-thread-line" pathLength="100" stroke="url(#${id})" d="${d}"></path>
-      <path class="pe-thread-sig" pathLength="100" d="${d}"></path>
-    </svg>`;
-}
+const STAGE_NAMES = ["Enquiry", "Assigned", "Documents", "Review", "Sanctioned", "Disbursed"];
 
 export function paisaPage(d, R, h) {
   const seq = () => "";
@@ -143,32 +133,105 @@ export function paisaPage(d, R, h) {
         </div>`;
   };
 
-  /* ---------- the opening ---------- */
+  /* ---------- the opening: light, type and motion, the way the site sets its own heroes ---------- */
+  // The copy sits centred over the night. Under it the agentic CRM is drawn once, in
+  // the site's own materials: a burst of spectrum light behind a mandala ring (the
+  // site's own motif) with the client's monogram at its heart, and five agents,
+  // each drawn as its work, on the ring round it. Nothing boxed, nothing
+  // overlapping; every label is a capability traced to the client's code. The orbit
+  // turns a little with the scroll. The phone draws the same and lists the agents
+  // under it.
+  const AGENTS = [
+    { id: "intake", name: "Intake Agent", does: "Dedupes · Assigns · Briefs", hue: "#2ba7ff", deg: 270, at: "top" },
+    { id: "messaging", name: "Messaging Agent", does: "Requests · Confirms · Tells", hue: "#e59dfa", deg: 342, at: "right" },
+    { id: "owner", name: "Owner's Agent", does: "Reads the pipeline · Briefs · Answers", hue: "#fe881b", deg: 54, at: "right" },
+    { id: "followup", name: "Follow-up Agent", does: "Sweeps · Nudges · Resets", hue: "#ffd600", deg: 126, at: "left" },
+    { id: "customer", name: "Customer Agent", does: "Reads · Answers · Hands over", hue: "#ac24ff", deg: 198, at: "left" },
+  ];
+  // a circular field, the way the site draws its radar: the agents on the outer ring, a
+  // second ring inside, the core at the centre. Desktop on a 1440 x 640 block, phone on
+  // a 342 x 300 block, in --u
+  const D = { w: 1440, h: 640, cx: 720, cy: 320, r: 280, r2: 206 };
+  const M = { w: 342, h: 300, cx: 171, cy: 150, r: 118, r2: 88 };
+  const pos = (deg, g) => {
+    const t = (deg * Math.PI) / 180;
+    return [g.cx + g.r * Math.cos(t), g.cy + g.r * Math.sin(t)];
+  };
+  // each agent's work as a thin line drawing, in the site's stroke, inside a hairline ring
+  const ICON = {
+    intake: '<path d="M4 13l2.2-7h11.6L20 13v5.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z"></path><path d="M4 13h4.5l1.5 2.5h4l1.5-2.5H20"></path>',
+    messaging: '<path d="M5.5 5h13A1.5 1.5 0 0 1 20 6.5v8a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5v-8A1.5 1.5 0 0 1 5.5 5z"></path><path d="M8 9.5h8M8 12.5h5"></path>',
+    customer: '<circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"></path>',
+    followup: '<circle cx="12" cy="12" r="8"></circle><path d="M12 7.5V12l3.2 2"></path>',
+    owner: '<path d="M4 19h16"></path><path d="M7 16v-5M12 16V6M17 16v-8"></path>',
+  };
+  const node = (a, i) => {
+    const [x, y] = pos(a.deg, D), [mx, my] = pos(a.deg, M);
+    return `
+        <div class="pe-orb-agent pe-orb-agent--${a.at}" style="--hue:${a.hue};--i:${i};--deg:${a.deg};--x:${x.toFixed(0)};--y:${y.toFixed(0)};--mx:${mx.toFixed(0)};--my:${my.toFixed(0)}"><span class="pe-orb-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" focusable="false">${ICON[a.id]}</svg></span><span class="pe-orb-label"><strong>${h.esc(a.name)}</strong><span>${h.esc(a.does)}</span></span></div>`;
+  };
+  const orbitSvg = (cls, g) => `
+        <svg class="pe-orb-svg pe-orb-svg--${cls}" viewBox="0 0 ${g.w} ${g.h}" aria-hidden="true" focusable="false">
+          <circle class="pe-orb-ring pe-orb-ring--in" cx="${g.cx}" cy="${g.cy}" r="${g.r2}"></circle>
+          <circle class="pe-orb-ring" cx="${g.cx}" cy="${g.cy}" r="${g.r}"></circle>
+          <circle class="pe-orb-run" cx="${g.cx}" cy="${g.cy}" r="${g.r}" pathLength="100"></circle>
+        </svg>`;
+  // the mandala: the site's own motif, a rosette of thin circles inside a spectrum ring
+  const rosette = [];
+  for (let k = 0; k < 16; k++) {
+    const t = (k * Math.PI) / 8;
+    rosette.push(`<circle cx="${(180 + 62 * Math.cos(t)).toFixed(1)}" cy="${(180 + 62 * Math.sin(t)).toFixed(1)}" r="96"></circle>`);
+  }
+  const mandala = `
+        <svg class="pe-mandala" viewBox="0 0 360 360" aria-hidden="true" focusable="false">
+          <defs><linearGradient id="pe-g-mandala" gradientUnits="userSpaceOnUse" x1="8" y1="180" x2="352" y2="180">${SPECTRUM_STOPS}
+          </linearGradient></defs>
+          <g class="pe-mandala-web">${rosette.join("")}<circle cx="180" cy="180" r="62"></circle><circle cx="180" cy="180" r="124"></circle></g>
+          <circle class="pe-mandala-ring pe-mandala-ring--haze" cx="180" cy="180" r="172" stroke="url(#pe-g-mandala)"></circle>
+          <circle class="pe-mandala-ring" cx="180" cy="180" r="172" stroke="url(#pe-g-mandala)"></circle>
+        </svg>`;
+  // a sparse, seeded star field, so a rebuild with no change writes the same sky
+  const rs = rng(23);
+  let stars = "";
+  for (let n = 0; n < 48; n++) {
+    const x = (rs() * 1440).toFixed(0), y = (rs() * 900).toFixed(0), r = (0.6 + rs() * 1.1).toFixed(1), o = (0.08 + rs() * 0.28).toFixed(2);
+    stars += `<circle cx="${x}" cy="${y}" r="${r}" opacity="${o}"${n % 6 === 0 ? ` class="pe-star-tw" style="--d:${(3 + rs() * 4).toFixed(1)}s"` : ""}></circle>`;
+  }
+
   const open = `
   <section class="pe-scene pe-open" data-pe-scene>
-    <span class="pe-glow pe-glow--open" aria-hidden="true"></span>${thread(
-      "pe-g-open-d", "pe-thread--d", "1440 900",
-      "M1500,70 C1160,120 1290,430 1010,520 C800,590 1060,760 1060,920", 'x1="1440" y1="60" x2="1060" y2="900"'
-    )}${thread(
-      "pe-g-open-m", "pe-thread--m", "390 844",
-      "M400,560 C310,575 345,655 262,696 C186,734 330,800 320,860", 'x1="400" y1="560" x2="300" y2="860"'
-    )}
-    <div class="pe-wrap">
+    <div class="pe-scene-sky" aria-hidden="true">
+      <svg class="pe-stars" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">${stars}</svg>
+    </div>
+    <div class="pe-open-copy">
       <img class="pe-mark" src="${peLogo}" alt="${h.esc(d.client)}" width="720" height="159" data-pe-in>
       ${h.caption(d.open.pill, "dark")}${statement(d.open.lines, "h1", "pe-h1")}
       <p class="pe-p pe-lede" data-pe-in>${h.esc(d.open.lede)}</p>
-      <div class="pe-ais">${d.open.ais
-        .map((a, i) => `
-        <div class="pe-ai pe-ai--${i ? "warm" : "cool"}" data-pe-in><span class="pe-ai-bar" aria-hidden="true"></span><div><strong>${h.esc(a.name)}</strong><span>${h.esc(a.say)}</span></div></div>`)
-        .join("")}
-      </div>
-      <div class="pe-legend" aria-hidden="true"><span><i></i>${h.esc(d.open.legend[0])}</span><span><i class="is-sys"></i>${h.esc(d.open.legend[1])}</span></div>
     </div>
+    <div class="pe-orb" data-pe-in aria-label="The agentic CRM: an intake agent, a messaging agent, the owner's agent, a follow-up agent and a customer agent, working round one core">
+      <span class="pe-rays" aria-hidden="true"></span>
+      <span class="pe-sweep" aria-hidden="true"></span>
+      ${orbitSvg("d", D)}${orbitSvg("m", M)}
+      <div class="pe-core" aria-hidden="true">${mandala}<span class="pe-core-disc"><span class="pe-mono pe-mono--core"></span></span></div>
+      <span class="pe-orb-cap" aria-hidden="true">Agentic CRM</span>
+      ${AGENTS.map(node).join("")}
+    </div>
+    <ul class="pe-orb-key" aria-hidden="true">${AGENTS.map((a) => `<li style="--hue:${a.hue}"><strong>${h.esc(a.name)}</strong><span>${h.esc(a.does)}</span></li>`).join("")}</ul>
+    <span class="pe-corner pe-corner--tr" aria-hidden="true">Built by Cosmiron AI</span>
   </section>`;
 
   /* ---------- who the client is ---------- */
   const doorAt = [[40, 72], [340, 52], [152, 192], [436, 212], [30, 332], [376, 352]];
   const doorEnd = [[85, 116], [415, 96], [225, 236], [495, 256], [108, 376], [425, 396]];
+  // where the one lead goes: the client's monogram in a ring of spectrum, at the end of the line
+  const leadIn = (id, cx, cy, r) => `
+          <defs><linearGradient id="pe-g-lead-${id}" gradientUnits="userSpaceOnUse" x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}">${SPECTRUM_STOPS}
+          </linearGradient></defs>
+          <g class="pe-lead-in">
+            <circle class="pe-lead-in-halo" cx="${cx}" cy="${cy}" r="${r + 14}"></circle>
+            <circle class="pe-lead-in-ring" cx="${cx}" cy="${cy}" r="${r}" stroke="url(#pe-g-lead-${id})"></circle>
+            <text class="pe-lead-in-cap" x="${cx + r + 14}" y="${cy + 5}">Into the CRM</text>
+          </g>`;
   const who = `
   <section class="pe-scene pe-who" data-pe-scene>
     <span class="pe-glow pe-glow--who pe-glow--brand" aria-hidden="true"></span>
@@ -182,19 +245,20 @@ export function paisaPage(d, R, h) {
         <svg class="pe-funnel pe-funnel--d" viewBox="0 0 560 780" aria-hidden="true" focusable="false">
           <defs><linearGradient id="pe-g-who-d" gradientUnits="userSpaceOnUse" x1="300" y1="580" x2="300" y2="780"><stop offset="0" stop-color="#1b4dfe"></stop><stop offset="0.5" stop-color="#ac24ff"></stop><stop offset="1" stop-color="#e59dfa"></stop></linearGradient></defs>
           ${doorEnd.map(([x, y]) => `<path class="pe-funnel-in" pathLength="100" d="M${x},${y} C${x},${Math.round((y + 580) / 2 + 60)} 300,${Math.round((y + 580) / 2)} 300,580"></path>`).join("\n          ")}
-          <path class="pe-funnel-out pe-funnel-haze" pathLength="100" stroke="url(#pe-g-who-d)" d="M300,580 L300,780"></path>
-          <path class="pe-funnel-out" pathLength="100" stroke="url(#pe-g-who-d)" d="M300,580 L300,780"></path>
-          <circle cx="300" cy="580" r="7"></circle>
+          <path class="pe-funnel-out pe-funnel-haze" pathLength="100" stroke="url(#pe-g-who-d)" d="M300,580 L300,724"></path>
+          <path class="pe-funnel-out" pathLength="100" stroke="url(#pe-g-who-d)" d="M300,580 L300,724"></path>
+          <circle cx="300" cy="580" r="7"></circle>${leadIn("d", 300, 752, 26)}
         </svg>
         ${d.who.doors.map((t, i) => `<span class="pe-door" style="--x:${doorAt[i][0]};--y:${doorAt[i][1]};--b:${i % 2 ? 9 : 7}s">${h.esc(t)}</span>`).join("\n        ")}
         <svg class="pe-funnel pe-funnel--m" viewBox="0 0 342 260" aria-hidden="true" focusable="false">
           <defs><linearGradient id="pe-g-who-m" gradientUnits="userSpaceOnUse" x1="171" y1="120" x2="171" y2="260"><stop offset="0" stop-color="#1b4dfe"></stop><stop offset="0.5" stop-color="#ac24ff"></stop><stop offset="1" stop-color="#e59dfa"></stop></linearGradient></defs>
           ${[20, 80, 140, 202, 262, 322].map((x) => `<path class="pe-funnel-in" pathLength="100" d="M${x},0 C${x},80 171,60 171,120"></path>`).join("\n          ")}
-          <path class="pe-funnel-out pe-funnel-haze" pathLength="100" stroke="url(#pe-g-who-m)" d="M171,120 L171,260"></path>
-          <path class="pe-funnel-out" pathLength="100" stroke="url(#pe-g-who-m)" d="M171,120 L171,260"></path>
-          <circle cx="171" cy="120" r="6"></circle>
+          <path class="pe-funnel-out pe-funnel-haze" pathLength="100" stroke="url(#pe-g-who-m)" d="M171,120 L171,212"></path>
+          <path class="pe-funnel-out" pathLength="100" stroke="url(#pe-g-who-m)" d="M171,120 L171,212"></path>
+          <circle cx="171" cy="120" r="6"></circle>${leadIn("m", 171, 236, 20)}
         </svg>
         <div class="pe-join pe-seq"${seq(2.4)}><strong>${h.esc(d.who.join[0])}</strong><span>${h.esc(d.who.join[1])}</span></div>
+        <span class="pe-mono pe-lead-mono" aria-hidden="true"></span>
       </div>
     </div>
   </section>`;
@@ -448,6 +512,13 @@ ${calling}
   <section class="pe-scene pe-signoff" data-pe-scene>
     <span class="pe-glow pe-glow--signoff pe-glow--brand" aria-hidden="true"></span>
     <div class="pe-signoff-in">
+      <!-- the site's own "intelligence in action" scene: a cloud of light pours into one point on the line and becomes the core, the same ring the hero opens with -->
+      <div class="pe-signoff-scene" aria-hidden="true" data-pe-in>
+        <video class="pe-signoff-video" muted playsinline loop preload="none" poster="${R}c2/media/work/${d.slug}/video/intelligence-poster.jpg" data-c2-lazy>
+          <source data-src="${R}c2/media/work/${d.slug}/video/intelligence.webm" type="video/webm">
+          <source data-src="${R}c2/media/work/${d.slug}/video/intelligence.mp4" type="video/mp4">
+        </video>
+      </div>
       <span class="pe-signoff-rule" aria-hidden="true" data-pe-in></span>
       <img class="pe-signoff-logo" src="${peLogo}" alt="${h.esc(d.client)}" width="720" height="159" loading="lazy" data-pe-in>
       <p class="pe-signoff-line" data-pe-in>${h.esc(d.signoff.line)}</p>
