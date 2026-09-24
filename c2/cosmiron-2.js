@@ -14,6 +14,7 @@
   }
 
   ready(function () {
+    lazyVideos();
     initFilters();
     pageCurtain();
     productUi();
@@ -428,6 +429,61 @@
         card.hidden = !(filter === "all" || tags.indexOf(filter) !== -1);
       });
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    });
+  }
+
+  /*
+   * Background videos marked data-c2-lazy: their sources sit in data-src and are only
+   * attached (and played) once the video is near the viewport. A video that is
+   * display:none at the current breakpoint never intersects, so it never downloads.
+   * Once playing they loop exactly as before.
+   */
+  function lazyVideos() {
+    var vids = Array.prototype.slice.call(document.querySelectorAll("video[data-c2-lazy]"));
+    if (!vids.length) return;
+    function play(v) {
+      try {
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      } catch (e) {}
+    }
+    function start(v) {
+      if (v.dataset.c2Started) return;
+      v.dataset.c2Started = "1";
+      Array.prototype.forEach.call(v.querySelectorAll("source[data-src]"), function (s) {
+        s.setAttribute("src", s.getAttribute("data-src"));
+        s.removeAttribute("data-src");
+      });
+      v.load();
+      play(v);
+    }
+    if (!("IntersectionObserver" in window)) {
+      vids.forEach(start);
+      return;
+    }
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          start(entry.target);
+          io.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "75% 0px 75% 0px" },
+    );
+    vids.forEach(function (v) {
+      io.observe(v);
+    });
+    // Same behaviour the page already had for its videos: rewind and resume when the tab comes back.
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) return;
+      vids.forEach(function (v) {
+        if (!v.dataset.c2Started) return;
+        try {
+          v.currentTime = 0;
+        } catch (e) {}
+        play(v);
+      });
     });
   }
 })();
