@@ -16,6 +16,7 @@
   ready(function () {
     lazyVideos();
     initFilters();
+    workRail();
     pageCurtain();
     productUi();
     if (reduceMotion || !window.gsap || !window.ScrollTrigger) return;
@@ -429,6 +430,53 @@
         card.hidden = !(filter === "all" || tags.indexOf(filter) !== -1);
       });
       if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    });
+  }
+
+  /*
+   * Work page: the rail of chapter numbers beside the page lights the chapter that is
+   * on screen, follows the filters (a hidden chapter loses its number) and scrolls to
+   * a chapter when its number is clicked.
+   */
+  function workRail() {
+    var rail = document.querySelector(".c2-wk-rail");
+    if (!rail || !("IntersectionObserver" in window)) return;
+    var links = Array.prototype.slice.call(rail.querySelectorAll("[data-wk-for]"));
+    var items = links.map(function (l) {
+      return document.getElementById(l.getAttribute("data-wk-for"));
+    });
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var i = items.indexOf(entry.target);
+          links.forEach(function (l, k) {
+            l.classList.toggle("is-active", k === i);
+          });
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" },
+    );
+    items.forEach(function (it) {
+      if (it) io.observe(it);
+    });
+    var bar = document.querySelector("[data-c2-filters]");
+    if (bar) {
+      bar.addEventListener("click", function () {
+        setTimeout(function () {
+          links.forEach(function (l, k) {
+            l.hidden = !!(items[k] && items[k].hidden);
+          });
+        }, 0);
+      });
+    }
+    links.forEach(function (l, k) {
+      l.addEventListener("click", function (e) {
+        if (!items[k]) return;
+        e.preventDefault();
+        if (window.lenis && window.lenis.scrollTo) window.lenis.scrollTo(items[k], { offset: 0 });
+        else items[k].scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     });
   }
 

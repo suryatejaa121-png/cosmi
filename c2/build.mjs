@@ -416,6 +416,35 @@ const dentCard = (dent, R) =>
     stage: `<div class="c2-exhibit-stage">${frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt)}</div>`,
   });
 
+// The Work page below its hero: one chapter per piece of work, read down a single
+// page. Each chapter is a full band with a large index number behind it, the piece's
+// own tint in the light, its screen bleeding off one edge and the copy on the other,
+// sides alternating. A rail of the same numbers rides beside the page and lights the
+// chapter on screen (cosmiron-2.js, workRail). The filters above still work on
+// data-c2-work / data-tags. The homepage's exhibit cards are untouched.
+function chapter(n, { id, href, tags, tint, kind, industry, status, dev = false, client, title, headline, note = "", chips, cta, stage, wide = false }) {
+  const num = String(n).padStart(2, "0");
+  return `
+        <article class="c2-wk-item${wide ? " c2-wk-item--wide" : ""}${n % 2 === 0 ? " c2-wk-item--flip" : ""}" id="wk-${esc(id)}" data-c2-work data-tags="${esc(tags.join("|"))}" style="--c2-tint:${esc(tint)}">
+          <span class="c2-wk-glow" aria-hidden="true"></span>
+          <span class="c2-wk-num" aria-hidden="true" data-c2-parallax="-24">${num}</span>
+          <a class="c2-wk-link" data-c2-transition href="${href}">
+            <div class="c2-wk-copy">
+              <div class="c2-wk-meta" data-c2-reveal><span class="c2-wk-index">${num}</span><span>${esc(kind)}</span><span>${esc(industry)}</span><span class="c2-status${dev ? " c2-status--dev" : ""}">${esc(status)}</span></div>
+              <div class="c2-wk-client" data-c2-reveal>${client}</div>
+              <h2 class="c2-wk-title" data-c2-reveal>${esc(title)}</h2>
+              <p class="c2-wk-headline c2-spectrum" data-c2-reveal>${esc(headline)}</p>${note ? `
+              <p class="c2-wk-note" data-c2-reveal>${note}</p>` : ""}
+              <ul class="c2-wk-chips" data-c2-stagger>${chips.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>
+              <span class="c2-wk-cta" data-c2-reveal>${esc(cta)} <span aria-hidden="true">→</span></span>
+            </div>
+            <div class="c2-wk-stage" data-c2-rise>
+              <div class="c2-wk-visual" data-c2-parallax="34">${stage}</div>
+            </div>
+          </a>
+        </article>`;
+}
+
 function workIndexBody(projects, R, voice, dent, st) {
   const ctx = { R, css: new Map() };
   const types = [...new Set(projects.map((p) => p.type).filter(Boolean))];
@@ -425,18 +454,84 @@ function workIndexBody(projects, R, voice, dent, st) {
           .map((t) => `<button type="button" data-filter="${esc(t)}" aria-pressed="false">${esc(FILTER_LABELS[t] || t)}</button>`)
           .join("")}</div>`
       : "";
-  const cards =
-    projects.map((p) => exhibitCard(p, R, `${p.slug}/index.html`, ctx)).join("") +
-    (st ? storyCard(st, R) : "") +
-    (dent ? dentCard(dent, R) : "") +
-    (voice
-      ? productCard(voice, R, ["Cosmiron product", voice.card.industry], {
-          slug: "cosmivoice",
-          tint: "#CA45FF",
-          logo: "cosmiron.webp",
-          stage: `<div class="c2-exhibit-stage c2-exhibit-stage--portrait"><img src="${R}c2/media/products/cosmivoice/${voice.image.small}" alt="${esc(voice.image.alt)}" width="640" height="640" loading="lazy"></div>`,
-        })
-      : "");
+  const items = [];
+  for (const p of projects) {
+    const product = isProduct(p);
+    items.push({
+      id: p.slug,
+      href: `${p.slug}/index.html`,
+      tags: [p.type, p.industry, ...p.capabilities.map((c) => c.name)].filter(Boolean),
+      tint: p.client.brand,
+      kind: p.type,
+      industry: p.industry,
+      status: p.status,
+      client: `${logoChip(R, p)}<span>${esc(product ? p.client.maker : p.client.name)}</span>${p.client.region ? `<span class="c2-wk-place">${esc(p.client.region)}</span>` : ""}`,
+      title: p.project,
+      headline: p.headline,
+      note: p.partners && p.partners.featured ? `${esc(p.client.name)}'s partners include <b>${p.partners.featured.map(esc).join(" · ")}</b>` : "",
+      chips: p.capabilities.map((c) => c.name),
+      cta: product ? "View product" : "View case study",
+      stage: product
+        ? `<div class="c2-wk-devices">${p.card.map((s) => uiView(ctx, p, s, { scroll: false })).join("")}</div>`
+        : frame(media(R, p, p.hero.src), p.hero.alt),
+      wide: !product,
+    });
+  }
+  if (st)
+    items.push({
+      id: st.slug,
+      href: `${R}work/${st.slug}/index.html`,
+      tags: ["Collaboration", st.card.industry],
+      tint: st.tint,
+      kind: "Client collaboration",
+      industry: st.card.industry,
+      status: st.card.status,
+      client: `<img class="c2-wordmark" src="${R}c2/media/work/${st.slug}/${st.logo}" alt="${esc(st.client)}" loading="lazy"><span class="c2-wk-place">${esc(st.place)}</span>`,
+      title: st.client,
+      headline: st.card.headline,
+      chips: st.card.tags,
+      cta: st.card.cta,
+      stage: frame(`${R}c2/media/work/${st.slug}/${st.card.image.src}`, st.card.image.alt),
+      wide: true,
+    });
+  if (dent)
+    items.push({
+      id: "cosmident",
+      href: `${R}products/cosmident/index.html`,
+      tags: ["Cosmiron product", dent.card.industry],
+      tint: "#7C3AED",
+      kind: "Cosmiron product",
+      industry: dent.card.industry,
+      status: dent.status,
+      client: `<span class="c2-logo-chip c2-logo-chip--full" style="--c2-chip:#0c0a14"><img src="${R}c2/media/products/logos/cosmident.webp" alt="" loading="lazy"></span><span>A Cosmiron product</span>`,
+      title: dent.name,
+      headline: dent.card.headline,
+      chips: dent.card.tags,
+      cta: `Explore ${dent.name}`,
+      stage: frame(`${R}c2/media/products/cosmident/${dent.card.image.src}`, dent.card.image.alt),
+      wide: true,
+    });
+  if (voice)
+    items.push({
+      id: "cosmivoice",
+      href: `${R}products/cosmivoice/index.html`,
+      tags: ["Cosmiron product", voice.card.industry],
+      tint: "#CA45FF",
+      kind: "Cosmiron product",
+      industry: voice.card.industry,
+      status: voice.status,
+      dev: true,
+      client: `<span class="c2-logo-chip c2-logo-chip--full" style="--c2-chip:#0c0a14"><img src="${R}c2/media/products/logos/cosmiron.webp" alt="" loading="lazy"></span><span>A Cosmiron product</span>`,
+      title: voice.name,
+      headline: voice.card.headline,
+      chips: voice.card.tags,
+      cta: `Explore ${voice.name}`,
+      stage: `<div class="c2-wk-portrait"><img src="${R}c2/media/products/cosmivoice/${voice.image.small}" alt="${esc(voice.image.alt)}" width="640" height="640" loading="lazy"></div>`,
+    });
+  const chapters = items.map((it, i) => chapter(i + 1, it)).join("");
+  const rail = `<nav class="c2-wk-rail" aria-label="Work index">${items
+    .map((it, i) => `<a href="#wk-${esc(it.id)}" data-wk-for="wk-${esc(it.id)}" style="--c2-tint:${esc(it.tint)}"><i></i><span>${String(i + 1).padStart(2, "0")}</span></a>`)
+    .join("")}</nav>`;
   return `
 <div class="c2 c2-work">${uiStyles(ctx)}
   <section class="c2-hero c2-hero--work">
@@ -448,11 +543,14 @@ function workIndexBody(projects, R, voice, dent, st) {
     </div>
   </section>
 
-  <section class="c2-work-list" aria-label="Work">
-    <div class="c2-container">
+  <section class="c2-wk" aria-label="Work">
+    <div class="c2-wk-head c2-container">
+      <span class="c2-wk-head-rule" aria-hidden="true"></span>
       ${filters}
-      <div class="c2-exhibits" data-c2-stagger>${cards}
-      </div>
+      <span class="c2-wk-head-rule" aria-hidden="true"></span>
+    </div>
+    ${rail}
+    <div class="c2-wk-list">${chapters}
     </div>
   </section>
 ${closingSection(R, {
